@@ -1,0 +1,362 @@
+{
+  "name": "asyncio",
+  "module": "asyncio",
+  "import": "import asyncio",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Async I/O framework for cooperative multitasking. Run multiple tasks concurrently without threads. Built into MicroPython firmware.",
+  "differences_from_cpython": "MicroPython subset of CPython asyncio. No uvloop. Simpler API.",
+  "functions": [
+    {
+      "name": "asyncio.run",
+      "signature": "run(coro)",
+      "returns": "varies",
+      "description": "Run coroutine until complete. Main entry point."
+    },
+    {
+      "name": "asyncio.create_task",
+      "signature": "create_task(coro)",
+      "returns": "Task",
+      "description": "Schedule coroutine for execution."
+    },
+    {
+      "name": "asyncio.current_task",
+      "signature": "current_task()",
+      "returns": "Task|None"
+    },
+    {
+      "name": "asyncio.sleep",
+      "signature": "sleep(seconds)",
+      "returns": "awaitable"
+    },
+    {
+      "name": "asyncio.sleep_ms",
+      "signature": "sleep_ms(ms)",
+      "returns": "awaitable"
+    },
+    {
+      "name": "asyncio.gather",
+      "signature": "gather(*coros)",
+      "returns": "awaitable",
+      "description": "Run multiple coroutines concurrently."
+    },
+    {
+      "name": "asyncio.wait_for",
+      "signature": "wait_for(coro, timeout)",
+      "returns": "awaitable",
+      "description": "Wait with timeout. Raises TimeoutError."
+    },
+    {
+      "name": "asyncio.wait_for_ms",
+      "signature": "wait_for_ms(coro, timeout_ms)",
+      "returns": "awaitable"
+    },
+    {
+      "name": "asyncio.open_connection",
+      "signature": "open_connection(host, port)",
+      "returns": "(reader, writer)",
+      "description": "Async TCP client."
+    },
+    {
+      "name": "asyncio.start_server",
+      "signature": "start_server(callback, host, port, backlog=5)",
+      "returns": "Server",
+      "description": "Async TCP server."
+    },
+    {
+      "name": "asyncio.get_event_loop",
+      "signature": "get_event_loop()",
+      "returns": "Loop"
+    },
+    {
+      "name": "asyncio.new_event_loop",
+      "signature": "new_event_loop()",
+      "returns": "Loop"
+    },
+    {
+      "name": "asyncio.run_until_complete",
+      "signature": "run_until_complete(coro)",
+      "returns": "varies"
+    }
+  ],
+  "classes": [
+    {
+      "name": "Lock",
+      "description": "Async mutex lock. Only one task can hold the lock at a time.",
+      "methods": [
+        {
+          "name": "Lock.acquire",
+          "signature": "acquire()",
+          "returns": "coroutine",
+          "description": "Acquire the lock. Suspends until available."
+        },
+        {
+          "name": "Lock.locked",
+          "signature": "locked()",
+          "returns": {
+            "type": "bool"
+          },
+          "description": "Check if the lock is currently held."
+        },
+        {
+          "name": "Lock.release",
+          "signature": "release()",
+          "returns": "None",
+          "description": "Release the lock."
+        }
+      ]
+    },
+    {
+      "name": "Event",
+      "description": "Async event synchronization primitive.",
+      "methods": [
+        {
+          "name": "Event.set",
+          "signature": "set()",
+          "returns": "None",
+          "description": "Set the event. All tasks waiting on it are scheduled to run."
+        },
+        {
+          "name": "Event.clear",
+          "signature": "clear()",
+          "returns": "None",
+          "description": "Clear the event flag."
+        },
+        {
+          "name": "Event.is_set",
+          "signature": "is_set()",
+          "returns": {
+            "type": "bool"
+          },
+          "description": "Check if the event is currently set."
+        },
+        {
+          "name": "Event.wait",
+          "signature": "wait()",
+          "returns": "coroutine",
+          "description": "Wait until the event is set. Suspends the calling task."
+        }
+      ]
+    },
+    {
+      "name": "Task",
+      "description": "Scheduled coroutine wrapper."
+    },
+    {
+      "name": "StreamReader",
+      "description": "Async stream reader returned by open_connection() and start_server().",
+      "methods": [
+        {
+          "name": "StreamReader.read",
+          "signature": "read([n])",
+          "returns": "coroutine->bytes",
+          "description": "Read up to n bytes. If n not given, read all available."
+        },
+        {
+          "name": "StreamReader.readinto",
+          "signature": "readinto(buf)",
+          "returns": "coroutine->int",
+          "description": "Read into buffer. Returns number of bytes read."
+        },
+        {
+          "name": "StreamReader.readline",
+          "signature": "readline()",
+          "returns": "coroutine->bytes",
+          "description": "Read a line (until \\\\n)."
+        },
+        {
+          "name": "StreamReader.readexactly",
+          "signature": "readexactly(n)",
+          "returns": "coroutine->bytes",
+          "description": "Read exactly n bytes. Raises EOFError if not enough data."
+        },
+        {
+          "name": "StreamReader.aclose",
+          "signature": "aclose()",
+          "returns": "coroutine->None",
+          "description": "Async close the stream."
+        },
+        {
+          "name": "StreamReader.awrite",
+          "signature": "awrite(buf)",
+          "returns": "coroutine->int",
+          "description": "Async write to the stream. Returns bytes written."
+        },
+        {
+          "name": "StreamReader.awritestr",
+          "signature": "awritestr(s)",
+          "returns": "coroutine->int",
+          "description": "Async write string to stream."
+        },
+        {
+          "name": "StreamReader.drain",
+          "signature": "drain()",
+          "returns": "coroutine->None",
+          "description": "Drain the write buffer (wait until all data is sent)."
+        },
+        {
+          "name": "StreamReader.get_extra_info",
+          "signature": "get_extra_info(name, default=None)",
+          "returns": "varies",
+          "description": "Get stream information (e.g., 'peername')."
+        },
+        {
+          "name": "StreamReader.wait_closed",
+          "signature": "wait_closed()",
+          "returns": "coroutine->None",
+          "description": "Wait until the stream is fully closed."
+        },
+        {
+          "name": "StreamReader.close",
+          "signature": "close()",
+          "returns": "None",
+          "description": "Close the stream."
+        }
+      ]
+    },
+    {
+      "name": "StreamWriter",
+      "description": "Async stream writer returned by open_connection() and start_server().",
+      "methods": [
+        {
+          "name": "StreamWriter.write",
+          "signature": "write(buf)",
+          "returns": "int",
+          "description": "Write buffer to stream. Returns bytes written."
+        },
+        {
+          "name": "StreamWriter.awrite",
+          "signature": "awrite(buf)",
+          "returns": "coroutine->int",
+          "description": "Async write buffer."
+        },
+        {
+          "name": "StreamWriter.awritestr",
+          "signature": "awritestr(s)",
+          "returns": "coroutine->int",
+          "description": "Async write string."
+        },
+        {
+          "name": "StreamWriter.aclose",
+          "signature": "aclose()",
+          "returns": "coroutine->None",
+          "description": "Async close."
+        },
+        {
+          "name": "StreamWriter.drain",
+          "signature": "drain()",
+          "returns": "coroutine->None",
+          "description": "Drain write buffer."
+        },
+        {
+          "name": "StreamWriter.get_extra_info",
+          "signature": "get_extra_info(name, default=None)",
+          "returns": "varies",
+          "description": "Get stream information."
+        },
+        {
+          "name": "StreamWriter.wait_closed",
+          "signature": "wait_closed()",
+          "returns": "coroutine->None",
+          "description": "Wait until fully closed."
+        },
+        {
+          "name": "StreamWriter.close",
+          "signature": "close()",
+          "returns": "None",
+          "description": "Close the stream."
+        },
+        {
+          "name": "StreamWriter.read",
+          "signature": "read([n])",
+          "returns": "coroutine->bytes",
+          "description": "Read from stream (bidirectional)."
+        },
+        {
+          "name": "StreamWriter.readinto",
+          "signature": "readinto(buf)",
+          "returns": "coroutine->int",
+          "description": "Read into buffer."
+        },
+        {
+          "name": "StreamWriter.readline",
+          "signature": "readline()",
+          "returns": "coroutine->bytes",
+          "description": "Read a line."
+        },
+        {
+          "name": "StreamWriter.readexactly",
+          "signature": "readexactly(n)",
+          "returns": "coroutine->bytes",
+          "description": "Read exactly n bytes."
+        }
+      ]
+    },
+    {
+      "name": "ThreadSafeFlag",
+      "description": "Thread-safe flag for IRQ-to-asyncio communication.",
+      "methods": [
+        {
+          "name": "ThreadSafeFlag.set",
+          "signature": "set()",
+          "returns": "None",
+          "description": "Set the flag. Safe to call from IRQ context. Wakes one waiting task."
+        },
+        {
+          "name": "ThreadSafeFlag.clear",
+          "signature": "clear()",
+          "returns": "None",
+          "description": "Clear the flag."
+        },
+        {
+          "name": "ThreadSafeFlag.wait",
+          "signature": "wait()",
+          "returns": "coroutine",
+          "description": "Wait for the flag to be set. Suspends calling task."
+        },
+        {
+          "name": "ThreadSafeFlag.ioctl",
+          "signature": "ioctl(cmd, arg)",
+          "returns": "varies",
+          "description": "I/O control for stream integration."
+        }
+      ]
+    },
+    {
+      "name": "TimeoutError",
+      "description": "Raised by wait_for() on timeout."
+    },
+    {
+      "name": "CancelledError",
+      "description": "Raised when task is cancelled."
+    }
+  ],
+  "constants": {
+    "CancelledError": null,
+    "Event": null,
+    "IOQueue": null,
+    "Lock": null,
+    "Loop": null,
+    "SingletonGenerator": null,
+    "StreamReader": null,
+    "StreamWriter": null,
+    "Task": null,
+    "TaskQueue": null,
+    "ThreadSafeFlag": null,
+    "TimeoutError": null,
+    "core": null,
+    "create_task": null,
+    "current_task": null,
+    "gather": null,
+    "new_event_loop": null,
+    "open_connection": null,
+    "run": null,
+    "run_until_complete": null,
+    "sleep": null,
+    "sleep_ms": null,
+    "start_server": null,
+    "wait_for": null,
+    "wait_for_ms": null,
+    "get_event_loop": null
+  }
+}

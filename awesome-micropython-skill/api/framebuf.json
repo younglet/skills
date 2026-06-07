@@ -1,0 +1,119 @@
+{
+  "name": "framebuf",
+  "module": "framebuf",
+  "import": "import framebuf",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Frame buffer for monochrome, grayscale, and RGB565 OLED/LCD displays. Drawing primitives: text, lines, rectangles, circles, ellipses.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific display buffer.",
+  "classes": [
+    {
+      "name": "FrameBuffer",
+      "signature": "framebuf.FrameBuffer(buffer, width, height, format, stride=None)",
+      "constructor_params": [
+        {
+          "name": "buffer",
+          "type": "bytearray",
+          "description": "Pre-allocated buffer for pixel data."
+        },
+        {
+          "name": "width",
+          "type": "int"
+        },
+        {
+          "name": "height",
+          "type": "int"
+        },
+        {
+          "name": "format",
+          "type": "int",
+          "description": "Color format constant."
+        },
+        {
+          "name": "stride",
+          "type": "int|None",
+          "description": "Bytes per row. None = auto from width/format."
+        }
+      ],
+      "methods": [
+        {
+          "name": "fill",
+          "signature": "fill(c)",
+          "returns": "None",
+          "description": "Fill entire buffer with color c."
+        },
+        {
+          "name": "pixel",
+          "signature": "pixel(x, y[, c])",
+          "returns": "int|None",
+          "description": "Get or set pixel."
+        },
+        {
+          "name": "hline",
+          "signature": "hline(x, y, w, c)",
+          "returns": "None"
+        },
+        {
+          "name": "vline",
+          "signature": "vline(x, y, h, c)",
+          "returns": "None"
+        },
+        {
+          "name": "line",
+          "signature": "line(x1, y1, x2, y2, c)",
+          "returns": "None"
+        },
+        {
+          "name": "rect",
+          "signature": "rect(x, y, w, h, c, fill=False)",
+          "returns": "None"
+        },
+        {
+          "name": "fill_rect",
+          "signature": "fill_rect(x, y, w, h, c)",
+          "returns": "None"
+        },
+        {
+          "name": "ellipse",
+          "signature": "ellipse(x, y, rx, ry, c, fill=False, m=15)",
+          "returns": "None"
+        },
+        {
+          "name": "poly",
+          "signature": "poly(x, y, coords, c, fill=False)",
+          "returns": "None",
+          "description": "Draw polygon from list of (x,y) tuples."
+        },
+        {
+          "name": "text",
+          "signature": "text(s, x, y, c=1)",
+          "returns": "None",
+          "description": "Draw text string. 8x8 pixel characters."
+        },
+        {
+          "name": "scroll",
+          "signature": "scroll(xstep, ystep)",
+          "returns": "None"
+        },
+        {
+          "name": "blit",
+          "signature": "blit(fbuf, x, y, key=-1)",
+          "returns": "None",
+          "description": "Copy another framebuf. key=transparent color."
+        }
+      ],
+      "constants": {}
+    }
+  ],
+  "constants": {
+    "MONO_VLSB": null,
+    "MVLSB": null,
+    "MONO_HLSB": null,
+    "MONO_HMSB": null,
+    "RGB565": null,
+    "GS2_HMSB": null,
+    "GS4_HMSB": null,
+    "GS8": null,
+    "FrameBuffer1": null
+  }
+}

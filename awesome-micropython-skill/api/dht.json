@@ -1,0 +1,117 @@
+{
+  "name": "dht",
+  "module": "dht",
+  "import": "import dht  # DO NOT write: from dht import DHT11",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "DHT11, DHT22 (AM2302), DHT21 (AM2301) temperature and humidity sensor driver. Built into MicroPython firmware on ESP32.",
+  "differences_from_cpython": "This module does NOT exist in CPython. MicroPython-specific sensor driver.",
+  "classes": [
+    {
+      "name": "DHT11",
+      "signature": "dht.DHT11(pin)",
+      "constructor_params": [
+        {
+          "name": "pin",
+          "type": "Pin",
+          "description": "Data pin (any GPIO). Must support input and open-drain output."
+        }
+      ],
+      "methods": [
+        {
+          "name": "DHT11.measure",
+          "signature": "measure()",
+          "returns": "None",
+          "description": "Trigger a sensor reading. Blocks for ~20ms. MUST call before reading temperature/humidity.",
+          "note": "Acquires the pin exclusively during measurement. Raises OSError(ETIMEDOUT) on failure."
+        },
+        {
+          "name": "DHT11.temperature",
+          "signature": "temperature()",
+          "returns": {
+            "type": "float",
+            "description": "Temperature in Celsius. Call measure() first."
+          },
+          "note": "DHT11: integer resolution. DHT22: 0.1°C resolution."
+        },
+        {
+          "name": "DHT11.humidity",
+          "signature": "humidity()",
+          "returns": {
+            "type": "float",
+            "description": "Relative humidity in %. Call measure() first."
+          },
+          "note": "DHT11: integer resolution (0-50°C, 20-90%). DHT22: 0.1% resolution (0-100%)."
+        }
+      ],
+      "example": "from machine import Pin\nimport dht\nimport time\n\nsensor = dht.DHT11(Pin(4))\nwhile True:\n    try:\n        sensor.measure()\n        temp = sensor.temperature()\n        hum = sensor.humidity()\n        print(f'Temperature: {temp}°C  Humidity: {hum}%')\n    except OSError as e:\n        print('Sensor read failed:', e)\n    time.sleep(2)",
+      "constants": {}
+    },
+    {
+      "name": "DHT22",
+      "signature": "dht.DHT22(pin)",
+      "constructor_params": [
+        {
+          "name": "pin",
+          "type": "Pin",
+          "description": "Data pin (any GPIO)."
+        }
+      ],
+      "methods": [
+        {
+          "name": "DHT22.measure",
+          "signature": "measure()",
+          "returns": "None",
+          "description": "Trigger a sensor reading. Blocks for ~20ms. Raises OSError(ETIMEDOUT) on failure."
+        },
+        {
+          "name": "DHT22.temperature",
+          "signature": "temperature()",
+          "returns": {
+            "type": "float",
+            "description": "Temperature in Celsius (0.1°C resolution)."
+          },
+          "note": "Call measure() first, otherwise returns stale data."
+        },
+        {
+          "name": "DHT22.humidity",
+          "signature": "humidity()",
+          "returns": {
+            "type": "float",
+            "description": "Relative humidity in % (0.1% resolution, 0-100% range)."
+          },
+          "note": "Call measure() first."
+        }
+      ],
+      "example": "from machine import Pin\nimport dht\n\nsensor = dht.DHT22(Pin(15))\nsensor.measure()\nprint('Temperature:', sensor.temperature())  # e.g., 23.5\nprint('Humidity:', sensor.humidity())          # e.g., 65.2",
+      "constants": {}
+    }
+  ],
+  "timing_requirements": [
+    "Minimum 1 second between measure() calls for DHT11.",
+    "Minimum 2 seconds between measure() calls for DHT22 (slower sensor).",
+    "DHT22 can fail if read too frequently — always handle OSError.",
+    "Use try/except around measure() — the one-wire protocol is timing-sensitive."
+  ],
+  "wiring": [
+    "VCC → 3.3V (some modules tolerate 5V but use 3.3V to be safe)",
+    "GND → GND",
+    "DATA → Any GPIO (connect 4.7kΩ - 10kΩ pull-up resistor to 3.3V)",
+    "Some DHT modules have built-in pull-up resistor on the PCB."
+  ],
+  "common_bugs": [
+    "Forgetting to call measure() before temperature()/humidity() — returns stale data.",
+    "Calling measure() too fast — DHT22 needs 2s between reads; raises OSError(ETIMEDOUT).",
+    "DHT11 returns integers, not floats. Type checking code may need adjustment.",
+    "No pull-up resistor — sensor may read all zeros or fail every time.",
+    "ESP32 deep-sleep wakes can interfere with DHT timing — add a short delay (100ms) after wake."
+  ],
+  "esp32_notes": [
+    "Works on any GPIO pin (unlike some other sensors that need specific pins).",
+    "DHT sensor is timing-critical. Avoid interrupts during measure().",
+    "In deep-sleep applications, call sensor.measure() AFTER wake, not before sleep."
+  ],
+  "constants": {
+    "DHTBase": null
+  }
+}

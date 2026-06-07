@@ -1,0 +1,6 @@
+{
+  "name": "drivers-power",
+  "category": "power",
+  "description": "power drivers sourced from awesome-micropython.com",
+  "drivers": {}
+}

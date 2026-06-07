@@ -1,0 +1,84 @@
+{
+  "name": "cryptolib",
+  "module": "cryptolib",
+  "import": "import cryptolib",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "AES encryption/decryption. Requires firmware with mbedtls crypto support. DO NOT use 'ucryptolib' — always import as 'cryptolib'.",
+  "differences_from_cpython": "This module does NOT exist in CPython. It is MicroPython-specific, backed by mbedtls.",
+  "classes": [
+    {
+      "name": "aes",
+      "signature": "cryptolib.aes(key, mode, [IV])",
+      "constructor_params": [
+        {
+          "name": "key",
+          "type": "bytes",
+          "description": "Encryption key. Must be 16 bytes (AES-128), 24 bytes (AES-192), or 32 bytes (AES-256)."
+        },
+        {
+          "name": "mode",
+          "type": "int",
+          "description": "Cipher mode: MODE_ECB (1), MODE_CBC (2), MODE_CTR (6)."
+        },
+        {
+          "name": "IV",
+          "type": "bytes|None",
+          "description": "Initialization vector. Required for CBC and CTR modes. Must be 16 bytes. Not used for ECB."
+        }
+      ],
+      "methods": [
+        {
+          "name": "aes.encrypt",
+          "signature": "encrypt(plaintext)",
+          "parameters": [
+            {
+              "name": "plaintext",
+              "type": "bytes",
+              "description": "Data to encrypt. Must be multiple of 16 bytes for ECB/CBC."
+            }
+          ],
+          "returns": {
+            "type": "bytes",
+            "description": "Encrypted ciphertext (same length as plaintext)."
+          },
+          "description": "Encrypt data. For ECB/CBC, length must be multiple of 16 bytes."
+        },
+        {
+          "name": "aes.decrypt",
+          "signature": "decrypt(ciphertext)",
+          "parameters": [
+            {
+              "name": "ciphertext",
+              "type": "bytes",
+              "description": "Data to decrypt. Must be multiple of 16 bytes for ECB/CBC."
+            }
+          ],
+          "returns": {
+            "type": "bytes",
+            "description": "Decrypted plaintext (same length as ciphertext)."
+          },
+          "description": "Decrypt data."
+        }
+      ],
+      "example": "import cryptolib\n\n# AES-128 ECB mode\nkey = b'0123456789abcdef'  # 16 bytes\ncipher = cryptolib.aes(key, cryptolib.MODE_ECB)\nplaintext = b'Hello ESP32!    '  # pad to 16 bytes\nencrypted = cipher.encrypt(plaintext)\nprint('Encrypted:', encrypted.hex())\n\ndecrypted = cipher.decrypt(encrypted)\nprint('Decrypted:', decrypted)  # b'Hello ESP32!    '"
+    }
+  ],
+  "constants": {},
+  "cbc_ctr_example": "import cryptolib\nimport os\n\nkey = b'0123456789abcdef'  # 16 bytes = AES-128\niv = os.urandom(16)         # random IV\ncipher = cryptolib.aes(key, cryptolib.MODE_CBC, iv)\n\nplaintext = b'Hello ESP32!    '  # 16 bytes\nencrypted = cipher.encrypt(plaintext)\n\n# Decrypt with same key and IV\ncipher2 = cryptolib.aes(key, cryptolib.MODE_CBC, iv)\ndecrypted = cipher2.decrypt(encrypted)\nprint(decrypted)  # b'Hello ESP32!    '",
+  "pkcs7_pad_example": "# PKCS#7 padding for arbitrary-length data\ndef pad(data, block_size=16):\n    pad_len = block_size - (len(data) % block_size)\n    return data + bytes([pad_len] * pad_len)\n\ndef unpad(data):\n    pad_len = data[-1]\n    return data[:-pad_len]\n\n# Usage\nplaintext = pad(b'Hello')  # b'Hello\\x0b\\x0b...' (11 bytes padding)\nencrypted = cipher.encrypt(plaintext)\ndecrypted = unpad(cipher.decrypt(encrypted))  # b'Hello'",
+  "esp32_notes": [
+    "AES is hardware-accelerated on ESP32 (uses hardware AES engine).",
+    "MODE_ECB and MODE_CBC require plaintext length to be multiple of 16 bytes.",
+    "MODE_CTR does NOT require padding — encrypt/decrypt arbitrary length.",
+    "AES object cannot be reused after encryption/decryption in some firmware versions.",
+    "IV must be random and unique per encryption session (especially for CBC/CTR).",
+    "Use os.urandom(16) to generate cryptographically secure random IV."
+  ],
+  "common_bugs": [
+    "Forgetting to pad data to 16-byte boundary for ECB/CBC — raises ValueError.",
+    "Reusing the same IV across multiple encryptions (security vulnerability).",
+    "Not preserving IV for decryption — decrypted data will be garbage.",
+    "Using ECB mode for multi-block data (use CBC or CTR instead for security)."
+  ]
+}

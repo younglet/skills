@@ -1,0 +1,147 @@
+{
+  "name": "import-guide",
+  "title": "MicroPython Import Rules & Common Mistakes",
+  "category": "standard",
+  "description": "How MicroPython resolves imports and the most common AI mistakes when writing MicroPython code.",
+  "rules": [
+    {
+      "id": 1,
+      "title": "NEVER use 'u' prefix module names — use standard Python names",
+      "severity": "CRITICAL",
+      "explanation": "Old MicroPython used 'ujson', 'urequests', 'utime', 'urandom', etc. These are DEPRECATED. Modern MicroPython (1.24+) maps standard names: 'json', 'requests', 'time', 'random'. Always use the standard Python name. The 'u' prefix is legacy and should never appear in new code.",
+      "forbidden": [
+        "import urequests",
+        "import ujson",
+        "import ure",
+        "import ustruct",
+        "import ucollections",
+        "import urandom",
+        "import usocket",
+        "import uhashlib",
+        "import uio",
+        "import ubinascii",
+        "import utime",
+        "import uselect",
+        "import uasyncio",
+        "import ubluetooth",
+        "import ucryptolib",
+        "from urequests import ...",
+        "from ujson import ...",
+        "from ure import ...",
+        "from ustruct import ...",
+        "from ucollections import ...",
+        "from urandom import ...",
+        "from usocket import ...",
+        "from uhashlib import ...",
+        "from uio import ...",
+        "from ubinascii import ...",
+        "from utime import ...",
+        "from uselect import ...",
+        "from uasyncio import ...",
+        "from ubluetooth import ...",
+        "from ucryptolib import ...",
+        "sys.path.append('/lib')",
+        "sys.modules['ujson']",
+        "__import__('ujson')"
+      ],
+      "required": [
+        "import requests",
+        "import json",
+        "import re",
+        "import struct",
+        "import collections",
+        "import random",
+        "import socket",
+        "import hashlib",
+        "import io",
+        "import binascii",
+        "import time",
+        "import select",
+        "import asyncio",
+        "import bluetooth",
+        "import cryptolib",
+        "from requests import get, post",
+        "NOTE: On some custom-compiled ESP32 firmware builds, 'requests', 'urequests', 'umqtt', 'websocket' and other modules are frozen into the firmware and available without mip install. On standard MicroPython builds, install requests via: import mip; mip.install('requests')",
+        "from json import dumps, loads",
+        "from machine import Pin, ADC, I2C, SPI, PWM"
+      ],
+      "zero_tolerance": "If ANY 'u' prefix appears in generated code — whether as 'import ujson' or 'from ujson import ...' — it is WRONG. Reject it immediately. Also rejects any code referencing 'u' modules via sys.modules or __import__()."
+    },
+    {
+      "id": 2,
+      "title": "lib/ directory files DO NOT use 'lib.' prefix",
+      "severity": "CRITICAL",
+      "explanation": "Files in /lib/ (or /flash/lib/) are added to sys.path directly. The directory name 'lib' is NOT a Python package namespace.",
+      "wrong": "import lib.mymodule\nfrom lib.mymodule import MyClass\nimport lib.ssd1306\nimport lib.requests",
+      "correct": "import mymodule\nfrom mymodule import MyClass\nimport ssd1306\nimport requests",
+      "note": "AI often writes 'import lib.requests' — this is WRONG. The correct import is just 'import requests'. Copy requests.py to /lib/ and import by name."
+    },
+    {
+      "id": 3,
+      "title": "'micropython' vs 'esp' vs 'esp32' modules",
+      "severity": "HIGH",
+      "explanation": "Three different modules with different scopes:",
+      "modules": [
+        {"name": "micropython", "scope": "ALL MicroPython ports", "key_funcs": "const(), opt_level(), mem_info(), alloc_emergency_exception_buf(), schedule(), kbd_intr()"},
+        {"name": "esp", "scope": "ESP8266 AND ESP32", "key_funcs": "osdebug(), sleep_type(), flash_size(), flash_read(), flash_write(), flash_erase()"},
+        {"name": "esp32", "scope": "ESP32 ONLY", "key_funcs": "wake_on_touch(), NVS(), Partition(), RMT(), raw_temperature(), idf_heap_info()"}
+      ]
+    },
+    {
+      "id": 4,
+      "title": "MicroPython uses 2000-01-01 epoch, NOT 1970",
+      "severity": "HIGH",
+      "explanation": "time.time() returns seconds since 2000-01-01 00:00:00 UTC, not 1970-01-01 like CPython.",
+      "example": "# ESP32 NTP time setting\nimport ntptime\nntptime.host = 'pool.ntp.org'\nntptime.settime()  # sets RTC to NTP time"
+    },
+    {
+      "id": 5,
+      "title": "No os.environ or environment variables",
+      "severity": "MEDIUM",
+      "explanation": "ESP32 has no OS environment. Configurations must use files (JSON, ini) or NVS (esp32.NVS).",
+      "wrong": "import os\napi_key = os.environ['API_KEY']  # AttributeError!",
+      "correct": "import json\nwith open('/config.json') as f:\n    config = json.load(f)\napi_key = config['API_KEY']"
+    },
+    {
+      "id": 6,
+      "title": "os.listdir() positional arg (NO keyword)",
+      "severity": "MEDIUM",
+      "explanation": "os.listdir() takes a POSITIONAL argument, not keyword. os.listdir(dir='/') raises TypeError.",
+      "wrong": "os.listdir(dir='/')  # TypeError!",
+      "correct": "os.listdir('/')"
+    },
+    {
+      "id": 7,
+      "title": "Wi-Fi blocks; use non-blocking pattern",
+      "severity": "MEDIUM",
+      "explanation": "wlan.connect() blocks until connected or failed. For interactive apps, poll status in a loop.",
+      "blocking": "wlan.connect('ssid', 'password')  # blocks for seconds",
+      "non_blocking": "wlan.connect('ssid', 'password')\nwhile not wlan.isconnected():\n    time.sleep_ms(100)\n    # can do other things here"
+    },
+    {
+      "id": 8,
+      "title": "ESP32 has TWO I2C but naming difference",
+      "severity": "MEDIUM",
+      "explanation": "machine.I2C(0, ...) uses hardware I2C0, machine.I2C(1, ...) uses hardware I2C1. machine.SoftI2C(...) works on any pins.",
+      "default_pins": {
+        "I2C0": {"scl": 22, "sda": 21},
+        "I2C1": {"scl": 32, "sda": 33}
+      }
+    },
+    {
+      "id": 9,
+      "title": "Timer callback takes exactly 1 argument",
+      "severity": "MEDIUM",
+      "explanation": "The callback function passed to Timer.init() receives the Timer object as its only argument.",
+      "wrong": "def my_callback():\n    print('tick')\ntimer.init(period=1000, callback=my_callback)  # crashes!",
+      "correct": "def my_callback(t):\n    print('tick')\ntimer.init(period=1000, callback=my_callback)"
+    },
+    {
+      "id": 10,
+      "title": "Const() for compile-time constants",
+      "severity": "LOW",
+      "explanation": "micropython.const(val) creates compile-time constants (saves RAM). Use for pin numbers, constants.",
+      "example": "from micropython import const\nLED_PIN = const(2)\nSDA_PIN = const(21)\nSCL_PIN = const(22)"
+    }
+  ]
+}

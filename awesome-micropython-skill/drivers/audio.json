@@ -1,0 +1,6 @@
+{
+  "name": "drivers-audio",
+  "category": "audio",
+  "description": "audio drivers sourced from awesome-micropython.com",
+  "drivers": {}
+}

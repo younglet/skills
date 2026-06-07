@@ -1,0 +1,32 @@
+{
+  "name": "machine-signal",
+  "module": "machine",
+  "class_name": "Signal",
+  "import": "from machine import Signal",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Logical signal abstraction on top of Pin. Simplifies active-low signal handling via invert=True. Signal.on() always means 'logically on' regardless of physical polarity.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific abstraction over Pin.",
+  "classes": [
+    {
+      "name": "Signal",
+      "signature": "machine.Signal(pin, *, invert=False)",
+      "constructor_params": [
+        {"name": "pin", "type": "Pin|int|str", "description": "Pin object, GPIO number, or string identifier."},
+        {"name": "invert", "type": "bool", "description": "If True, physical pin level is inverted (on() sets pin low, off() sets pin high). Default False."}
+      ],
+      "methods": [
+        {"name": "Signal.value", "signature": "value([x])", "returns": "int|None", "description": "Get or set logical signal value. 0 or 1. With invert=True, reads inverted physical level."},
+        {"name": "Signal.on", "signature": "on()", "returns": "None", "description": "Set signal logically high. If invert=True, sets pin LOW."},
+        {"name": "Signal.off", "signature": "off()", "returns": "None", "description": "Set signal logically low. If invert=True, sets pin HIGH."}
+      ],
+      "example": "from machine import Pin, Signal\n\n# Active-low LED (LED on when GPIO is LOW)\nled = Signal(2, invert=True)\nled.on()    # GPIO2 = LOW, LED is ON\nled.off()   # GPIO2 = HIGH, LED is OFF\n\n# Read inverted button (active-low with pull-up)\nbtn = Signal(0, invert=True)  # GPIO0, pull-up, active-low\nif btn.value():  # True when button pressed\n    print('Button pressed!')"
+    }
+  ],
+  "esp32_notes": [
+    "Signal is a pure software abstraction — no hardware dependency.",
+    "Useful for active-low LEDs, buttons, relays, and enable pins.",
+    "Underlying pin is accessible via Signal.pin if needed.",
+    "Signal class is small and lightweight — negligible memory overhead."
+  ]
+}

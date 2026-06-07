@@ -1,0 +1,115 @@
+{
+  "name": "machine-pin",
+  "module": "machine",
+  "class_name": "Pin",
+  "import": "from machine import Pin",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "GPIO pin control: input, output, open-drain, interrupts, pull-up/down. The fundamental hardware I/O class on ESP32.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific. Pin numbers are GPIO numbers (not board physical pin numbers).",
+  "classes": [
+    {
+      "name": "Pin",
+      "signature": "machine.Pin(id, mode=-1, pull=-1, *, value=None, drive=0, alt=-1)",
+      "constructor_params": [
+        {
+          "name": "id",
+          "type": "int|str",
+          "description": "GPIO number (0-39 on ESP32) or string like 'P0'. Required."
+        },
+        {
+          "name": "mode",
+          "type": "int",
+          "description": "Pin mode: Pin.IN(1), Pin.OUT(3), Pin.OPEN_DRAIN(7). Default: Pin.IN."
+        },
+        {
+          "name": "pull",
+          "type": "int",
+          "description": "Pull resistor: Pin.PULL_UP(2), Pin.PULL_DOWN(1), None(0). Default: None."
+        },
+        {
+          "name": "value",
+          "type": "int|None",
+          "description": "Initial output value for Pin.OUT mode. 0 or 1."
+        },
+        {
+          "name": "drive",
+          "type": "int",
+          "description": "Drive strength: 0-3. ESP32-specific."
+        },
+        {
+          "name": "alt",
+          "type": "int",
+          "description": "Alternate function number. ESP32-specific. Not available on all firmware builds."
+        }
+      ],
+      "methods": [
+        {
+          "name": "Pin.init",
+          "signature": "init(mode=-1, pull=-1, *, value=None, drive=0, alt=-1)",
+          "returns": "None",
+          "description": "Re-initialize pin. Parameters same as constructor."
+        },
+        {
+          "name": "Pin.value",
+          "signature": "value([x])",
+          "returns": "int|None",
+          "description": "Get or set pin value. Without argument: returns 0 or 1. With argument: sets output and returns None."
+        },
+        {
+          "name": "Pin.on",
+          "signature": "on()",
+          "returns": "None",
+          "description": "Set pin high (output 1)."
+        },
+        {
+          "name": "Pin.off",
+          "signature": "off()",
+          "returns": "None",
+          "description": "Set pin low (output 0)."
+        },
+        {
+          "name": "Pin.irq",
+          "signature": "irq(handler=None, trigger=Pin.IRQ_FALLING|Pin.IRQ_RISING, *, priority=1, wake=None, hard=False)",
+          "returns": "IRQ object",
+          "description": "Set interrupt handler. handler receives 1 arg (the Pin). trigger: Pin.IRQ_RISING, Pin.IRQ_FALLING, or both OR'd. hard=True for hard interrupt (runs immediately). wake keyword for ESP32 deep-sleep wake.",
+          "callback_signature_warning": "IRQ handler signature is `def handler(pin):` where `pin` is the Pin object. NOT `def handler():` with no args."
+        },
+        {
+          "name": "Pin.toggle",
+          "signature": "toggle()",
+          "returns": "None",
+          "description": "Toggle pin output value. ESP32-specific method."
+        },
+        {
+          "name": "Pin.board",
+          "signature": "Pin.board",
+          "returns": "dict",
+          "description": "Board-specific pin mapping dictionary."
+        }
+      ],
+      "constants": {
+        "IN": 1,
+        "OUT": 3,
+        "OPEN_DRAIN": 7,
+        "PULL_UP": 2,
+        "PULL_DOWN": 1,
+        "WAKE_HIGH": 5,
+        "WAKE_LOW": 4,
+        "IRQ_RISING": 1,
+        "IRQ_FALLING": 2,
+        "DRIVE_0": 0,
+        "DRIVE_1": 1,
+        "DRIVE_2": 2,
+        "DRIVE_3": 3
+      },
+      "example": "from machine import Pin\nled = Pin(2, Pin.OUT)\nled.on()\nbtn = Pin(0, Pin.IN, Pin.PULL_UP)\nif btn.value() == 0:\n    print('pressed')"
+    }
+  ],
+  "esp32_notes": [
+    "GPIO 34-39 are input-only (no pull-up/down on some boards).",
+    "GPIO 1 and 3 are usually UART0 TX/RX (USB serial).",
+    "GPIO 6-11 are connected to internal flash, do NOT use.",
+    "Pin.board is a class attribute that provides board-specific pin mappings."
+  ]
+}

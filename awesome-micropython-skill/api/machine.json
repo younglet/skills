@@ -1,0 +1,343 @@
+{
+  "name": "machine",
+  "module": "machine",
+  "import": "import machine  # OR: from machine import Pin, ADC, PWM, I2C, etc.",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Core hardware-related functions: CPU frequency, reset, sleep modes, unique ID. For peripheral classes (Pin, ADC, I2C, SPI, etc.), see individual machine-*.json files.",
+  "differences_from_cpython": [
+    "This module does NOT exist in CPython. It is MicroPython-specific.",
+    "All hardware access is synchronous; no threading needed for simple I/O.",
+    "Pin numbers are GPIO numbers (not physical board pin numbers).",
+    "Memory is limited: avoid creating too many hardware objects simultaneously."
+  ],
+  "functions": [
+    {
+      "name": "machine.freq",
+      "signature": "machine.freq([clock_speed])",
+      "parameters": [
+        {
+          "name": "clock_speed",
+          "type": "int|None",
+          "description": "CPU frequency in Hz. None = return current frequency."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "Current CPU frequency in Hz."
+      },
+      "example": "machine.freq()           # 240000000\nmachine.freq(160000000)  # set to 160MHz",
+      "notes": "ESP32 supports: 80MHz, 160MHz, 240MHz. Lower frequency = less power consumption."
+    },
+    {
+      "name": "machine.reset",
+      "signature": "machine.reset()",
+      "parameters": [],
+      "returns": {
+        "type": "None",
+        "description": "Does not return; device resets."
+      },
+      "example": "machine.reset()",
+      "notes": "Hard reset. Equivalent to pressing RST button."
+    },
+    {
+      "name": "machine.soft_reset",
+      "signature": "machine.soft_reset()",
+      "parameters": [],
+      "returns": {
+        "type": "None",
+        "description": "Does not return; device soft-resets."
+      },
+      "example": "machine.soft_reset()",
+      "notes": "Soft reset via Ctrl+D equivalent. Clears Python state but not hardware registers."
+    },
+    {
+      "name": "machine.reset_cause",
+      "signature": "machine.reset_cause()",
+      "parameters": [],
+      "returns": {
+        "type": "int",
+        "description": "Constant indicating reset cause."
+      },
+      "example": "if machine.reset_cause() == machine.DEEPSLEEP_RESET:\n    print('Woke from deep sleep')",
+      "constants_ref": {
+        "PWRON_RESET": 1,
+        "HARD_RESET": 2,
+        "WDT_RESET": 3,
+        "DEEPSLEEP_RESET": 4,
+        "SOFT_RESET": 5
+      },
+      "wake_reason_constants": {
+        "DEEPSLEEP": 4,
+        "EXT0_WAKE": 2,
+        "EXT1_WAKE": 3,
+        "PIN_WAKE": 2,
+        "SLEEP": 2,
+        "TIMER_WAKE": 4,
+        "TOUCHPAD_WAKE": 5,
+        "ULP_WAKE": 6
+      }
+    },
+    {
+      "name": "machine.unique_id",
+      "signature": "machine.unique_id()",
+      "parameters": [],
+      "returns": {
+        "type": "bytes",
+        "description": "Unique device ID (6 bytes on ESP32, MAC-based)."
+      },
+      "example": "uid = machine.unique_id()  # b'\\x24\\x0a\\xc4\\x...'"
+    },
+    {
+      "name": "machine.idle",
+      "signature": "machine.idle()",
+      "parameters": [],
+      "returns": {
+        "type": "None"
+      },
+      "description": "Enter CPU idle state. Saves a small amount of power. Returns when interrupt occurs.",
+      "example": "machine.idle()"
+    },
+    {
+      "name": "machine.lightsleep",
+      "signature": "machine.lightsleep([time_ms])",
+      "parameters": [
+        {
+          "name": "time_ms",
+          "type": "int|None",
+          "description": "Sleep duration in ms. None = sleep until interrupt."
+        }
+      ],
+      "returns": {
+        "type": "None"
+      },
+      "example": "machine.lightsleep(10000)  # 10 seconds",
+      "notes": "ESP32: GPIO state is retained. Wake via GPIO, Timer, or Touch."
+    },
+    {
+      "name": "machine.deepsleep",
+      "signature": "machine.deepsleep([time_ms])",
+      "parameters": [
+        {
+          "name": "time_ms",
+          "type": "int|None",
+          "description": "Sleep duration in ms. None = sleep until external wake."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Does not return; device enters deep sleep."
+      },
+      "example": "machine.deepsleep(60000)  # deep sleep for 60s",
+      "notes": "GPIO state is lost except RTC GPIOs. Use esp32.wake_on_*() BEFORE calling deepsleep()."
+    },
+    {
+      "name": "machine.disable_irq",
+      "signature": "machine.disable_irq()",
+      "returns": {
+        "type": "int",
+        "description": "Returns previous IRQ state for restore via enable_irq()."
+      },
+      "description": "Disable interrupts. Use before timing-critical 1-Wire/DHT operations.",
+      "see_also": "machine.enable_irq"
+    },
+    {
+      "name": "machine.enable_irq",
+      "signature": "machine.enable_irq(state)",
+      "parameters": [
+        {
+          "name": "state",
+          "type": "int",
+          "description": "Previous state returned by disable_irq()."
+        }
+      ],
+      "returns": {
+        "type": "None"
+      },
+      "description": "Restore interrupts to previous state.",
+      "see_also": "machine.disable_irq"
+    },
+    {
+      "name": "machine.time_pulse_us",
+      "signature": "machine.time_pulse_us(pin, pulse_level, timeout_us=1000000)",
+      "parameters": [
+        {
+          "name": "pin",
+          "type": "Pin"
+        },
+        {
+          "name": "pulse_level",
+          "type": "int",
+          "description": "0 or 1."
+        },
+        {
+          "name": "timeout_us",
+          "type": "int",
+          "description": "Timeout in us."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "Pulse duration in us, or -1 on timeout."
+      },
+      "description": "Measure a pulse width. Useful for HCSR04 ultrasonic sensors."
+    },
+    {
+      "name": "machine.wake_reason",
+      "signature": "machine.wake_reason()",
+      "returns": {
+        "type": "tuple",
+        "description": "(wake_reason, gpio_list)."
+      },
+      "description": "Get the wake reason from last deep sleep."
+    },
+    {
+      "name": "machine.mem8",
+      "signature": "machine.mem8[addr]",
+      "returns": "int",
+      "description": "8-bit direct memory/register read/write. Advanced use only."
+    },
+    {
+      "name": "machine.mem16",
+      "signature": "machine.mem16[addr]",
+      "returns": "int",
+      "description": "16-bit direct memory/register read/write. Advanced use only."
+    },
+    {
+      "name": "machine.mem32",
+      "signature": "machine.mem32[addr]",
+      "returns": "int",
+      "description": "32-bit direct memory/register read/write. Advanced use only."
+    },
+    {
+      "name": "machine.dht_readinto",
+      "signature": "machine.dht_readinto(pin, buf)",
+      "returns": "None",
+      "description": "Low-level DHT read. Prefer the dht module."
+    }
+  ],
+  "peripheral_classes": {
+    "description": "machine module also provides these hardware peripheral classes. Each has its own detailed JSON file.",
+    "classes": [
+      {
+        "name": "Pin",
+        "file": "machine-pin.json",
+        "description": "GPIO input/output/interrupt control"
+      },
+      {
+        "name": "ADC",
+        "file": "machine-adc.json",
+        "description": "Analog-to-Digital Converter (12-bit)"
+      },
+      {
+        "name": "DAC",
+        "file": "machine-dac.json",
+        "description": "Digital-to-Analog Converter (8-bit, GPIO25/26)"
+      },
+      {
+        "name": "PWM",
+        "file": "machine-pwm.json",
+        "description": "Pulse Width Modulation via LEDC"
+      },
+      {
+        "name": "I2C / SoftI2C",
+        "file": "machine-i2c.json",
+        "description": "I2C bus (hardware + software)"
+      },
+      {
+        "name": "SPI / SoftSPI",
+        "file": "machine-spi.json",
+        "description": "SPI bus (hardware + software)"
+      },
+      {
+        "name": "UART",
+        "file": "machine-uart.json",
+        "description": "Serial UART (3 peripherals)"
+      },
+      {
+        "name": "Timer",
+        "file": "machine-timer.json",
+        "description": "Hardware timer callbacks (4 virtual timers)"
+      },
+      {
+        "name": "RTC",
+        "file": "machine-rtc.json",
+        "description": "Real-Time Clock + RTC memory"
+      },
+      {
+        "name": "WDT",
+        "file": "machine-wdt.json",
+        "description": "Watchdog Timer"
+      },
+      {
+        "name": "SDCard",
+        "file": "machine-sdcard.json",
+        "description": "SD card over SPI"
+      },
+      {
+        "name": "TouchPad",
+        "file": "machine-touchpad.json",
+        "description": "Capacitive touch (original ESP32 only)"
+      },
+      {
+        "name": "Signal",
+        "file": "machine-signal.json",
+        "description": "Logical signal (active-low abstraction)"
+      },
+      {
+        "name": "I2S",
+        "file": "machine-i2s.json",
+        "description": "I2S audio bus (ESP32 only)"
+      },
+      {
+        "name": "Counter",
+        "file": "machine-counter.json",
+        "description": "Pulse counter (uses ESP32 PCNT)"
+      },
+      {
+        "name": "Encoder",
+        "file": "machine-encoder.json",
+        "description": "Rotary encoder (uses ESP32 PCNT)"
+      },
+      {
+        "name": "ADCBlock",
+        "file": "machine-adcblock.json",
+        "description": "Advanced ADC block configuration"
+      }
+    ]
+  },
+  "constants": {
+    "ADC": null,
+    "ADCBlock": null,
+    "Counter": null,
+    "DAC": null,
+    "DEEPSLEEP": null,
+    "DEEPSLEEP_RESET": null,
+    "Encoder": null,
+    "EXT0_WAKE": null,
+    "EXT1_WAKE": null,
+    "HARD_RESET": null,
+    "I2C": null,
+    "I2S": null,
+    "PIN_WAKE": null,
+    "Pin": null,
+    "PWM": null,
+    "PWRON_RESET": null,
+    "RTC": null,
+    "SDCard": null,
+    "Signal": null,
+    "SLEEP": null,
+    "SOFT_RESET": null,
+    "SoftI2C": null,
+    "SoftSPI": null,
+    "SPI": null,
+    "TIMER_WAKE": null,
+    "Timer": null,
+    "TOUCHPAD_WAKE": null,
+    "TouchPad": null,
+    "UART": null,
+    "ULP_WAKE": null,
+    "WDT": null,
+    "WDT_RESET": null
+  }
+}

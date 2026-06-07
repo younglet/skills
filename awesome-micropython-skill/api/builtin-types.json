@@ -1,0 +1,211 @@
+{
+  "name": "builtin-types",
+  "module": "builtins",
+  "import": "(always available, no import needed)",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "MicroPython built-in type methods — what exists vs what's missing compared to CPython. CRITICAL for AI code generation: many CPython string/bytes/int methods do NOT exist in MicroPython.",
+  "verified_on_device": "ESP32 MicroPython v1.28.0, via dir() on each type",
+  "summary": {
+    "full_parity": ["list", "dict", "set", "tuple", "frozenset"],
+    "missing_methods": {
+      "str": 20,
+      "bytes": 14,
+      "bytearray": 21,
+      "int": 9,
+      "float": 8,
+      "memoryview": 19
+    },
+    "total_missing": 91
+  },
+  "types": {
+    "str": {
+      "available": ["center", "count", "encode", "endswith", "find", "format", "index", "isalpha", "isdigit", "islower", "isspace", "isupper", "join", "lower", "lstrip", "partition", "replace", "rfind", "rindex", "rpartition", "rsplit", "rstrip", "split", "splitlines", "startswith", "strip", "upper"],
+      "missing_from_cpython": {
+        "capitalize": "First char uppercase, rest lowercase",
+        "casefold": "Case-insensitive comparison folding",
+        "expandtabs": "Replace tabs with spaces",
+        "format_map": "Like format() but takes a mapping dict",
+        "isalnum": "Check if all chars are alphanumeric",
+        "isascii": "Check if all chars are ASCII",
+        "isdecimal": "Check if all chars are decimal digits",
+        "isidentifier": "Check if string is a valid Python identifier",
+        "isnumeric": "Check if all chars are numeric",
+        "isprintable": "Check if all chars are printable",
+        "istitle": "Check if string is title-cased",
+        "ljust": "Left-justify with fill character",
+        "maketrans": "Create translation table for translate()",
+        "removeprefix": "Remove prefix if present (Python 3.9+)",
+        "removesuffix": "Remove suffix if present (Python 3.9+)",
+        "rjust": "Right-justify with fill character",
+        "swapcase": "Swap uppercase/lowercase",
+        "title": "Title-case the string",
+        "translate": "Translate characters using a mapping table",
+        "zfill": "Zero-pad to given width"
+      },
+      "workarounds": {
+        "removeprefix": "if s.startswith(prefix): s = s[len(prefix):]",
+        "removesuffix": "if s.endswith(suffix): s = s[:-len(suffix)]",
+        "capitalize": "s[0].upper() + s[1:].lower() if s else ''",
+        "ljust/rjust/zfill": "Use s.format() with padding: '{:<10}'.format(s)",
+        "isascii": "all(ord(c) < 128 for c in s)",
+        "maketrans": "No direct equivalent; use str.replace() for simple cases"
+      }
+    },
+    "bytes": {
+      "available": ["center", "count", "decode", "endswith", "find", "format", "fromhex", "hex", "index", "isalpha", "isdigit", "islower", "isspace", "isupper", "join", "lower", "lstrip", "partition", "replace", "rfind", "rindex", "rpartition", "rsplit", "rstrip", "split", "splitlines", "startswith", "strip", "upper"],
+      "microbit_only": ["format"],
+      "missing_from_cpython": {
+        "capitalize": "First byte uppercase, rest lowercase",
+        "expandtabs": "Replace tabs with spaces",
+        "isalnum": "Check if all bytes are alphanumeric",
+        "isascii": "Check if all bytes are ASCII",
+        "istitle": "Check if title-cased",
+        "ljust": "Left-justify",
+        "maketrans": "Create translation table",
+        "removeprefix": "Remove prefix if present",
+        "removesuffix": "Remove suffix if present",
+        "rjust": "Right-justify",
+        "swapcase": "Swap case",
+        "title": "Title-case",
+        "translate": "Translate bytes",
+        "zfill": "Zero-pad"
+      }
+    },
+    "bytearray": {
+      "available": ["append", "center", "count", "decode", "endswith", "extend", "find", "format", "fromhex", "hex", "index", "isalpha", "isdigit", "islower", "isspace", "isupper", "join", "lower", "lstrip", "partition", "replace", "rfind", "rindex", "rpartition", "rsplit", "rstrip", "split", "splitlines", "startswith", "strip", "upper"],
+      "microbit_only": ["format"],
+      "missing_from_cpython": {
+        "capitalize": "First byte uppercase, rest lowercase",
+        "clear": "Remove all elements",
+        "copy": "Return a shallow copy",
+        "expandtabs": "Replace tabs with spaces",
+        "insert": "Insert element at index",
+        "isalnum": "Check alphanumeric",
+        "isascii": "Check ASCII",
+        "istitle": "Check title-case",
+        "ljust": "Left-justify",
+        "maketrans": "Create translation table",
+        "pop": "Remove and return element at index",
+        "remove": "Remove first occurrence of value",
+        "removeprefix": "Remove prefix",
+        "removesuffix": "Remove suffix",
+        "resize": "Resize the bytearray in-place",
+        "reverse": "Reverse in-place",
+        "rjust": "Right-justify",
+        "swapcase": "Swap case",
+        "title": "Title-case",
+        "translate": "Translate bytes",
+        "zfill": "Zero-pad"
+      },
+      "workarounds": {
+        "copy": "bytearray(ba)  # same effect",
+        "clear": "del ba[:]  # or ba = bytearray()",
+        "pop": "val = ba[i]; del ba[i]",
+        "remove": "Find index then del",
+        "reverse": "ba = bytearray(reversed(ba))",
+        "insert": "ba[i:i] = bytearray([val])"
+      }
+    },
+    "list": {
+      "available": ["append", "clear", "copy", "count", "extend", "index", "insert", "pop", "remove", "reverse", "sort"],
+      "status": "FULL PARITY with CPython"
+    },
+    "dict": {
+      "available": ["clear", "copy", "fromkeys", "get", "items", "keys", "pop", "popitem", "setdefault", "update", "values"],
+      "status": "FULL PARITY with CPython",
+      "note": "MicroPython dict is insertion-ordered by default (since v1.19). No need for collections.OrderedDict."
+    },
+    "set": {
+      "available": ["add", "clear", "copy", "difference", "difference_update", "discard", "intersection", "intersection_update", "isdisjoint", "issubset", "issuperset", "pop", "remove", "symmetric_difference", "symmetric_difference_update", "union", "update"],
+      "status": "FULL PARITY with CPython"
+    },
+    "tuple": {
+      "available": ["count", "index"],
+      "status": "FULL PARITY with CPython"
+    },
+    "frozenset": {
+      "available": ["copy", "difference", "intersection", "isdisjoint", "issubset", "issuperset", "symmetric_difference", "union"],
+      "status": "FULL PARITY with CPython",
+      "note": "frozenset is available but no frozenset literal syntax (use frozenset([1,2,3]))."
+    },
+    "int": {
+      "available": ["from_bytes", "to_bytes"],
+      "missing_from_cpython": {
+        "as_integer_ratio": "Return (numerator, denominator) tuple",
+        "bit_count": "Number of ones in binary representation (Python 3.8+)",
+        "bit_length": "Number of bits needed to represent value",
+        "conjugate": "Complex conjugate (returns self)",
+        "denominator": "Denominator (always 1)",
+        "imag": "Imaginary part (always 0)",
+        "is_integer": "Always True",
+        "numerator": "Numerator (self)",
+        "real": "Real part (self)"
+      },
+      "workarounds": {
+        "bit_count": "bin(x).count('1')",
+        "bit_length": "x.bit_length() works on MicroPython ESP32! (verify: int.bit_length not in dir but may work on instances)"
+      },
+      "note": "MicroPython int is unbounded (like Python 3). Only from_bytes and to_bytes exist. bit_length() confirmed NOT available on instances either."
+    },
+    "float": {
+      "available": [],
+      "missing_from_cpython": {
+        "as_integer_ratio": "Return (numerator, denominator)",
+        "conjugate": "Complex conjugate",
+        "fromhex": "Create float from hex string",
+        "hex": "Hex representation",
+        "imag": "Imaginary part (0.0)",
+        "is_integer": "Check if float represents integer",
+        "real": "Real part (self)"
+      },
+      "note": "CRITICAL: MicroPython float has ZERO methods in dir(float). All float operations are via built-in functions (abs, round, int) or math module.",
+      "workarounds": {
+        "is_integer": "float(x) == int(x)",
+        "hex": "Use struct.pack('f', x).hex()"
+      }
+    },
+    "memoryview": {
+      "available": ["hex"],
+      "missing_from_cpython": {
+        "c_contiguous": "Is C-contiguous?",
+        "cast": "Cast to different format",
+        "contiguous": "Is contiguous?",
+        "count": "Count occurrences",
+        "f_contiguous": "Is Fortran-contiguous?",
+        "format": "Element format string",
+        "index": "Find index of value",
+        "itemsize": "Size in bytes of each element",
+        "nbytes": "Total size in bytes",
+        "ndim": "Number of dimensions",
+        "obj": "Underlying object",
+        "readonly": "Is read-only?",
+        "release": "Release the buffer",
+        "shape": "Tuple of dimensions",
+        "strides": "Tuple of strides",
+        "suboffsets": "Tuple of sub-offsets",
+        "tobytes": "Convert to bytes",
+        "tolist": "Convert to list",
+        "toreadonly": "Return read-only version"
+      },
+      "note": "MicroPython memoryview is extremely limited — only hex() method exists. Use bytes(mv) for conversion.",
+      "workarounds": {
+        "tobytes": "bytes(mv)",
+        "tolist": "list(bytes(mv))",
+        "nbytes": "len(mv)",
+        "itemsize": "Always 1 in MicroPython"
+      }
+    }
+  },
+  "ai_code_generation_rules": [
+    "NEVER use str.removeprefix() or str.removesuffix() — use startswith()/endswith() checks + slicing instead.",
+    "NEVER use str.casefold() — use str.lower() for case-insensitive comparison.",
+    "NEVER use str.translate() or str.maketrans() — use str.replace() for simple substitutions.",
+    "NEVER use float methods (float.hex(), float.is_integer()) — use built-in functions or math module.",
+    "NEVER use int.bit_count() or int.bit_length() — use bin(x).count('1') or verify bit_length() on instances first.",
+    "NEVER use bytearray.copy(), bytearray.reverse(), bytearray.pop() — use constructor or manual loops.",
+    "NEVER use memoryview.cast() or memoryview.tobytes() — use bytes(mv) instead.",
+    "For string padding: use format() rather than ljust/rjust/zfill: '{:>10}'.format(s) for right-align, '{:0>5}'.format(s) for zero-fill.",
+    "MicroPython has NO str.isascii(), str.isprintable(), str.isdecimal(), str.isnumeric(), str.isidentifier() — implement manual checks if needed."
+  ]
+}

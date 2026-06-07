@@ -1,0 +1,52 @@
+{
+  "name": "machine-rtc",
+  "module": "machine",
+  "class_name": "RTC",
+  "import": "from machine import RTC",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Real-Time Clock for date/time management. Survives deep sleep on ESP32 (powered by RTC domain). Also provides RTC memory for data preservation across sleep.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific RTC interface. Epoch is 2000-01-01, not 1970.",
+  "classes": [
+    {
+      "name": "RTC",
+      "signature": "machine.RTC()",
+      "constructor_params": [],
+      "methods": [
+        {
+          "name": "RTC.datetime",
+          "signature": "datetime([datetime_tuple])",
+          "parameters": [
+            {"name": "datetime_tuple", "type": "tuple|None", "description": "Optional 8-tuple: (year, month, day, weekday, hours, minutes, seconds, subseconds). weekday=0-6 (Mon=0). subseconds=microseconds. None to query."}
+          ],
+          "returns": {"type": "tuple|None", "description": "If reading: (year, month, day, weekday, hours, minutes, seconds, subseconds)."},
+          "description": "Get or set RTC datetime. Weekday is auto-calculated when setting."
+        },
+        {
+          "name": "RTC.init",
+          "signature": "init(datetime)",
+          "parameters": [{"name": "datetime", "type": "tuple", "description": "8-tuple same format as datetime()."}],
+          "returns": "None",
+          "description": "Initialize RTC with datetime tuple."
+        },
+        {
+          "name": "RTC.memory",
+          "signature": "memory([data])",
+          "parameters": [
+            {"name": "data", "type": "bytes|None", "description": "Data to store in RTC memory. None to read current data."}
+          ],
+          "returns": {"type": "bytes", "description": "Up to 4096 bytes on ESP32."},
+          "description": "Get or set RTC memory. Data persists through deep sleep."
+        }
+      ],
+      "example": "from machine import RTC\n\nrtc = RTC()\n\n# Set time: (year, month, day, weekday, hour, min, sec, subsec)\nrtc.datetime((2024, 6, 15, 5, 10, 30, 0, 0))\n\n# Read current time\ndt = rtc.datetime()\nprint(f'{dt[0]}-{dt[1]:02d}-{dt[2]:02d} {dt[4]:02d}:{dt[5]:02d}:{dt[6]:02d}')\n\n# Store data in RTC memory (survives deep sleep)\nrtc.memory(b'wake_count:5')\nprint(rtc.memory())  # b'wake_count:5'"
+    }
+  ],
+  "esp32_notes": [
+    "ESP32 RTC survives deep sleep (powered by RTC domain).",
+    "RTC.memory() returns up to 4096 bytes on ESP32 (8KB total, half reserved).",
+    "Weekday is calculated automatically when setting datetime.",
+    "Epoch is 2000-01-01, NOT Unix 1970-01-01.",
+    "Microsecond subsecond field is typically 0 on ESP32 (no sub-second resolution)."
+  ]
+}

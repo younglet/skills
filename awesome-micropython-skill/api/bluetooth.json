@@ -1,0 +1,486 @@
+{
+  "name": "bluetooth",
+  "module": "bluetooth",
+  "import": "import bluetooth",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Low-level Bluetooth (BLE) interface. Available on ESP32 with BLE support.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific BLE API. ESP32 original supports BLE; ESP32-S2 does NOT.",
+  "classes": [
+    {
+      "name": "BLE",
+      "signature": "bluetooth.BLE()",
+      "description": "Bluetooth Low Energy (BLE) controller. Manages GATT server, advertising, and connections.",
+      "methods": [
+        {
+          "name": "BLE.active",
+          "signature": "active([active], /)",
+          "parameters": [
+            {
+              "name": "active",
+              "type": "bool|None",
+              "description": "True to enable BLE. None to query."
+            }
+          ],
+          "returns": {
+            "type": "bool|None"
+          },
+          "note": "Enabling BLE allocates ~12KB RAM."
+        },
+        {
+          "name": "BLE.config",
+          "signature": "config(param=None, value=None)",
+          "parameters": [
+            {
+              "name": "param",
+              "type": "str|None",
+              "description": "'mac', 'rxbuf', 'txbuf', 'mtu', 'bond', 'mitm', 'io', 'le_secure'."
+            },
+            {
+              "name": "value",
+              "type": "varies"
+            }
+          ],
+          "returns": "Current value",
+          "note": "Config 'rxbuf': int (default 512). Must be large enough for characteristic data."
+        },
+        {
+          "name": "BLE.irq",
+          "signature": "ble.irq(handler)",
+          "parameters": [
+            {
+              "name": "handler",
+              "type": "callable|None",
+              "description": "Function(event, data). Called for all BLE events."
+            }
+          ],
+          "returns": "None",
+          "description": "Register BLE event handler. One handler for all events."
+        },
+        {
+          "name": "BLE.gap_advertise",
+          "signature": "gap_advertise(interval_us, adv_data=None, *, resp_data=None, connectable=True)",
+          "parameters": [
+            {
+              "name": "interval_us",
+              "type": "int",
+              "description": "Advertising interval in microseconds. 100000-1000000 (100ms-1s)."
+            },
+            {
+              "name": "adv_data",
+              "type": "bytes|None",
+              "description": "Advertising data payload (max 31 bytes)."
+            },
+            {
+              "name": "resp_data",
+              "type": "bytes|None",
+              "description": "Scan response data (max 31 bytes)."
+            },
+            {
+              "name": "connectable",
+              "type": "bool",
+              "description": "Allow connections. Default True."
+            }
+          ],
+          "returns": "None",
+          "description": "Start BLE advertising."
+        },
+        {
+          "name": "BLE.gap_scan",
+          "signature": "gap_scan(duration_ms, interval_us=1280, window_us=11250, active=False, /)",
+          "parameters": [
+            {
+              "name": "duration_ms",
+              "type": "int",
+              "description": "Scan duration. 0 = scan forever."
+            },
+            {
+              "name": "interval_us",
+              "type": "int"
+            },
+            {
+              "name": "window_us",
+              "type": "int"
+            },
+            {
+              "name": "active",
+              "type": "bool"
+            }
+          ],
+          "returns": "None (results delivered via IRQ).",
+          "note": "stop_scan by calling gap_scan(None)."
+        },
+        {
+          "name": "BLE.gap_connect",
+          "signature": "gap_connect(addr_type, addr, scan_duration_ms=2000, min_conn_interval_us=None, max_conn_interval_us=None, /)",
+          "parameters": [
+            {
+              "name": "addr_type",
+              "type": "int",
+              "description": "0=public, 1=random."
+            },
+            {
+              "name": "addr",
+              "type": "bytes",
+              "description": "6-byte MAC address."
+            },
+            {
+              "name": "scan_duration_ms",
+              "type": "int"
+            }
+          ],
+          "returns": "None (result via IRQ)."
+        },
+        {
+          "name": "BLE.gap_pair",
+          "signature": "gap_pair(conn_handle, /)",
+          "parameters": [
+            {
+              "name": "conn_handle",
+              "type": "int"
+            }
+          ],
+          "description": "Initiate pairing with connected device."
+        },
+        {
+          "name": "BLE.gap_passkey",
+          "signature": "gap_passkey(conn_handle, action, passkey, /)",
+          "parameters": [
+            {
+              "name": "conn_handle",
+              "type": "int"
+            },
+            {
+              "name": "action",
+              "type": "int",
+              "description": "0=NONE, 2=INPUT, 3=DISPLAY, 4=INPUT_DISPLAY."
+            },
+            {
+              "name": "passkey",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "BLE.gap_disconnect",
+          "signature": "gap_disconnect(conn_handle, /)",
+          "parameters": [
+            {
+              "name": "conn_handle",
+              "type": "int",
+              "description": "Connection handle from IRQ event."
+            }
+          ]
+        },
+        {
+          "name": "BLE.gatts_register_services",
+          "signature": "gatts_register_services(services_definition)",
+          "parameters": [
+            {
+              "name": "services_definition",
+              "type": "list",
+              "description": "List of service/characteristic/descriptor tuples defining GATT structure."
+            }
+          ],
+          "returns": "tuple(handles...)",
+          "description": "Register GATT services. Returns handles for each definition entry."
+        },
+        {
+          "name": "BLE.gatts_write",
+          "signature": "gatts_write(handle, data, send_update=False, /)",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "int",
+              "description": "Characteristic value handle."
+            },
+            {
+              "name": "data",
+              "type": "bytes|str",
+              "description": "Value to write."
+            },
+            {
+              "name": "send_update",
+              "type": "bool",
+              "description": "Send notification/indication to client."
+            }
+          ]
+        },
+        {
+          "name": "BLE.gatts_read",
+          "signature": "gatts_read(handle, /)",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "int"
+            }
+          ],
+          "returns": "bytes"
+        },
+        {
+          "name": "BLE.gatts_notify",
+          "signature": "gatts_notify(conn_handle, value_handle, data=None, /)",
+          "parameters": [
+            {
+              "name": "conn_handle",
+              "type": "int"
+            },
+            {
+              "name": "value_handle",
+              "type": "int"
+            },
+            {
+              "name": "data",
+              "type": "bytes|None",
+              "description": "If None, uses stored value from gatts_write()."
+            }
+          ]
+        },
+        {
+          "name": "BLE.gatts_set_buffer",
+          "signature": "gatts_set_buffer(handle, length, append=False, /)",
+          "parameters": [
+            {
+              "name": "handle",
+              "type": "int"
+            },
+            {
+              "name": "length",
+              "type": "int"
+            },
+            {
+              "name": "append",
+              "type": "bool"
+            }
+          ],
+          "description": "Pre-allocate buffer for characteristic value."
+        },
+        {
+          "name": "BLE.gattc_discover_services",
+          "signature": "gattc_discover_services(conn_handle, /)",
+          "parameters": [
+            {
+              "name": "conn_handle",
+              "type": "int"
+            }
+          ],
+          "description": "Discover all services on remote device."
+        },
+        {
+          "name": "BLE.gattc_discover_characteristics",
+          "signature": "gattc_discover_characteristics(conn_handle, start_handle, end_handle, /)",
+          "parameters": [
+            {
+              "name": "conn_handle",
+              "type": "int"
+            },
+            {
+              "name": "start_handle",
+              "type": "int"
+            },
+            {
+              "name": "end_handle",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "BLE.gattc_read",
+          "signature": "gattc_read(conn_handle, value_handle, /)",
+          "parameters": [
+            {
+              "name": "conn_handle",
+              "type": "int"
+            },
+            {
+              "name": "value_handle",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "BLE.gattc_write",
+          "signature": "gattc_write(conn_handle, value_handle, data, mode=0, /)",
+          "parameters": [
+            {
+              "name": "conn_handle",
+              "type": "int"
+            },
+            {
+              "name": "value_handle",
+              "type": "int"
+            },
+            {
+              "name": "data",
+              "type": "bytes"
+            },
+            {
+              "name": "mode",
+              "type": "int",
+              "description": "0=write_no_response, 1=write_with_response."
+            }
+          ]
+        },
+        {
+          "name": "BLE.gatts_indicate",
+          "signature": "gatts_indicate(conn_handle, value_handle, data=None, /)",
+          "parameters": [
+            {
+              "name": "conn_handle",
+              "type": "int"
+            },
+            {
+              "name": "value_handle",
+              "type": "int"
+            },
+            {
+              "name": "data",
+              "type": "bytes|None"
+            }
+          ],
+          "description": "Send indication to client. Confirmed delivery (unlike notify)."
+        },
+        {
+          "name": "BLE.gattc_discover_descriptors",
+          "signature": "gattc_discover_descriptors(conn_handle, start_handle, end_handle, /)",
+          "parameters": [
+            {
+              "name": "conn_handle",
+              "type": "int"
+            },
+            {
+              "name": "start_handle",
+              "type": "int"
+            },
+            {
+              "name": "end_handle",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "name": "BLE.gattc_exchange_mtu",
+          "signature": "gattc_exchange_mtu(conn_handle, /)",
+          "parameters": [
+            {
+              "name": "conn_handle",
+              "type": "int"
+            }
+          ],
+          "description": "Request MTU exchange with remote device."
+        }
+      ],
+      "constants": {},
+      "irq_events": [
+        {
+          "event": 1,
+          "name": "_IRQ_CENTRAL_CONNECT",
+          "data": "(conn_handle, addr_type, addr)"
+        },
+        {
+          "event": 2,
+          "name": "_IRQ_CENTRAL_DISCONNECT",
+          "data": "(conn_handle, addr_type, addr)"
+        },
+        {
+          "event": 3,
+          "name": "_IRQ_GATTS_WRITE",
+          "data": "(conn_handle, attr_handle)"
+        },
+        {
+          "event": 4,
+          "name": "_IRQ_GATTS_READ_REQUEST",
+          "data": "(conn_handle, attr_handle)"
+        },
+        {
+          "event": 5,
+          "name": "_IRQ_SCAN_RESULT",
+          "data": "(addr_type, addr, adv_type, rssi, adv_data)"
+        },
+        {
+          "event": 6,
+          "name": "_IRQ_SCAN_DONE"
+        },
+        {
+          "event": 7,
+          "name": "_IRQ_PERIPHERAL_CONNECT",
+          "data": "(conn_handle, addr_type, addr)"
+        },
+        {
+          "event": 8,
+          "name": "_IRQ_PERIPHERAL_DISCONNECT",
+          "data": "(conn_handle, addr_type, addr)"
+        },
+        {
+          "event": 16,
+          "name": "_IRQ_GATTC_SERVICE_RESULT",
+          "data": "(conn_handle, start_handle, end_handle, uuid)"
+        },
+        {
+          "event": 18,
+          "name": "_IRQ_GATTC_CHARACTERISTIC_RESULT",
+          "data": "(conn_handle, end_handle, value_handle, properties, uuid)"
+        },
+        {
+          "event": 20,
+          "name": "_IRQ_GATTC_READ_RESULT",
+          "data": "(conn_handle, value_handle, data)"
+        },
+        {
+          "event": 21,
+          "name": "_IRQ_GATTC_WRITE_DONE",
+          "data": "(conn_handle, value_handle)"
+        },
+        {
+          "event": 22,
+          "name": "_IRQ_GATTC_NOTIFY",
+          "data": "(conn_handle, value_handle, data)"
+        },
+        {
+          "event": 27,
+          "name": "_IRQ_MTU_EXCHANGED",
+          "data": "(conn_handle, mtu)"
+        }
+      ]
+    }
+  ],
+  "additional_classes": [
+    {
+      "name": "bluetooth.UUID",
+      "description": "BLE UUID constructor. Used in service/characteristic definitions.",
+      "signature": "bluetooth.UUID(value)",
+      "parameters": [
+        {
+          "name": "value",
+          "type": "int|str",
+          "description": "16-bit UUID as int (0x1800-0xFFFF) or 128-bit UUID as string 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'."
+        }
+      ],
+      "note": "UUID objects are used as values in GATT service/characteristic/descriptor tuples."
+    }
+  ],
+  "uuid_type_constants": {
+    "UUID16_S": "16-bit UUID (service)",
+    "UUID16_C": "16-bit UUID (characteristic)",
+    "UUID16_D": "16-bit UUID (descriptor)",
+    "UUID128_S": "128-bit UUID (service)",
+    "UUID128_C": "128-bit UUID (characteristic)",
+    "UUID128_D": "128-bit UUID (descriptor)"
+  },
+  "simple_peripheral_example": "from micropython import const\nimport bluetooth\n\n_IRQ_CENTRAL_CONNECT = const(1)\n_IRQ_CENTRAL_DISCONNECT = const(2)\n_IRQ_GATTS_WRITE = const(3)\n\n_FLAG_READ = const(2)\n_FLAG_WRITE = const(8)\n_FLAG_NOTIFY = const(16)\n\n_UART_UUID = bluetooth.UUID('6E400001-B5A3-F393-E0A9-E50E24DCCA9E')\n_UART_TX = (bluetooth.UUID('6E400003-B5A3-F393-E0A9-E50E24DCCA9E'), _FLAG_NOTIFY,)\n_UART_RX = (bluetooth.UUID('6E400002-B5A3-F393-E0A9-E50E24DCCA9E'), _FLAG_WRITE,)\n_UART_SERVICE = (_UART_UUID, (_UART_TX, _UART_RX,),)\n\nble = bluetooth.BLE()\nble.active(True)\n((tx_handle, rx_handle),) = ble.gatts_register_services((_UART_SERVICE,))\nble.gap_advertise(100000, b'\\x02\\x01\\x06')",
+  "esp32_notes": [
+    "BLE requires ~12KB RAM when activated.",
+    "Wi-Fi and BLE share the same radio; co-existence is supported but may reduce throughput.",
+    "iBeacon functionality possible via advertising data.",
+    "For Wi-Fi + BLE simultaneously, use ESP32 original (not S2)."
+  ],
+  "constants": {
+    "BLE": null,
+    "UUID": null,
+    "FLAG_READ": null,
+    "FLAG_WRITE": null,
+    "FLAG_NOTIFY": null,
+    "FLAG_INDICATE": null,
+    "FLAG_WRITE_NO_RESPONSE": null
+  }
+}

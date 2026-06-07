@@ -1,0 +1,25 @@
+{
+  "name": "nonblocking-loop",
+  "category": "architecture",
+  "description": "Replace blocking time.sleep() with ticks_ms()-based scheduling. Essential for responsive devices that need to handle WiFi, sensors, and buttons simultaneously.",
+  "problem": "time.sleep() blocks everything — no WiFi check, no button response, no sensor read. Beginners write linear code that freezes the device.",
+  "solution": "Use time.ticks_ms() + time.ticks_diff() to create multiple independent timers running in parallel within a single loop.",
+  "imports": ["time"],
+  "code": "# Non-blocking scheduler pattern — replace all time.sleep() with this\nimport time\n\nclass Scheduler:\n    \"\"\"Run functions at intervals without blocking.\"\"\"\n    def __init__(self):\n        self._tasks = []\n\n    def every(self, interval_ms, callback):\n        \"\"\"Register callback to run every interval_ms milliseconds.\"\"\"\n        self._tasks.append({\n            'interval': interval_ms,\n            'callback': callback,\n            'next_run': time.ticks_ms()\n        })\n\n    def run_once(self, delay_ms, callback):\n        \"\"\"Run callback once after delay_ms.\"\"\"\n        self._tasks.append({\n            'interval': delay_ms,\n            'callback': callback,\n            'next_run': time.ticks_add(time.ticks_ms(), delay_ms),\n            'once': True\n        })\n\n    def tick(self):\n        \"\"\"Call this in your main loop as fast as possible.\"\"\"\n        now = time.ticks_ms()\n        for t in self._tasks[:]:\n            if time.ticks_diff(now, t['next_run']) >= 0:\n                t['callback']()\n                if t.get('once'):\n                    self._tasks.remove(t)\n                else:\n                    t['next_run'] = time.ticks_add(now, t['interval'])\n\n# ── Usage ──\n# sched = Scheduler()\n# sched.every(1000, lambda: print('1 second passed'))\n# sched.every(100, read_sensor)        # read sensor 10x/sec\n# sched.every(5000, check_wifi)        # check WiFi every 5s\n# sched.run_once(30000, deep_sleep)    # go to sleep after 30s\n#\n# while True:\n#     sched.tick()\n#     time.sleep_ms(10)  # small sleep to feed WDT\n",
+  "key_insights": [
+    "time.ticks_diff(a, b) handles the 32-bit wrap (~298 hours) correctly. NEVER use a - b directly.",
+    "Put the smallest possible sleep_ms() at the bottom of loop (10ms is good) — feeds WDT without wasting CPU.",
+    "CPU at 10ms loop interval = ~0.1% utilization. You can have dozens of scheduled tasks with zero performance impact.",
+    "Callback functions should be FAST (<1ms). If a task takes longer, split it into state-machine steps."
+  ],
+  "variants": {
+    "bare_ticks": "No scheduler class — just if ticks_diff(now, last) > INTERVAL: for each task. Fewer objects, less memory.",
+    "priority_tasks": "Two Scheduler instances — high priority runs every loop, low priority only when idle.",
+    "cooperative_multitask": "Each task is a generator function. yield from main loop advances one step per call."
+  },
+  "pitfalls": [
+    "time.ticks_diff(now, next_run) >= 0 — not 'now >= next_run'. Direct comparison breaks at wrap-around!",
+    "Running heavy callbacks in tick() blocks other tasks. Keep callbacks lightweight.",
+    "time.sleep_ms(0) burns CPU at 100%. Always use at least 1ms sleep to yield to WiFi/OS tasks."
+  ]
+}

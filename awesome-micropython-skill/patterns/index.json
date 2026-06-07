@@ -1,0 +1,41 @@
+{
+  "name": "patterns-index",
+  "description": "Reusable MicroPython code patterns. Each pattern is a self-contained recipe with full code, why-it-works explanation, and common variants. Copy-paste ready.",
+  "patterns": {
+    "wifi-reconnect": {
+      "file": "wifi-reconnect.json",
+      "description": "WiFi auto-reconnect with watchdog awareness and non-blocking status check",
+      "tags": ["wifi", "network", "reliability", "production"]
+    },
+    "nonblocking-loop": {
+      "file": "nonblocking-loop.json",
+      "description": "Timer-based non-blocking main loop — replace time.sleep() with ticks_ms()",
+      "tags": ["timer", "main-loop", "responsive", "beginner"]
+    },
+    "config-nvs": {
+      "file": null,
+      "description": "Persist settings (WiFi credentials, device params) in NVS flash (PLANNED)",
+      "tags": ["nvs", "storage", "config"]
+    },
+    "deep-sleep": {
+      "file": null,
+      "description": "Battery-friendly deep sleep with RTC memory and wake sources (PLANNED)",
+      "tags": ["power", "battery", "sleep"]
+    },
+    "sensor-read": {
+      "file": "sensor-read.json",
+      "description": "Robust sensor reading with timeout, retry, and graceful degradation",
+      "tags": ["sensor", "error-handling", "reliability"]
+    },
+    "async-server": {
+      "file": null,
+      "description": "Minimal asyncio TCP/HTTP server pattern (PLANNED)",
+      "tags": ["asyncio", "server", "network"]
+    },
+    "ota-update": {
+      "file": null,
+      "description": "OTA firmware update from HTTP server (PLANNED)",
+      "tags": ["ota", "firmware", "update"]
+    }
+  }
+}

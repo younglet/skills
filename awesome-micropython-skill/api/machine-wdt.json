@@ -1,0 +1,41 @@
+{
+  "name": "machine-wdt",
+  "module": "machine",
+  "class_name": "WDT",
+  "import": "from machine import WDT",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Watchdog Timer. Resets the ESP32 if not fed regularly. Protects against firmware hangs and infinite loops.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific WDT interface.",
+  "classes": [
+    {
+      "name": "WDT",
+      "signature": "machine.WDT(id=0, timeout=5000)",
+      "constructor_params": [
+        {"name": "id", "type": "int", "description": "WDT ID. ESP32: 0 for main system WDT."},
+        {"name": "timeout", "type": "int", "description": "Timeout in milliseconds. Default 5000 (5 seconds)."}
+      ],
+      "methods": [
+        {
+          "name": "WDT.feed",
+          "signature": "feed()",
+          "returns": "None",
+          "description": "Feed (reset) the watchdog timer. Must be called before timeout expires to prevent reset."
+        }
+      ],
+      "example": "from machine import WDT\nimport time\n\nwdt = WDT(timeout=10000)  # 10 second timeout\n\nwhile True:\n    do_some_work()\n    wdt.feed()  # reset the timer\n    time.sleep(1)"
+    }
+  ],
+  "esp32_notes": [
+    "ESP32 has two watchdog groups. WDT(0) is the main system WDT.",
+    "Timeout is approximate — ESP32 uses hardware stages with limited resolution.",
+    "Once enabled, WDT cannot be disabled until reset (ESP32 hardware limitation).",
+    "The REPL/interactive prompt automatically feeds the WDT during execution.",
+    "Typical timeout values: 5000ms (5s) is safe for most applications."
+  ],
+  "common_bugs": [
+    "Once created, the WDT cannot be stopped — plan for this in your code.",
+    "If a loop takes longer than timeout, the ESP32 will reset. Set timeout generously.",
+    "Sleep functions (time.sleep) count toward WDT timeout — feed before long sleeps."
+  ]
+}

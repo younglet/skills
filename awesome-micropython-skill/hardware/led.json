@@ -1,0 +1,49 @@
+{
+  "name": "led",
+  "category": "light",
+  "description": "Basic LED controlled via GPIO pin. Simplest output device — good for testing GPIO and as a status indicator.",
+  "complexity": "beginner",
+  "parts": [
+    {"name": "LED", "spec": "5mm, any color, ~2V forward voltage"},
+    {"name": "Resistor", "spec": "220Ω-330Ω (current limiting)"},
+    {"name": "Jumper wires", "spec": "2x M-F"}
+  ],
+  "wiring": {
+    "led_anode": "GPIO pin (any, via resistor)",
+    "led_cathode": "GND",
+    "resistor": "Between GPIO pin and LED anode",
+    "diagram": "ESP32 GPIO → [220Ω] → LED(+) → LED(-) → GND"
+  },
+  "esp32_constraints": {
+    "usable_pins": "Any GPIO except 6-11 (flash). 34-39 are input-only (OK here since we're outputting).",
+    "max_current": "12mA per GPIO pin. With 220Ω at 3.3V: ~6mA — safe.",
+    "pwm_pins": "All output-capable GPIOs support PWM (for brightness control)."
+  },
+  "methods": {
+    "digital": {
+      "description": "Simple on/off via GPIO output.",
+      "imports": ["from machine import Pin"],
+      "code": "from machine import Pin\nimport time\n\nled = Pin(2, Pin.OUT)  # GPIO 2 = built-in LED on many ESP32 boards\n\n# Blink 3 times\nfor _ in range(3):\n    led.on()            # or led.value(1)\n    time.sleep(0.5)\n    led.off()           # or led.value(0)\n    time.sleep(0.5)\n\nled.off()  # ensure off when done",
+      "methods_used": ["Pin.on()", "Pin.off()", "Pin.value()"]
+    },
+    "pwm": {
+      "description": "Fade brightness via PWM.",
+      "imports": ["from machine import Pin, PWM"],
+      "code": "from machine import Pin, PWM\nimport time\n\nled = PWM(Pin(2), freq=1000, duty=0)  # 1kHz, off\n\n# Fade in\nfor duty in range(0, 1024, 16):\n    led.duty(duty)\n    time.sleep_ms(20)\n\n# Fade out\nfor duty in range(1023, -1, -16):\n    led.duty(duty)\n    time.sleep_ms(20)\n\nled.duty(0)  # off",
+      "methods_used": ["PWM.duty()", "PWM(freq=...)"]
+    },
+    "builtin": {
+      "description": "Using the built-in LED (if available).",
+      "code": "import machine\nimport time\n\nled = machine.Pin(2, machine.Pin.OUT)  # GPIO 2 is built-in on ESP32-DevKitC\nfor _ in range(5):\n    led.value(not led.value())\n    time.sleep(0.3)",
+      "methods_used": ["Pin.value()"],
+      "note": "GPIO 2 is the built-in LED on most ESP32 dev boards. Some boards use GPIO 5, 13, or 22 instead."
+    }
+  },
+  "pitfalls": [
+    "FORGETTING the current-limiting resistor will burn out the LED and possibly the GPIO pin.",
+    "GPIO 6-11 are connected to internal SPI flash — DO NOT USE for LEDs.",
+    "Pin(2, Pin.OUT) on ESP32-DevKitC controls the built-in LED — may conflict with other uses.",
+    "PWM at very low duty cycles (< 10) may produce visible flicker on some LEDs."
+  ],
+  "extensions": ["rgb_led", "ws2812", "led_matrix"]
+}

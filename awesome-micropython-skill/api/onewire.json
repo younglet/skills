@@ -1,0 +1,172 @@
+{
+  "name": "onewire",
+  "module": "onewire",
+  "import": "import onewire",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Dallas 1-Wire bus protocol driver. Used with DS18B20, DS18S20 temperature sensors and other OneWire devices. Built into MicroPython firmware.",
+  "differences_from_cpython": "This module does NOT exist in CPython. It is MicroPython-specific for embedded 1-Wire bus communication.",
+  "classes": [
+    {
+      "name": "OneWire",
+      "signature": "onewire.OneWire(pin)",
+      "constructor_params": [
+        {
+          "name": "pin",
+          "type": "Pin",
+          "description": "Data pin. Must support open-drain output and input. Any GPIO."
+        }
+      ],
+      "methods": [
+        {
+          "name": "OneWire.reset",
+          "signature": "reset()",
+          "returns": {
+            "type": "bool",
+            "description": "True if any device is present on the bus, False otherwise."
+          },
+          "description": "Send reset pulse and detect presence pulse. Must be called first before communicating."
+        },
+        {
+          "name": "OneWire.readbit",
+          "signature": "readbit()",
+          "returns": {
+            "type": "int",
+            "description": "0 or 1."
+          },
+          "description": "Read a single bit from the bus."
+        },
+        {
+          "name": "OneWire.readbyte",
+          "signature": "readbyte()",
+          "returns": {
+            "type": "int",
+            "description": "8-bit byte read from the bus."
+          },
+          "description": "Read a byte from the bus."
+        },
+        {
+          "name": "OneWire.readinto",
+          "signature": "readinto(buf)",
+          "parameters": [
+            {
+              "name": "buf",
+              "type": "bytearray",
+              "description": "Buffer to read into."
+            }
+          ],
+          "returns": "None",
+          "description": "Read bytes from the bus into the provided buffer."
+        },
+        {
+          "name": "OneWire.writebit",
+          "signature": "writebit(value)",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "int",
+              "description": "Bit value: 0 or 1."
+            }
+          ],
+          "returns": "None",
+          "description": "Write a single bit to the bus."
+        },
+        {
+          "name": "OneWire.writebyte",
+          "signature": "writebyte(value)",
+          "parameters": [
+            {
+              "name": "value",
+              "type": "int",
+              "description": "Byte value to write."
+            }
+          ],
+          "returns": "None",
+          "description": "Write a byte to the bus."
+        },
+        {
+          "name": "OneWire.write",
+          "signature": "write(buf)",
+          "parameters": [
+            {
+              "name": "buf",
+              "type": "bytes|bytearray",
+              "description": "Data to write."
+            }
+          ],
+          "returns": "None",
+          "description": "Write bytes to the bus."
+        },
+        {
+          "name": "OneWire.crc8",
+          "signature": "crc8(data)",
+          "parameters": [
+            {
+              "name": "data",
+              "type": "bytes|bytearray",
+              "description": "Data to compute CRC-8 over."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "8-bit Dallas CRC checksum."
+          },
+          "description": "Compute Dallas 1-Wire CRC-8 checksum. Useful for validating ROM addresses."
+        },
+        {
+          "name": "OneWire.select_rom",
+          "signature": "select_rom(rom)",
+          "parameters": [
+            {
+              "name": "rom",
+              "type": "bytes",
+              "description": "8-byte ROM address of the device to select."
+            }
+          ],
+          "returns": "None",
+          "description": "Select a specific device by its ROM address. Must call reset() first."
+        },
+        {
+          "name": "OneWire.scan",
+          "signature": "scan()",
+          "returns": {
+            "type": "list[bytes]",
+            "description": "List of 8-byte ROM addresses for all devices on the bus."
+          },
+          "description": "Scan the 1-Wire bus and return ROM addresses of all devices found."
+        },
+        {
+          "name": "_search_rom",
+          "signature": "_search_rom()",
+          "description": "Internal search ROM helper.",
+          "returns": "bytes"
+        }
+      ],
+      "example": "from machine import Pin\nimport onewire\n\now = onewire.OneWire(Pin(4))\nroms = ow.scan()\nprint('Found devices:', len(roms))\nfor rom in roms:\n    print('ROM:', rom.hex())\n\n# Select a device and communicate\now.reset()\now.select_rom(roms[0])\now.writebyte(0xBE)  # read scratchpad\nbuf = bytearray(9)\now.readinto(buf)\nprint('Data:', buf)",
+      "constants": {
+        "MATCH_ROM": null,
+        "SEARCH_ROM": null,
+        "SKIP_ROM": null
+      }
+    }
+  ],
+  "constants": {},
+  "exceptions": [
+    {
+      "name": "OneWireError",
+      "description": "Exception raised on 1-Wire communication errors."
+    }
+  ],
+  "wiring": [
+    "DATA -> Any GPIO pin (connect 4.7kohm pull-up resistor to 3.3V)",
+    "VCC -> 3.3V (or parasitic power mode: VCC -> GND)",
+    "GND -> GND",
+    "Pull-up resistor is REQUIRED - the 1-Wire bus is open-drain."
+  ],
+  "esp32_notes": [
+    "Works on any GPIO pin (bit-banged, not hardware-dependent).",
+    "1-Wire protocol is timing-critical. Disable interrupts during communication if possible.",
+    "For DS18B20, use the ds18x20 module (install via mip) which builds on onewire for convenience.",
+    "Long wires (>1m) may need a stronger pull-up (2.2kohm) or active pull-up."
+  ]
+}

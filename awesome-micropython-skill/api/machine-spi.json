@@ -1,0 +1,272 @@
+{
+  "name": "machine-spi",
+  "module": "machine",
+  "class_name": "SoftSPI / SPI",
+  "import": "from machine import SPI, SoftSPI",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "SPI (Serial Peripheral Interface) bus communication. Both software (SoftSPI) and hardware (SPI) available. ESP32 has 2 hardware SPI peripherals (HSPI=1, VSPI=2).",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific SPI interface.",
+  "classes": [
+    {
+      "name": "SoftSPI",
+      "signature": "machine.SoftSPI(baudrate=1000000, *, polarity=0, phase=0, bits=8, sck, mosi, miso)",
+      "description": "Software (bit-banged) SPI. Works on any GPIO pins.",
+      "constructor_params": [
+        {
+          "name": "baudrate",
+          "type": "int",
+          "description": "SCK clock rate in Hz. Default 1_000_000 (1MHz)."
+        },
+        {
+          "name": "polarity",
+          "type": "int",
+          "description": "SPI polarity (CPOL): 0=idle low, 1=idle high."
+        },
+        {
+          "name": "phase",
+          "type": "int",
+          "description": "SPI phase (CPHA): 0=sample first edge, 1=sample second edge."
+        },
+        {
+          "name": "bits",
+          "type": "int",
+          "description": "Bits per transfer. Default 8."
+        },
+        {
+          "name": "sck",
+          "type": "Pin",
+          "description": "Clock pin. Required keyword arg."
+        },
+        {
+          "name": "mosi",
+          "type": "Pin",
+          "description": "MOSI pin (Master Out Slave In). Required."
+        },
+        {
+          "name": "miso",
+          "type": "Pin",
+          "description": "MISO pin (Master In Slave Out). Required."
+        }
+      ],
+      "constants": {
+        "LSB": null,
+        "MSB": null
+      },
+      "methods": [
+        {
+          "name": "SoftSPI.init",
+          "signature": "init(baudrate=1000000, *, polarity=0, phase=0, bits=8, firstbit=MSB, sck=None, mosi=None, miso=None)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Initialize SPI peripheral with given parameters."
+        },
+        {
+          "name": "SoftSPI.deinit",
+          "signature": "deinit()",
+          "returns": {
+            "type": "None"
+          },
+          "description": "De-initialize SPI bus, release pins."
+        },
+        {
+          "name": "SoftSPI.read",
+          "signature": "read(nbytes, write=0x00)",
+          "returns": {
+            "type": "bytes"
+          },
+          "description": "Read nbytes while writing the given value."
+        },
+        {
+          "name": "SoftSPI.readinto",
+          "signature": "readinto(buf, write=0x00)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Read into buffer while writing the given value."
+        },
+        {
+          "name": "SoftSPI.write",
+          "signature": "write(buf)",
+          "returns": {
+            "type": "int",
+            "description": "Number of bytes written."
+          },
+          "description": "Write bytes to SPI bus."
+        },
+        {
+          "name": "SoftSPI.write_readinto",
+          "signature": "write_readinto(write_buf, read_buf)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Write from write_buf while reading into read_buf simultaneously."
+        }
+      ]
+    },
+    {
+      "name": "SPI",
+      "signature": "machine.SPI(id, baudrate=1000000, *, polarity=0, phase=0, bits=8, sck=None, mosi=None, miso=None)",
+      "description": "Hardware SPI. ESP32: id=1 (HSPI), id=2 (VSPI). id=2 is the default VSPI on most dev boards.",
+      "constructor_params": [
+        {
+          "name": "id",
+          "type": "int",
+          "description": "SPI peripheral ID. ESP32: 1 (HSPI) or 2 (VSPI)."
+        },
+        {
+          "name": "baudrate",
+          "type": "int",
+          "description": "Clock rate in Hz. Default 1MHz. Max ~80MHz (half APB clock)."
+        },
+        {
+          "name": "polarity",
+          "type": "int",
+          "description": "0 or 1."
+        },
+        {
+          "name": "phase",
+          "type": "int",
+          "description": "0 or 1."
+        },
+        {
+          "name": "bits",
+          "type": "int",
+          "description": "Bits per transfer. Default 8."
+        },
+        {
+          "name": "sck",
+          "type": "Pin|None",
+          "description": "Clock pin. None = use default pin for this id."
+        },
+        {
+          "name": "mosi",
+          "type": "Pin|None",
+          "description": "MOSI pin."
+        },
+        {
+          "name": "miso",
+          "type": "Pin|None",
+          "description": "MISO pin."
+        }
+      ],
+      "default_pins": {
+        "HSPI (id=1)": {
+          "sck": 14,
+          "mosi": 13,
+          "miso": 12
+        },
+        "VSPI (id=2)": {
+          "sck": 18,
+          "mosi": 23,
+          "miso": 19
+        }
+      },
+      "constants": {
+        "LSB": null,
+        "MSB": null
+      },
+      "methods": [
+        {
+          "name": "SPI.init",
+          "signature": "init(baudrate=1000000, *, polarity=0, phase=0, bits=8, firstbit=MSB, sck=None, mosi=None, miso=None)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Initialize SPI peripheral with given parameters."
+        },
+        {
+          "name": "SPI.deinit",
+          "signature": "deinit()",
+          "returns": {
+            "type": "None"
+          },
+          "description": "De-initialize SPI bus, release pins."
+        },
+        {
+          "name": "SPI.read",
+          "signature": "read(nbytes, write=0x00)",
+          "returns": {
+            "type": "bytes"
+          },
+          "description": "Read nbytes while writing the given value."
+        },
+        {
+          "name": "SPI.readinto",
+          "signature": "readinto(buf, write=0x00)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Read into buffer while writing the given value."
+        },
+        {
+          "name": "SPI.write",
+          "signature": "write(buf)",
+          "returns": {
+            "type": "int",
+            "description": "Number of bytes written."
+          },
+          "description": "Write bytes to SPI bus."
+        },
+        {
+          "name": "SPI.write_readinto",
+          "signature": "write_readinto(write_buf, read_buf)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Write from write_buf while reading into read_buf simultaneously."
+        }
+      ]
+    }
+  ],
+  "shared_methods": [
+    {
+      "name": "SPI.init",
+      "signature": "init(baudrate=1000000, *, polarity=0, phase=0, bits=8, sck=None, mosi=None, miso=None)",
+      "returns": "None",
+      "description": "Re-initialize SPI."
+    },
+    {
+      "name": "SPI.deinit",
+      "signature": "deinit()",
+      "returns": "None",
+      "description": "Turn off SPI and release pins."
+    },
+    {
+      "name": "SPI.read",
+      "signature": "read(nbytes, write=0x00)",
+      "returns": {
+        "type": "bytes",
+        "description": "nbytes read from SPI."
+      },
+      "description": "Read nbytes while writing constant value (default 0x00)."
+    },
+    {
+      "name": "SPI.readinto",
+      "signature": "readinto(buf, write=0x00)",
+      "returns": "None",
+      "description": "Read into buffer while writing constant value."
+    },
+    {
+      "name": "SPI.write",
+      "signature": "write(buf)",
+      "returns": "None",
+      "description": "Write buffer contents to SPI."
+    },
+    {
+      "name": "SPI.write_readinto",
+      "signature": "write_readinto(write_buf, read_buf)",
+      "returns": "None",
+      "description": "Write from write_buf and simultaneously read into read_buf."
+    }
+  ],
+  "example": "from machine import Pin, SPI, SoftSPI\n\n# Hardware SPI (VSPI, default pins)\nspi = SPI(2, baudrate=10000000, polarity=0, phase=0)\n\n# Software SPI (any pins)\n# spi = SoftSPI(baudrate=5000000, sck=Pin(18), mosi=Pin(23), miso=Pin(19))\n\n# Write to device, then read response\nspi.write(b'\\xAA\\xBB')   # send command\ndata = spi.read(4)        # read 4 bytes response\n\n# Full-duplex transfer\nwrite_buf = b'\\x01\\x02\\x03'\nread_buf = bytearray(3)\nspi.write_readinto(write_buf, read_buf)\nprint('Received:', read_buf)",
+  "esp32_notes": [
+    "ESP32 HSPI default: sck=14, mosi=13, miso=12 (id=1).",
+    "ESP32 VSPI default: sck=18, mosi=23, miso=19 (id=2). Used by SDCard slot=2.",
+    "Hardware SPI can use DMA for fast transfers; SoftSPI cannot.",
+    "Max hardware SPI baudrate: 80MHz (limited by APB clock; practical max ~40MHz).",
+    "For SD card, use machine.SDCard which wraps SPI internally."
+  ]
+}

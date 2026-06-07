@@ -1,0 +1,122 @@
+{
+  "name": "micropython",
+  "module": "micropython",
+  "import": "import micropython",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "MicroPython internals: memory info, compilation control, scheduling, emergency exception buffer.",
+  "differences_from_cpython": "Does NOT exist in CPython. Provides low-level MicroPython runtime control.",
+  "functions": [
+    {
+      "name": "micropython.const",
+      "signature": "const(val)",
+      "returns": "int",
+      "description": "Compile-time constant. Saves RAM vs. global variable."
+    },
+    {
+      "name": "micropython.opt_level",
+      "signature": "opt_level([level])",
+      "returns": "int",
+      "description": "Get/set compiler optimization level 0-3."
+    },
+    {
+      "name": "micropython.mem_info",
+      "signature": "mem_info([verbose])",
+      "returns": "None",
+      "description": "Print memory usage info."
+    },
+    {
+      "name": "micropython.qstr_info",
+      "signature": "qstr_info([verbose])",
+      "returns": "None",
+      "description": "Print interning (qstr) pool info."
+    },
+    {
+      "name": "micropython.stack_use",
+      "signature": "stack_use()",
+      "returns": "int",
+      "description": "Current stack usage in bytes."
+    },
+    {
+      "name": "micropython.alloc_emergency_exception_buf",
+      "signature": "alloc_emergency_exception_buf(size)",
+      "returns": "None",
+      "description": "Allocate buffer for exception in ISRs/threads. MUST call before Timer callbacks."
+    },
+    {
+      "name": "micropython.schedule",
+      "signature": "schedule(func, arg)",
+      "returns": "None",
+      "description": "Schedule function to run as soon as possible (after current opcode)."
+    },
+    {
+      "name": "micropython.kbd_intr",
+      "signature": "kbd_intr(chr)",
+      "returns": "None",
+      "description": "Set character for KeyboardInterrupt (default Ctrl+C = 3)."
+    },
+    {
+      "name": "micropython.heap_lock",
+      "signature": "heap_lock()",
+      "returns": "None",
+      "description": "Lock heap. Prevents memory allocation."
+    },
+    {
+      "name": "micropython.heap_unlock",
+      "signature": "heap_unlock()",
+      "returns": "None"
+    }
+  ],
+  "classes": [
+    {
+      "name": "RingIO",
+      "description": "Ring buffer for efficient byte streaming."
+    },
+    {
+      "name": "RingIO",
+      "signature": "micropython.RingIO(size)",
+      "description": "Ring buffer for efficient byte streaming.",
+      "methods": [
+        {
+          "name": "RingIO.any",
+          "signature": "any()",
+          "description": "Number of bytes available to read.",
+          "returns": "varies"
+        },
+        {
+          "name": "RingIO.close",
+          "signature": "close()",
+          "description": "Close the ring buffer.",
+          "returns": "varies"
+        },
+        {
+          "name": "RingIO.read",
+          "signature": "read([n])",
+          "description": "Read up to n bytes.",
+          "returns": "varies"
+        },
+        {
+          "name": "RingIO.readinto",
+          "signature": "readinto(buf)",
+          "description": "Read bytes into buffer.",
+          "returns": "varies"
+        },
+        {
+          "name": "RingIO.readline",
+          "signature": "readline()",
+          "description": "Read a line.",
+          "returns": "varies"
+        },
+        {
+          "name": "RingIO.write",
+          "signature": "write(buf)",
+          "description": "Write bytes to ring buffer.",
+          "returns": "varies"
+        }
+      ]
+    }
+  ],
+  "constants": {
+    "RingIO": null
+  }
+}

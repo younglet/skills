@@ -1,0 +1,468 @@
+{
+  "name": "esp32",
+  "module": "esp32",
+  "import": "import esp32",
+  "version": "1.28.0",
+  "category": "esp32",
+  "description": "ESP32-specific functions and classes: NVS (non-volatile storage), RMT (pulse generator), PCNT (pulse counter), deep-sleep wake sources, Partition, ULP, and hardware info.",
+  "differences_from_cpython": "This module does NOT exist in CPython. It is entirely ESP32-specific.",
+  "functions": [
+    {
+      "name": "esp32.wake_on_touch",
+      "signature": "wake_on_touch(wake)",
+      "parameters": [
+        {
+          "name": "wake",
+          "type": "bool",
+          "description": "True to enable touch wake from deep sleep."
+        }
+      ],
+      "returns": "None",
+      "note": "Only on boards with touch sensor support (original ESP32)."
+    },
+    {
+      "name": "esp32.wake_on_ext0",
+      "signature": "wake_on_ext0(pin, level)",
+      "parameters": [
+        {
+          "name": "pin",
+          "type": "Pin|None",
+          "description": "Pin object (RTC GPIO only). None to disable."
+        },
+        {
+          "name": "level",
+          "type": "int",
+          "description": "esp32.WAKEUP_ALL_LOW or esp32.WAKEUP_ANY_HIGH."
+        }
+      ],
+      "returns": "None",
+      "note": "RTC IO only: GPIO 0,2,4,12-15,25-27,32-39."
+    },
+    {
+      "name": "esp32.wake_on_ext1",
+      "signature": "wake_on_ext1(pins, level)",
+      "parameters": [
+        {
+          "name": "pins",
+          "type": "tuple|list|None",
+          "description": "Tuple/list of Pin objects (RTC GPIO). None to disable."
+        },
+        {
+          "name": "level",
+          "type": "int",
+          "description": "esp32.WAKEUP_ALL_LOW or esp32.WAKEUP_ANY_HIGH."
+        }
+      ],
+      "returns": "None"
+    },
+    {
+      "name": "esp32.wake_on_gpio",
+      "signature": "wake_on_gpio(wake)",
+      "parameters": [
+        {
+          "name": "wake",
+          "type": "bool"
+        }
+      ],
+      "returns": "None",
+      "description": "Enable GPIO wake from light sleep."
+    },
+    {
+      "name": "esp32.wake_on_ulp",
+      "signature": "wake_on_ulp(wake)",
+      "parameters": [
+        {
+          "name": "wake",
+          "type": "bool"
+        }
+      ],
+      "returns": "None",
+      "description": "Enable ULP wake from deep sleep."
+    },
+    {
+      "name": "esp32.gpio_deep_sleep_hold",
+      "signature": "gpio_deep_sleep_hold(enable)",
+      "parameters": [
+        {
+          "name": "enable",
+          "type": "bool",
+          "description": "True to hold GPIO state during deep sleep."
+        }
+      ],
+      "returns": "None"
+    },
+    {
+      "name": "esp32.raw_temperature",
+      "signature": "raw_temperature()",
+      "returns": {
+        "type": "int",
+        "description": "Raw internal temperature sensor value (not Celsius)."
+      },
+      "note": "Approximate Celsius: (raw - 32) / 1.8. Not factory calibrated."
+    },
+    {
+      "name": "esp32.idf_heap_info",
+      "signature": "idf_heap_info(capabilities)",
+      "parameters": [
+        {
+          "name": "capabilities",
+          "type": "int",
+          "description": "esp32.HEAP_DATA or esp32.HEAP_EXEC."
+        }
+      ],
+      "returns": {
+        "type": "list[tuple]",
+        "description": "List of 4-tuples (total, used, free, min_free) for each heap region."
+      },
+      "note": "For MicroPython heap, use gc.mem_free() instead."
+    }
+  ],
+  "constants": {
+    "WAKEUP_ALL_LOW": null,
+    "WAKEUP_ANY_HIGH": null,
+    "HEAP_DATA": null,
+    "HEAP_EXEC": null,
+    "NVS": null,
+    "PCNT": null,
+    "Partition": null,
+    "RMT": null,
+    "ULP": null
+  },
+  "classes": [
+    {
+      "name": "NVS",
+      "full_name": "esp32.NVS",
+      "description": "Non-Volatile Storage using ESP32's NVS partition. Data survives power cycles and soft resets.",
+      "constructor_params": [
+        {
+          "name": "namespace",
+          "type": "str",
+          "description": "Namespace key, unique per application. Max 15 chars."
+        }
+      ],
+      "methods": [
+        {
+          "name": "NVS.set_i32",
+          "signature": "set_i32(key, value)",
+          "params": [
+            {
+              "name": "key",
+              "type": "str",
+              "description": "Key name (max 15 chars)."
+            },
+            {
+              "name": "value",
+              "type": "int",
+              "description": "32-bit signed integer."
+            }
+          ],
+          "returns": "None"
+        },
+        {
+          "name": "NVS.get_i32",
+          "signature": "get_i32(key)",
+          "params": [
+            {
+              "name": "key",
+              "type": "str",
+              "description": "Key name."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "Stored value. Raises OSError if key not found."
+          }
+        },
+        {
+          "name": "NVS.set_blob",
+          "signature": "set_blob(key, value)",
+          "params": [
+            {
+              "name": "key",
+              "type": "str"
+            },
+            {
+              "name": "value",
+              "type": "bytes|bytearray|str",
+              "description": "Binary data to store."
+            }
+          ],
+          "returns": "None"
+        },
+        {
+          "name": "NVS.get_blob",
+          "signature": "get_blob(key, buffer)",
+          "params": [
+            {
+              "name": "key",
+              "type": "str"
+            },
+            {
+              "name": "buffer",
+              "type": "bytearray",
+              "description": "Buffer to read into. Must be pre-allocated."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "Number of bytes read."
+          }
+        },
+        {
+          "name": "NVS.erase_key",
+          "signature": "erase_key(key)",
+          "params": [
+            {
+              "name": "key",
+              "type": "str"
+            }
+          ],
+          "returns": "None"
+        },
+        {
+          "name": "NVS.commit",
+          "signature": "commit()",
+          "returns": "None",
+          "description": "Commit pending writes to flash."
+        }
+      ],
+      "example": "import esp32\nnvs = esp32.NVS('myapp')\nnvs.set_i32('counter', 42)\nval = nvs.get_i32('counter')\nprint(val)",
+      "notes": [
+        "NVS partition is typically 20-24KB on standard ESP32.",
+        "Keys are case-insensitive and max 15 characters.",
+        "Use commit() if writing in loops without closing."
+      ],
+      "constants": {}
+    },
+    {
+      "name": "RMT",
+      "full_name": "esp32.RMT",
+      "description": "Remote Control peripheral for precise pulse train generation. 8 channels, used for IR remotes, NeoPixel/WS2812 LEDs, and custom serial protocols.",
+      "constructor_params": [
+        {
+          "name": "pin",
+          "type": "Pin",
+          "description": "Any output-capable GPIO."
+        },
+        {
+          "name": "channel",
+          "type": "int",
+          "description": "RMT channel (0-7). 8 channels available."
+        },
+        {
+          "name": "clock_div",
+          "type": "int",
+          "description": "Clock divider. 80 = 1us resolution at 80MHz APB. Lower = finer resolution."
+        }
+      ],
+      "methods": [
+        {
+          "name": "RMT.active",
+          "signature": "active([enable])",
+          "returns": "bool|None",
+          "description": "Get/set active state. True to enable."
+        },
+        {
+          "name": "RMT.write_pulses",
+          "signature": "write_pulses(pulses, start=1)",
+          "returns": "None",
+          "description": "Transmit pulse sequence. pulses is list of (high_us, low_us) tuples."
+        },
+        {
+          "name": "RMT.deinit",
+          "signature": "deinit()",
+          "returns": "None",
+          "description": "Release RMT channel."
+        },
+        {
+          "name": "RMT.loop",
+          "signature": "loop(enable)",
+          "returns": "None",
+          "description": "Enable continuous loop of pulse sequence."
+        },
+        {
+          "name": "RMT.wait_done",
+          "signature": "wait_done(timeout=0)",
+          "returns": "bool",
+          "description": "Wait for transmission complete."
+        },
+        {
+          "name": "RMT.clock_div",
+          "signature": "clock_div",
+          "returns": "int",
+          "description": "Current clock divider value."
+        },
+        {
+          "name": "RMT.source_freq",
+          "signature": "source_freq",
+          "returns": "int",
+          "description": "Source clock frequency in Hz."
+        },
+        {
+          "name": "RMT.loop_count",
+          "signature": "loop_count([n])",
+          "returns": "int|None",
+          "description": "Get/set loop iteration count."
+        },
+        {
+          "name": "RMT.bitstream_channel",
+          "signature": "bitstream_channel(value)",
+          "returns": "None",
+          "description": "Configure for NeoPixel bitstream. Internal API."
+        },
+        {
+          "name": "RMT.bitstream_rmt",
+          "signature": "bitstream_rmt(pin, data, *, timing=(350, 900, 350, 900))",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Stream bits via RMT on the given pin. Used for WS2812/NeoPixel timing. timing: (T0H_us, T0L_us, T1H_us, T1L_us)."
+        }
+      ],
+      "constants": {
+        "PULSE_MAX": 32767
+      },
+      "example": "from machine import Pin\nimport esp32\n\nrmt = esp32.RMT(Pin(18), channel=0, clock_div=80)\nrmt.write_pulses([(10, 5)] * 10, start=1)\nrmt.wait_done()",
+      "esp32_notes": [
+        "8 RMT channels (0-7). Each is independent.",
+        "Resolution: clock_div=80 gives 1us at 80MHz APB.",
+        "Maximum 32767 pulses per transmission.",
+        "For NeoPixel LEDs, prefer the neopixel module which uses RMT internally."
+      ]
+    },
+    {
+      "name": "Partition",
+      "full_name": "esp32.Partition",
+      "description": "ESP32 partition table access. Read/write raw partition data.",
+      "methods": [
+        {
+          "name": "Partition.find",
+          "signature": "find(type=-1, subtype=-1, label=None)",
+          "returns": "Partition|None"
+        },
+        {
+          "name": "Partition.info",
+          "signature": "info()",
+          "returns": "tuple",
+          "description": "(type, subtype, addr, size, label, encrypted)"
+        },
+        {
+          "name": "Partition.ioctl",
+          "signature": "ioctl(cmd, arg)",
+          "returns": "int"
+        },
+        {
+          "name": "Partition.readblocks",
+          "signature": "readblocks(block_num, buf, offset=0)",
+          "returns": "None"
+        },
+        {
+          "name": "Partition.writeblocks",
+          "signature": "writeblocks(block_num, buf, offset=0)",
+          "returns": "None"
+        },
+        {
+          "name": "Partition.set_boot",
+          "signature": "set_boot()",
+          "returns": "None"
+        },
+        {
+          "name": "Partition.get_next_update",
+          "signature": "get_next_update()",
+          "returns": "Partition|None"
+        },
+        {
+          "name": "Partition.mark_app_valid_cancel_rollback",
+          "signature": "mark_app_valid_cancel_rollback()",
+          "returns": "None"
+        }
+      ],
+      "constants": {
+        "BOOT": 0,
+        "RUNNING": 1,
+        "TYPE_APP": 0,
+        "TYPE_DATA": 1
+      }
+    },
+    {
+      "name": "ULP",
+      "full_name": "esp32.ULP",
+      "description": "Ultra-Low-Power coprocessor control.",
+      "methods": [
+        {
+          "name": "ULP.set_wakeup_period",
+          "signature": "set_wakeup_period(period_index, period_us)",
+          "returns": "None"
+        },
+        {
+          "name": "ULP.load_binary",
+          "signature": "load_binary(load_addr, program_binary)",
+          "returns": "None"
+        },
+        {
+          "name": "ULP.run",
+          "signature": "run(entry_point)",
+          "returns": "None"
+        }
+      ],
+      "constants": {
+        "RESERVE_MEM": 512
+      }
+    },
+    {
+      "name": "PCNT",
+      "full_name": "esp32.PCNT",
+      "description": "Pulse Counter peripheral. Count pulses on GPIO pins with optional filtering and interrupts. Used for rotary encoders, flow meters, frequency measurement.",
+      "methods": [
+        {
+          "name": "PCNT.init",
+          "signature": "init(*, pulse_gpio, ctrl_gpio=-1, lctrl_mode=PCNT.REVERSE, hctrl_mode=PCNT.REVERSE, pos_mode=PCNT.INCREMENT, neg_mode=PCNT.DECREMENT, counter=0, freq=0)",
+          "returns": "None",
+          "description": "Initialize PCNT. pulse_gpio: signal input pin. ctrl_gpio: optional control pin."
+        },
+        {
+          "name": "PCNT.deinit",
+          "signature": "deinit()",
+          "returns": "None"
+        },
+        {
+          "name": "PCNT.value",
+          "signature": "value([val])",
+          "returns": "int|None",
+          "description": "Get or set counter value."
+        },
+        {
+          "name": "PCNT.start",
+          "signature": "start()",
+          "returns": "None"
+        },
+        {
+          "name": "PCNT.stop",
+          "signature": "stop()",
+          "returns": "None"
+        },
+        {
+          "name": "PCNT.irq",
+          "signature": "irq(handler=None, trigger=PCNT.IRQ_ZERO)",
+          "returns": "IRQ|None",
+          "description": "Set interrupt handler for counter events."
+        }
+      ],
+      "constants": {
+        "INCREMENT": 1,
+        "DECREMENT": 2,
+        "HOLD": 2,
+        "IGNORE": 0,
+        "NORMAL": 0,
+        "REVERSE": 1,
+        "IRQ_ZERO": 64,
+        "IRQ_MIN": 16,
+        "IRQ_MAX": 32,
+        "IRQ_THRESHOLD0": 8,
+        "IRQ_THRESHOLD1": 4
+      },
+      "note": "PCNT is the low-level ESP32 pulse counter. For higher-level API, use machine.Counter or machine.Encoder."
+    }
+  ],
+  "deep_sleep_example": "import machine\nimport esp32\nfrom machine import Pin\n\nesp32.wake_on_ext0(Pin(0), esp32.WAKEUP_ALL_LOW)\nprint('Going to deep sleep for 30 seconds...')\nmachine.deepsleep(30000)"
+}

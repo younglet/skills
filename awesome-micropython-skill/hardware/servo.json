@@ -1,0 +1,51 @@
+{
+  "name": "servo",
+  "category": "motion",
+  "description": "SG90/MG90S/MG996R servo motor — position control via 50Hz PWM. 0°–180° range with ~0.5ms–2.5ms pulse width.",
+  "complexity": "beginner",
+  "parts": [
+    {"name": "Servo motor", "spec": "SG90 (micro), MG90S (metal gear), MG996R (high torque)"},
+    {"name": "Jumper wires", "spec": "3x M-F"},
+    {"name": "External power", "spec": "5V 1A+ for MG996R (ESP32 3.3V pin cannot power servos!)"}
+  ],
+  "wiring": {
+    "servo_brown_black": "GND (common with ESP32 GND)",
+    "servo_red": "5V external power (NOT ESP32 3.3V!)",
+    "servo_orange_yellow_white": "ESP32 GPIO (PWM signal only, low current)",
+    "diagram": "External 5V → Servo Red (+)\nESP32 GND → Servo Brown (-) AND External GND\nESP32 GPIO(D) → Servo Orange/Yellow (Signal)"
+  },
+  "esp32_constraints": {
+    "power": "CRITICAL: Do NOT power servo from ESP32 3.3V or 5V pin. Use external 5V supply with common ground.",
+    "gpio_amps": "Servo signal pin draws <1mA — any GPIO works.",
+    "pwm_required": "Any output-capable GPIO. ESP32 has 16 PWM channels.",
+    "signal_voltage": "ESP32 GPIO outputs 3.3V. Most servos accept 3.3V logic. If unreliable, use level shifter to 5V."
+  },
+  "timing": {
+    "frequency": "50 Hz (period = 20ms)",
+    "pulse_range": "0.5ms (0°) to 2.5ms (180°)",
+    "typical_center": "1.5ms (90°)",
+    "duty_formula": "duty = int((pulse_ms / 20.0) * 1023). 0° = 26, 90° = 77, 180° = 128"
+  },
+  "code": {
+    "imports": ["from machine import Pin, PWM"],
+    "example": "from machine import Pin, PWM\nimport time\n\n# Setup\nservo = PWM(Pin(15), freq=50)  # GPIO 15, 50Hz\n\ndef set_angle(angle):\n    \"\"\"Move servo to angle 0-180 degrees.\"\"\"\n    # Map 0-180° to 0.5ms-2.5ms pulse → 26-128 duty at 50Hz/10-bit\n    min_duty = 26   # 0.5ms\n    max_duty = 128  # 2.5ms\n    duty = int(min_duty + (angle / 180.0) * (max_duty - min_duty))\n    servo.duty(duty)\n\n# Sweep demo\nfor angle in range(0, 181, 10):\n    set_angle(angle)\n    time.sleep_ms(100)\n\nfor angle in range(180, -1, -10):\n    set_angle(angle)\n    time.sleep_ms(100)\n\n# Park at center\nset_angle(90)\ntime.sleep(0.5)\nservo.deinit()  # release PWM\n",
+    "methods_used": ["PWM(freq=50)", "PWM.duty()", "PWM.deinit()"],
+    "angle_to_duty_quickref": {
+      "0": 26,
+      "45": 51,
+      "90": 77,
+      "135": 102,
+      "180": 128
+    }
+  },
+  "pitfalls": [
+    "POWERING servo from ESP32 pin — will cause brownout/reset. Always use external 5V.",
+    "Forgetting common GND between ESP32 and external supply — servo won't move.",
+    "freq must be exactly 50. Wrong frequency = servo jitter or no movement.",
+    "duty() values out of 26-128 range may cause servo to push against mechanical stops — buzzing, overheating.",
+    "duty() accepts 0-1023 at 10-bit resolution. At 50Hz, useful range is ~26-128.",
+    "MG996R needs 1-2A — a phone charger USB port won't suffice. Use a dedicated power supply.",
+    "PWM.deinit() after use — otherwise servo may twitch on next boot/reset."
+  ],
+  "extensions": ["continuous_servo", "servo_sweep", "multi_servo"]
+}

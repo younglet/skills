@@ -1,0 +1,30 @@
+{
+  "name": "machine-dac",
+  "module": "machine",
+  "class_name": "DAC",
+  "import": "from machine import DAC",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Digital-to-Analog Converter. Output analog voltages on GPIO 25 and 26. 8-bit resolution.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific ESP32 DAC interface.",
+  "classes": [
+    {
+      "name": "DAC",
+      "signature": "machine.DAC(pin)",
+      "constructor_params": [
+        {"name": "pin", "type": "int|Pin", "description": "DAC-capable pin. ESP32: GPIO 25 (DAC1), GPIO 26 (DAC2)."}
+      ],
+      "methods": [
+        {"name": "DAC.write", "signature": "write(value)", "parameters": [{"name": "value", "type": "int", "description": "Output value: 0-255 (0V to 3.3V)."}], "returns": "None", "description": "Set DAC output voltage."}
+      ],
+      "example": "from machine import Pin, DAC\n\ndac = DAC(Pin(25))\ndac.write(128)  # ~1.65V (mid-scale)\ndac.write(0)    # 0V\ndac.write(255)  # ~3.3V"
+    }
+  ],
+  "esp32_notes": [
+    "Only GPIO 25 and 26 support DAC on original ESP32.",
+    "Not available on ESP32-S2/S3 (no DAC peripheral).",
+    "8-bit resolution only (0-255).",
+    "Can be used simultaneously with ADC on other pins.",
+    "DAC output can be routed to internal capacitive sensor or used for audio."
+  ]
+}

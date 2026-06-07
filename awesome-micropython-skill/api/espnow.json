@@ -1,0 +1,139 @@
+{
+  "name": "espnow",
+  "module": "espnow",
+  "import": "import espnow",
+  "version": "1.28.0",
+  "category": "esp32",
+  "description": "ESP-NOW peer-to-peer wireless communication between ESP32 devices. Low-latency, connectionless, up to 250 bytes per packet.",
+  "differences_from_cpython": "Does NOT exist in CPython. ESP32-specific wireless protocol.",
+  "constants": {
+    "ADDR_LEN": null,
+    "KEY_LEN": null,
+    "MAX_DATA_LEN": null,
+    "MAX_ENCRYPT_PEER_NUM": null,
+    "MAX_TOTAL_PEER_NUM": null,
+    "RATE_1M": null,
+    "RATE_2M": null,
+    "RATE_11M": null,
+    "RATE_6M": null,
+    "RATE_12M": null,
+    "RATE_24M": null,
+    "RATE_54M": null,
+    "ESPNowBase": null,
+    "RATE_5M": null,
+    "RATE_LORA_250K": null,
+    "RATE_LORA_500K": null
+  },
+  "classes": [
+    {
+      "name": "ESPNow",
+      "signature": "espnow.ESPNow()",
+      "description": "ESP-NOW communication controller.",
+      "methods": [
+        {
+          "name": "ESPNow.active",
+          "signature": "active([flag])",
+          "returns": "bool",
+          "description": "Enable/disable ESP-NOW."
+        },
+        {
+          "name": "ESPNow.config",
+          "signature": "config(param=None, value=None)",
+          "returns": "varies",
+          "description": "'rate', 'rxbuf', 'txbuf', 'channel' etc."
+        },
+        {
+          "name": "ESPNow.add_peer",
+          "signature": "add_peer(mac, *, key=None, channel=None, ifidx=0, encrypt=False)",
+          "returns": "None",
+          "description": "Add a peer. mac is 6-byte bytes. key is 16-byte bytes for encryption."
+        },
+        {
+          "name": "ESPNow.del_peer",
+          "signature": "del_peer(mac)",
+          "returns": "None"
+        },
+        {
+          "name": "ESPNow.get_peer",
+          "signature": "get_peer(mac)",
+          "returns": "tuple"
+        },
+        {
+          "name": "ESPNow.get_peers",
+          "signature": "get_peers()",
+          "returns": "list",
+          "description": "Return list of registered peers."
+        },
+        {
+          "name": "ESPNow.mod_peer",
+          "signature": "mod_peer(mac, *, key=None, channel=None, encrypt=False)",
+          "returns": "None"
+        },
+        {
+          "name": "ESPNow.peer_count",
+          "signature": "peer_count()",
+          "returns": "int"
+        },
+        {
+          "name": "ESPNow.send",
+          "signature": "send(mac, msg[, sync=True])",
+          "returns": "None",
+          "description": "Send message to peer. msg max 250 bytes."
+        },
+        {
+          "name": "ESPNow.recv",
+          "signature": "recv([timeout_ms])",
+          "returns": "tuple|None",
+          "description": "Receive (mac, msg) or None."
+        },
+        {
+          "name": "ESPNow.recvinto",
+          "signature": "recvinto(data, timeout_ms=-1)",
+          "returns": "int",
+          "description": "Receive into buffer."
+        },
+        {
+          "name": "ESPNow.any",
+          "signature": "any()",
+          "returns": "int",
+          "description": "Number of pending received messages."
+        },
+        {
+          "name": "ESPNow.irq",
+          "signature": "irq(handler)",
+          "returns": "None",
+          "description": "Set callback for received messages."
+        },
+        {
+          "name": "ESPNow.set_pmk",
+          "signature": "set_pmk(pmk)",
+          "returns": "None",
+          "description": "Set Primary Master Key for encryption."
+        },
+        {
+          "name": "ESPNow.stats",
+          "signature": "stats()",
+          "returns": "tuple",
+          "description": "Return (tx_packets, tx_responses, tx_failures, rx_packets, rx_errors)."
+        },
+        {
+          "name": "ESPNow.irecv",
+          "signature": "irecv([timeout_ms])",
+          "returns": {
+            "type": "tuple|None",
+            "description": "(mac, msg) or None on timeout."
+          },
+          "description": "Non-blocking receive. Returns (sender_mac, message) or None if no data."
+        }
+      ],
+      "example": "import espnow\nimport network\n\nwlan = network.WLAN(network.STA_IF)\nwlan.active(True)\n\ne = espnow.ESPNow()\ne.active(True)\npeer = b'\\xAA\\xBB\\xCC\\xDD\\xEE\\xFF'\ne.add_peer(peer)\ne.send(peer, b'Hello ESP-NOW!')\n\n# Receive\nmsg = e.recv(1000)\nif msg:\n    mac, data = msg\n    print('From:', mac.hex(), 'Data:', data)",
+      "constants": {}
+    }
+  ],
+  "esp32_notes": [
+    "Wi-Fi MUST be initialized (wlan.active(True)) before ESP-NOW.",
+    "ESP-NOW uses the same radio as Wi-Fi; can coexist but shares bandwidth.",
+    "Encryption requires 16-byte key per peer (max 6 encrypted peers).",
+    "Long Range mode available: config(rate=espnow.RATE_LORA_250K)."
+  ]
+}

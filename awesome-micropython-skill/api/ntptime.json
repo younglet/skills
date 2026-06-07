@@ -1,0 +1,58 @@
+{
+  "name": "ntptime",
+  "module": "ntptime",
+  "import": "import ntptime",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "NTP (Network Time Protocol) client for synchronizing the ESP32 RTC with internet time servers. Built into MicroPython firmware.",
+  "differences_from_cpython": "This module does NOT exist in CPython. It is MicroPython-specific for embedded time synchronization.",
+  "functions": [
+    {
+      "name": "ntptime.settime",
+      "signature": "settime()",
+      "parameters": [],
+      "returns": "None",
+      "description": "Query the configured NTP server and set the ESP32 RTC to the received time. Blocks during network request (~1-2 seconds).",
+      "note": "Must have Wi-Fi connected BEFORE calling this. Raises OSError/ETIMEDOUT on failure."
+    },
+    {
+      "name": "ntptime.time",
+      "signature": "time()",
+      "parameters": [],
+      "returns": {
+        "type": "tuple",
+        "description": "(year, month, day, hour, minute, second, weekday, yearday). Weekday 0-6 (Mon=0)."
+      },
+      "description": "Query NTP server and return time as tuple. Does NOT set the RTC.",
+      "note": "Returns time in UTC. MicroPython epoch is 2000-01-01."
+    }
+  ],
+  "properties": [
+    {
+      "name": "ntptime.host",
+      "type": "str",
+      "description": "NTP server hostname. Default: 'pool.ntp.org'. Set before calling settime().",
+      "example": "ntptime.host = 'ntp.aliyun.com'  # Better for Asia"
+    },
+    {
+      "name": "ntptime.timeout",
+      "type": "int",
+      "description": "Socket timeout in seconds. Default: 1."
+    }
+  ],
+  "example": "import network\nimport ntptime\nimport time\n\n# Connect Wi-Fi first\nwlan = network.WLAN(network.STA_IF)\nwlan.active(True)\nwlan.connect('MyWiFi', 'password')\nwhile not wlan.isconnected():\n    time.sleep_ms(100)\n\n# Optional: use a closer NTP server\nntptime.host = 'ntp.aliyun.com'\n\n# Sync RTC\nntptime.settime()\nprint('Time synced:', time.localtime())",
+  "esp32_notes": [
+    "ESP32 RTC maintains time during deep sleep (if RTC domain is powered).",
+    "After deep sleep wake, call ntptime.settime() again if network reconnects.",
+    "NTP uses UDP port 123.",
+    "The 2000-01-01 epoch means time.time() returns seconds since 2000, NOT 1970.",
+    "For periodic sync, call settime() every 1-24 hours (NTP drift on ESP32 is ~1-2s/day)."
+  ],
+  "common_bugs": [
+    "Calling ntptime.settime() without Wi-Fi connected — raises OSError.",
+    "Forgetting to call wlan.active(True) and wlan.connect() first.",
+    "Assuming time.time() returns Unix timestamp (1970 epoch) — it uses 2000 epoch on ESP32.",
+    "Not waiting for Wi-Fi to fully connect (wlan.isconnected() == True) before calling settime()."
+  ],
+  "internal_imports_note": "Module imports time.gmtime, socket, struct for internal use. These may appear in dir(ntptime) but are not part of the public API."
+}

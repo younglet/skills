@@ -1,0 +1,108 @@
+{
+  "name": "machine-sdcard",
+  "module": "machine",
+  "class_name": "SDCard",
+  "import": "from machine import SDCard",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "SD card interface over SPI bus. Mount as filesystem for expanded storage (logging, config files, data).",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific SD card driver.",
+  "classes": [
+    {
+      "name": "SDCard",
+      "signature": "machine.SDCard(slot=1, width=1, cd=None, wp=None, sck=None, miso=None, mosi=None, cs=None, freq=20000000)",
+      "constructor_params": [
+        {
+          "name": "slot",
+          "type": "int",
+          "description": "SPI slot. 1 (HSPI) or 2 (VSPI, default) on ESP32."
+        },
+        {
+          "name": "width",
+          "type": "int",
+          "description": "Bus width. 1 for SPI mode (default)."
+        },
+        {
+          "name": "cd",
+          "type": "Pin|None",
+          "description": "Card detect pin (optional)."
+        },
+        {
+          "name": "wp",
+          "type": "Pin|None",
+          "description": "Write protect pin (optional)."
+        },
+        {
+          "name": "sck",
+          "type": "Pin|None",
+          "description": "SPI clock. None = slot default."
+        },
+        {
+          "name": "miso",
+          "type": "Pin|None",
+          "description": "SPI MISO. None = slot default."
+        },
+        {
+          "name": "mosi",
+          "type": "Pin|None",
+          "description": "SPI MOSI. None = slot default."
+        },
+        {
+          "name": "cs",
+          "type": "Pin|None",
+          "description": "Chip select pin. Required for SD card."
+        },
+        {
+          "name": "freq",
+          "type": "int",
+          "description": "SPI frequency in Hz. Default 20MHz. Reduce to 1-5MHz if unreliable."
+        }
+      ],
+      "methods": [
+        {
+          "name": "SDCard.info",
+          "signature": "info()",
+          "returns": {
+            "type": "dict",
+            "description": "Card information: capacity, sector size, etc."
+          },
+          "description": "Return SD card information dict."
+        },
+        {
+          "name": "SDCard.ioctl",
+          "signature": "ioctl(cmd, arg)",
+          "returns": "int",
+          "description": "Low-level IO control. Used by filesystem driver."
+        },
+        {
+          "name": "SDCard.deinit",
+          "signature": "deinit()",
+          "returns": "None|int",
+          "description": "De-initialize SD card."
+        },
+        {
+          "name": "SDCard.readblocks",
+          "signature": "readblocks(block_num, buf, offset=0)",
+          "returns": "None|int",
+          "description": "Read blocks from SD card."
+        },
+        {
+          "name": "SDCard.writeblocks",
+          "signature": "writeblocks(block_num, buf, offset=0)",
+          "returns": "None|int",
+          "description": "Write blocks to SD card."
+        }
+      ],
+      "example": "from machine import Pin, SDCard\nimport os\n\n# SD card on VSPI (slot 2) with CS on GPIO 5\nsd = SDCard(slot=2, cs=Pin(5), freq=20000000)\n\n# Mount filesystem\nos.mount(sd, '/sd')\n\n# Use it\nprint(os.listdir('/sd'))\n\n# Write a file\nwith open('/sd/data.txt', 'w') as f:\n    f.write('Hello from ESP32!')\n\n# Unmount before removal\nos.umount('/sd')"
+    }
+  ],
+  "esp32_notes": [
+    "Requires external SD card module connected via SPI.",
+    "Mount at '/sd' (or any other path) for filesystem access.",
+    "VSPI (slot=2) default pins: sck=18, mosi=23, miso=19.",
+    "HSPI (slot=1) default pins: sck=14, mosi=13, miso=12.",
+    "Reduce freq to 1-5MHz if using long wires or breadboard.",
+    "Only one SD card can be mounted at a time.",
+    "Format SD card as FAT32 (not exFAT) for ESP32 compatibility."
+  ]
+}

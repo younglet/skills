@@ -1,0 +1,6 @@
+{
+  "name": "drivers-utility",
+  "category": "utility",
+  "description": "utility drivers sourced from awesome-micropython.com",
+  "drivers": {}
+}

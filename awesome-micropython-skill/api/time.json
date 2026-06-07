@@ -1,0 +1,108 @@
+{
+  "name": "time",
+  "module": "time",
+  "import": "import time  # OR: from time import sleep, ticks_ms, ticks_diff, etc.",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Time-related functions. Subset of CPython's time module with MicroPython-specific additions for embedded timing.",
+  "differences_from_cpython": [
+    "No timezone support. No datetime module built-in.",
+    "MicroPython adds ticks_ms(), ticks_us(), ticks_diff(), ticks_add() for embedded timing.",
+    "time.time() on ESP32 returns seconds since boot (NOT Unix epoch).",
+    "sleep_us() is available (not in CPython)."
+  ],
+  "functions": [
+    {
+      "name": "time.sleep",
+      "signature": "sleep(seconds)",
+      "parameters": [{"name": "seconds", "type": "int|float", "description": "Seconds to sleep. Float for sub-second."}],
+      "returns": "None",
+      "note": "Blocking. For non-blocking delays, use ticks_ms() + ticks_diff()."
+    },
+    {
+      "name": "time.sleep_ms",
+      "signature": "sleep_ms(ms)",
+      "parameters": [{"name": "ms", "type": "int", "description": "Milliseconds to sleep."}],
+      "returns": "None",
+      "note": "More efficient than sleep() for millisecond delays."
+    },
+    {
+      "name": "time.sleep_us",
+      "signature": "sleep_us(us)",
+      "parameters": [{"name": "us", "type": "int", "description": "Microseconds to sleep."}],
+      "returns": "None",
+      "note": "Minimum sleep is ~30µs. For shorter delays, use busy-wait with machine.bit() or NOP."
+    },
+    {
+      "name": "time.time",
+      "signature": "time()",
+      "returns": {"type": "int", "description": "Seconds since power-on or last hard reset (ESP32)."},
+      "note": "ON ESP32: NOT Unix epoch. Use RTC for calendar time. Use time.time() for elapsed time."
+    },
+    {
+      "name": "time.time_ns",
+      "signature": "time_ns()",
+      "returns": {"type": "int", "description": "Nanoseconds since power-on."},
+      "note": "High resolution timestamp."
+    },
+    {
+      "name": "time.ticks_ms",
+      "signature": "ticks_ms()",
+      "returns": {"type": "int", "description": "Millisecond counter. Wraps after ~298 hours."},
+      "note": "USE WITH ticks_diff() to handle wrap correctly. NEVER compare ticks values directly!"
+    },
+    {
+      "name": "time.ticks_us",
+      "signature": "ticks_us()",
+      "returns": {"type": "int", "description": "Microsecond counter. Wraps after ~71 minutes."},
+      "note": "USE WITH ticks_diff() to handle wrap correctly."
+    },
+    {
+      "name": "time.ticks_cpu",
+      "signature": "ticks_cpu()",
+      "returns": {"type": "int", "description": "CPU cycle counter. Highest resolution, wraps quickly."},
+      "note": "Use for micro-benchmarks. Not portable across CPU speeds."
+    },
+    {
+      "name": "time.ticks_add",
+      "signature": "ticks_add(ticks, delta)",
+      "parameters": [
+        {"name": "ticks", "type": "int", "description": "Base ticks value."},
+        {"name": "delta", "type": "int", "description": "Offset to add (can be negative)."}
+      ],
+      "returns": {"type": "int", "description": "ticks + delta, with wrap-around handling."}
+    },
+    {
+      "name": "time.ticks_diff",
+      "signature": "ticks_diff(ticks1, ticks2)",
+      "parameters": [
+        {"name": "ticks1", "type": "int", "description": "Later ticks value."},
+        {"name": "ticks2", "type": "int", "description": "Earlier ticks value."}
+      ],
+      "returns": {"type": "int", "description": "Signed difference, correct even across wrap."},
+      "note": "ALWAYS use this to compare ticks. ticks1 - ticks2 is WRONG (fails at wrap).",
+      "WRONG": "if ticks_ms() - last > 1000:  # WRONG! Breaks at wrap!",
+      "CORRECT": "if ticks_diff(ticks_ms(), last) > 1000:  # Correct"
+    },
+    {
+      "name": "time.gmtime",
+      "signature": "gmtime([secs])",
+      "parameters": [{"name": "secs", "type": "int|None", "description": "Seconds since epoch. None = use RTC time."}],
+      "returns": {"type": "tuple", "description": "(year, month, mday, hour, minute, second, weekday, yearday). weekday=0-6 (Mon=0)."}
+    },
+    {
+      "name": "time.localtime",
+      "signature": "localtime([secs])",
+      "parameters": [{"name": "secs", "type": "int|None"}],
+      "returns": "Same as gmtime (no timezone difference on MicroPython)."
+    },
+    {
+      "name": "time.mktime",
+      "signature": "mktime(datetime_tuple)",
+      "parameters": [{"name": "datetime_tuple", "type": "tuple", "description": "Same format as gmtime()."}],
+      "returns": {"type": "int", "description": "Seconds since epoch (2000-01-01 00:00:00 UTC)."},
+      "note": "MicroPython epoch is 2000-01-01, NOT 1970-01-01 as in CPython!"
+    }
+  ],
+  "non_blocking_delay_example": "import time\n\nlast = time.ticks_ms()\nwhile True:\n    if time.ticks_diff(time.ticks_ms(), last) >= 1000:\n        print('1 second passed')\n        last = time.ticks_ms()"
+}

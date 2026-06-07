@@ -1,0 +1,489 @@
+{
+  "name": "network",
+  "module": "network",
+  "import": "import network",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Network configuration for Wi-Fi (WLAN), Ethernet (LAN), and PPP. Provides station (STA) and access point (AP) Wi-Fi modes.",
+  "differences_from_cpython": [
+    "This module does NOT exist in CPython. It is MicroPython-specific.",
+    "No 'requests' module built-in. Install via mip: mip.install('requests').",
+    "STA mode (station/client) and AP mode (access point) can run simultaneously on ESP32.",
+    "Wi-Fi credentials persist across soft resets on ESP32."
+  ],
+  "module_functions": [
+    {
+      "name": "network.country",
+      "signature": "country([code])",
+      "returns": "str|None",
+      "description": "Get or set Wi-Fi country code (e.g., 'CN', 'US'). Limits available channels."
+    },
+    {
+      "name": "network.hostname",
+      "signature": "hostname([name])",
+      "returns": "str|None",
+      "description": "Get or set network hostname (DHCP)."
+    },
+    {
+      "name": "network.ipconfig",
+      "signature": "ipconfig([if_id])",
+      "returns": "tuple|None",
+      "description": "Get IP config for given interface (STA_IF=0, AP_IF=1)."
+    },
+    {
+      "name": "network.phy_mode",
+      "signature": "phy_mode([mode])",
+      "returns": "int|None",
+      "description": "Get or set Wi-Fi PHY mode: MODE_11B, MODE_11G, MODE_11N, MODE_LR."
+    }
+  ],
+  "classes": [
+    {
+      "name": "WLAN",
+      "signature": "network.WLAN(interface_id)",
+      "description": "Wi-Fi network interface. ESP32 supports STA_IF (station) and AP_IF (access point) simultaneously.",
+      "constructor_params": [
+        {
+          "name": "interface_id",
+          "type": "int|constant",
+          "description": "network.STA_IF (0) for station mode, network.AP_IF (1) for access point mode."
+        }
+      ],
+      "constants": {
+        "IF_STA": 0,
+        "IF_AP": 1,
+        "PM_NONE": 0,
+        "PM_PERFORMANCE": 1,
+        "PM_POWERSAVE": 2,
+        "PROTOCOL_DEFAULT": 7,
+        "PROTOCOL_LR": 8,
+        "SEC_DPP": null,
+        "SEC_OPEN": null,
+        "SEC_OWE": null,
+        "SEC_WAPI": null,
+        "SEC_WEP": null,
+        "SEC_WPA": null,
+        "SEC_WPA2": null,
+        "SEC_WPA2_ENT": null,
+        "SEC_WPA2_WPA3": null,
+        "SEC_WPA2_WPA3_ENT": null,
+        "SEC_WPA3": null,
+        "SEC_WPA3_ENT_192": null,
+        "SEC_WPA3_EXT_PSK": null,
+        "SEC_WPA3_EXT_PSK_MIXED_MODE": null,
+        "SEC_WPA3_ENT": null,
+        "SEC_WPA_ENT": null,
+        "SEC_WPA_WPA2": null
+      },
+      "security_constants": {
+        "SEC_OPEN": 0,
+        "SEC_WEP": 1,
+        "SEC_WPA": 2,
+        "SEC_WPA2": 3,
+        "SEC_WPA_WPA2": 4,
+        "SEC_WPA2_ENT": 5,
+        "SEC_WPA3": 6,
+        "SEC_WPA2_WPA3": 7,
+        "SEC_WAPI": 8,
+        "SEC_OWE": 9,
+        "SEC_WPA3_ENT_192": 10,
+        "SEC_WPA3_EXT_PSK": 11,
+        "SEC_WPA3_EXT_PSK_MIXED_MODE": 12,
+        "SEC_DPP": 13,
+        "SEC_WPA3_ENT": 14,
+        "SEC_WPA2_WPA3_ENT": 15,
+        "SEC_WPA_ENT": 16
+      },
+      "methods": [
+        {
+          "name": "WLAN.active",
+          "signature": "active([is_active])",
+          "parameters": [
+            {
+              "name": "is_active",
+              "type": "bool|None",
+              "description": "True to enable, False to disable. None to query."
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "Current active state."
+          },
+          "description": "Enable or disable the WLAN interface."
+        },
+        {
+          "name": "WLAN.connect",
+          "signature": "connect(ssid, password=None, *, bssid=None, channel=None, ...)",
+          "parameters": [
+            {
+              "name": "ssid",
+              "type": "str",
+              "description": "Wi-Fi network name."
+            },
+            {
+              "name": "password",
+              "type": "str|None",
+              "description": "Wi-Fi password. None for open networks."
+            },
+            {
+              "name": "bssid",
+              "type": "bytes|None",
+              "description": "MAC address of specific AP (6 bytes)."
+            },
+            {
+              "name": "channel",
+              "type": "int|None",
+              "description": "Wi-Fi channel (1-13)."
+            }
+          ],
+          "returns": "None",
+          "description": "Connect to Wi-Fi network (STA mode only). BLOCKING - blocks until connected or timeout.",
+          "notes": "THIS IS BLOCKING. For non-blocking, use asyncio or check status in loop."
+        },
+        {
+          "name": "WLAN.disconnect",
+          "signature": "disconnect()",
+          "returns": "None",
+          "description": "Disconnect from Wi-Fi (STA mode only)."
+        },
+        {
+          "name": "WLAN.status",
+          "signature": "status([param])",
+          "parameters": [
+            {
+              "name": "param",
+              "type": "int|str|None",
+              "description": "None=general status, 'rssi'=signal strength, 'stations'=connected stations (AP mode)."
+            }
+          ],
+          "returns": "int|list",
+          "description": "Get WLAN status.",
+          "status_codes": {
+            "STAT_IDLE": [
+              1000,
+              "No connection and no activity"
+            ],
+            "STAT_CONNECTING": [
+              1001,
+              "Connecting in progress"
+            ],
+            "STAT_GOT_IP": [
+              1010,
+              "Connected with IP address"
+            ],
+            "STAT_NO_AP_FOUND": [
+              201,
+              "AP not found"
+            ],
+            "STAT_WRONG_PASSWORD": [
+              202,
+              "Wi-Fi password incorrect"
+            ],
+            "STAT_CONNECT_FAIL": [
+              203,
+              "Other connection failure"
+            ],
+            "STAT_ASSOC_FAIL": [
+              203,
+              "Association failed"
+            ],
+            "STAT_HANDSHAKE_TIMEOUT": [
+              204,
+              "Handshake timeout"
+            ],
+            "STAT_BEACON_TIMEOUT": [
+              200,
+              "Beacon timeout"
+            ],
+            "STAT_NO_AP_FOUND_W_COMPATIBLE_SECURITY": [
+              210,
+              "No AP with compatible security"
+            ],
+            "STAT_NO_AP_FOUND_IN_AUTHMODE_THRESHOLD": [
+              211,
+              "No AP in authmode threshold"
+            ],
+            "STAT_NO_AP_FOUND_IN_RSSI_THRESHOLD": [
+              212,
+              "No AP in RSSI threshold"
+            ]
+          }
+        },
+        {
+          "name": "WLAN.isconnected",
+          "signature": "isconnected()",
+          "returns": "bool",
+          "description": "Check if connected. Shorthand for status() == STAT_GOT_IP."
+        },
+        {
+          "name": "WLAN.ifconfig",
+          "signature": "ifconfig([(ip, subnet, gateway, dns)])",
+          "parameters": [
+            {
+              "name": "params",
+              "type": "tuple|None",
+              "description": "Optional 4-tuple: (ip, subnet, gateway, dns). Sets static IP."
+            }
+          ],
+          "returns": {
+            "type": "tuple",
+            "description": "(ip, subnet, gateway, dns) as strings."
+          },
+          "description": "Get or set IP-level network parameters."
+        },
+        {
+          "name": "WLAN.ipconfig",
+          "signature": "ipconfig([param])",
+          "parameters": [
+            {
+              "name": "param",
+              "type": "str|None",
+              "description": "'addr4', 'addr6', 'dns4', etc. None = full config."
+            }
+          ],
+          "returns": "varies",
+          "description": "Get detailed IP configuration including IPv6 data."
+        },
+        {
+          "name": "WLAN.config",
+          "signature": "config(param=None, value=None)",
+          "parameters": [
+            {
+              "name": "param",
+              "type": "str|None",
+              "description": "'mac', 'ssid', 'channel', 'hidden', 'txpower', 'pm', 'protocol', 'reconnects', 'hostname', 'security', 'key' etc."
+            },
+            {
+              "name": "value",
+              "type": "varies|None",
+              "description": "Value to set. None = query current."
+            }
+          ],
+          "returns": "varies",
+          "description": "Get or set WLAN configuration."
+        },
+        {
+          "name": "WLAN.scan",
+          "signature": "scan()",
+          "returns": {
+            "type": "list[tuple]",
+            "description": "List of (ssid, bssid, channel, RSSI, authmode, hidden)."
+          },
+          "description": "Scan for available Wi-Fi networks. Blocks for ~2-3 seconds."
+        }
+      ],
+      "auth_constants": {
+        "AUTH_OPEN": 0,
+        "AUTH_WEP": 1,
+        "AUTH_WPA_PSK": 2,
+        "AUTH_WPA2_PSK": 3,
+        "AUTH_WPA_WPA2_PSK": 4,
+        "AUTH_WPA2_ENTERPRISE": 5,
+        "AUTH_WPA3_PSK": 6,
+        "AUTH_WPA2_WPA3_PSK": 7,
+        "AUTH_WAPI_PSK": 8,
+        "AUTH_OWE": 9,
+        "AUTH_WPA3_ENT_192": 10,
+        "AUTH_WPA3_EXT_PSK": 11,
+        "AUTH_WPA3_EXT_PSK_MIXED_MODE": 12,
+        "AUTH_MAX": 17
+      },
+      "protocol_constants": {
+        "MODE_11B": 1,
+        "MODE_11G": 2,
+        "MODE_11N": 4,
+        "MODE_LR": 8
+      },
+      "sta_example": "import network\nwlan = network.WLAN(network.STA_IF)\nwlan.active(True)\nwlan.connect('MyWiFi', 'password')\nwhile not wlan.isconnected():\n    pass\nprint('IP:', wlan.ifconfig()[0])",
+      "ap_example": "import network\nap = network.WLAN(network.AP_IF)\nap.config(ssid='ESP32-AP', password='12345678', security=network.WLAN.SEC_WPA2)\nap.active(True)\nprint('AP IP:', ap.ifconfig()[0])",
+      "non_blocking_connect_example": "import network, time\nwlan = network.WLAN(network.STA_IF)\nwlan.active(True)\nwlan.connect('MyWiFi', 'password')\nfor _ in range(20):\n    if wlan.isconnected():\n        print('Connected!')\n        break\n    print('Connecting...')\n    time.sleep(0.5)\nelse:\n    print('Failed to connect')",
+      "esp32_notes": [
+        "ESP32 can run STA and AP simultaneously.",
+        "Default hostname: 'esp32-<MAC>'. Change with wlan.config(dhcp_hostname='myname').",
+        "Power saving: wlan.config(pm=network.WLAN.PM_PERFORMANCE) for better throughput.",
+        "After deep sleep, Wi-Fi is re-initialized automatically on active(True).",
+        "Maximum AP connections: 4 on original ESP32, 10 on ESP32-S3.",
+        "Wi-Fi and ADC2 cannot be used simultaneously."
+      ]
+    },
+    {
+      "name": "LAN",
+      "signature": "network.LAN(*, phy_type=network.PHY_LAN8720, phy_addr=0, ...)",
+      "description": "Ethernet interface. ESP32 with external PHY chip.",
+      "constructor_params": [
+        {
+          "name": "id",
+          "type": "int",
+          "description": "LAN interface id. Default 0."
+        },
+        {
+          "name": "phy_type",
+          "type": "int",
+          "description": "PHY type constant."
+        },
+        {
+          "name": "phy_addr",
+          "type": "int",
+          "description": "PHY I2C address."
+        },
+        {
+          "name": "mdc",
+          "type": "Pin",
+          "description": "MDC pin."
+        },
+        {
+          "name": "mdio",
+          "type": "Pin",
+          "description": "MDIO pin."
+        },
+        {
+          "name": "power",
+          "type": "Pin|None",
+          "description": "Power pin."
+        }
+      ],
+      "phy_constants": {
+        "PHY_LAN8710": 0,
+        "PHY_LAN8720": 1,
+        "PHY_IP101": 2,
+        "PHY_RTL8201": 3,
+        "PHY_DP83848": 4,
+        "PHY_KSZ8041": 5,
+        "PHY_KSZ8081": 6,
+        "PHY_LAN8670": 7,
+        "PHY_GENERIC": 8,
+        "PHY_DM9051": 101,
+        "PHY_KSZ8851SNL": 100,
+        "PHY_W5500": 102
+      },
+      "eth_status": {
+        "ETH_INITIALIZED": 0,
+        "ETH_STARTED": 1,
+        "ETH_STOPPED": 2,
+        "ETH_CONNECTED": 3,
+        "ETH_DISCONNECTED": 4,
+        "ETH_GOT_IP": 5
+      },
+      "methods": "Same as WLAN: active(), isconnected(), ifconfig(), status(), config(), ipconfig().",
+      "example": "from machine import Pin\nimport network\nlan = network.LAN(mdc=Pin(23), mdio=Pin(18), power=Pin(12), phy_type=network.PHY_LAN8720, phy_addr=0)\nlan.active(True)\nprint(lan.ifconfig())",
+      "esp32_notes": [
+        "Requires external PHY chip. Not available on most dev boards.",
+        "Only on original ESP32 (not S2/S3/C3).",
+        "ESP32-Ethernet-Kit boards have built-in LAN8720."
+      ],
+      "constants": {}
+    },
+    {
+      "name": "PPP",
+      "signature": "network.PPP(authmode=PPP.AUTH_NONE, username=None, password=None)",
+      "description": "Point-to-Point Protocol for cellular/4G modem internet connectivity.",
+      "methods": [
+        {
+          "name": "PPP.active",
+          "signature": "active([enable])",
+          "returns": "bool|None"
+        },
+        {
+          "name": "PPP.connect",
+          "signature": "connect()",
+          "returns": "None"
+        },
+        {
+          "name": "PPP.disconnect",
+          "signature": "disconnect()",
+          "returns": "None"
+        },
+        {
+          "name": "PPP.ifconfig",
+          "signature": "ifconfig()",
+          "returns": "tuple"
+        },
+        {
+          "name": "PPP.ipconfig",
+          "signature": "ipconfig()",
+          "returns": "varies"
+        },
+        {
+          "name": "PPP.isconnected",
+          "signature": "isconnected()",
+          "returns": "bool"
+        },
+        {
+          "name": "PPP.config",
+          "signature": "config(param)",
+          "returns": "varies"
+        },
+        {
+          "name": "PPP.status",
+          "signature": "status()",
+          "returns": "int"
+        },
+        {
+          "name": "PPP.poll",
+          "signature": "poll()",
+          "returns": "None"
+        }
+      ],
+      "constants": {
+        "AUTH_NONE": 0,
+        "AUTH_PAP": 1,
+        "AUTH_CHAP": 2,
+        "SEC_NONE": 0,
+        "SEC_PAP": 1,
+        "SEC_CHAP": 2
+      }
+    }
+  ],
+  "constants": {
+    "AP_IF": null,
+    "AUTH_MAX": null,
+    "AUTH_OPEN": null,
+    "AUTH_OWE": null,
+    "AUTH_WAPI_PSK": null,
+    "AUTH_WEP": null,
+    "AUTH_WPA2_ENTERPRISE": null,
+    "AUTH_WPA2_PSK": null,
+    "AUTH_WPA2_WPA3_PSK": null,
+    "AUTH_WPA3_ENT_192": null,
+    "AUTH_WPA3_EXT_PSK": null,
+    "AUTH_WPA3_EXT_PSK_MIXED_MODE": null,
+    "AUTH_WPA3_PSK": null,
+    "AUTH_WPA_PSK": null,
+    "AUTH_WPA_WPA2_PSK": null,
+    "ETH_CONNECTED": null,
+    "ETH_DISCONNECTED": null,
+    "ETH_GOT_IP": null,
+    "ETH_INITIALIZED": null,
+    "ETH_STARTED": null,
+    "ETH_STOPPED": null,
+    "MODE_11B": null,
+    "MODE_11G": null,
+    "MODE_11N": null,
+    "MODE_LR": null,
+    "PHY_DM9051": null,
+    "PHY_DP83848": null,
+    "PHY_GENERIC": null,
+    "PHY_IP101": null,
+    "PHY_KSZ8041": null,
+    "PHY_KSZ8081": null,
+    "PHY_KSZ8851SNL": null,
+    "PHY_LAN8670": null,
+    "PHY_LAN8710": null,
+    "PHY_LAN8720": null,
+    "PHY_RTL8201": null,
+    "PHY_W5500": null,
+    "STAT_ASSOC_FAIL": null,
+    "STAT_BEACON_TIMEOUT": null,
+    "STAT_CONNECTING": null,
+    "STAT_CONNECT_FAIL": null,
+    "STAT_GOT_IP": null,
+    "STAT_HANDSHAKE_TIMEOUT": null,
+    "STAT_IDLE": null,
+    "STAT_NO_AP_FOUND": null,
+    "STAT_NO_AP_FOUND_IN_AUTHMODE_THRESHOLD": null,
+    "STAT_NO_AP_FOUND_IN_RSSI_THRESHOLD": null,
+    "STAT_NO_AP_FOUND_W_COMPATIBLE_SECURITY": null,
+    "STAT_WRONG_PASSWORD": null,
+    "STA_IF": null
+  }
+}

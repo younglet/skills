@@ -1,0 +1,64 @@
+{
+  "name": "esp",
+  "module": "esp",
+  "import": "import esp",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "ESP8266/ESP32 shared functions: flash access, OS debug control, GPIO matrix. Not ESP32-specific (see esp32 module for those).",
+  "differences_from_cpython": "Does NOT exist in CPython. Shared ESP8266/ESP32 module.",
+  "functions": [
+    {
+      "name": "esp.osdebug",
+      "signature": "osdebug(level)",
+      "returns": "None",
+      "description": "Set OS debug output level. 0=none, 1=error, 2=warning, 3=info, 4=debug, 5=verbose."
+    },
+    {
+      "name": "esp.flash_size",
+      "signature": "flash_size()",
+      "returns": "int",
+      "description": "Total flash size in bytes."
+    },
+    {
+      "name": "esp.flash_user_start",
+      "signature": "flash_user_start()",
+      "returns": "int",
+      "description": "Start address of user flash partition."
+    },
+    {
+      "name": "esp.flash_read",
+      "signature": "flash_read(byte_offset, length_or_buffer)",
+      "returns": "bytes|None"
+    },
+    {
+      "name": "esp.flash_write",
+      "signature": "flash_write(byte_offset, bytes)",
+      "returns": "None"
+    },
+    {
+      "name": "esp.flash_erase",
+      "signature": "flash_erase(sector)",
+      "returns": "None"
+    },
+    {
+      "name": "esp.gpio_matrix_in",
+      "signature": "gpio_matrix_in(pin, signal)",
+      "returns": "None",
+      "description": "Route GPIO input to peripheral signal."
+    },
+    {
+      "name": "esp.gpio_matrix_out",
+      "signature": "gpio_matrix_out(pin, signal, out_inv=False, oen_inv=False)",
+      "returns": "None",
+      "description": "Route peripheral signal to GPIO output."
+    }
+  ],
+  "constants": {
+    "LOG_NONE": null,
+    "LOG_ERROR": null,
+    "LOG_WARNING": null,
+    "LOG_INFO": null,
+    "LOG_DEBUG": null,
+    "LOG_VERBOSE": null
+  }
+}

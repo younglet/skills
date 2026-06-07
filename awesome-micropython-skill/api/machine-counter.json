@@ -1,0 +1,66 @@
+{
+  "name": "machine-counter",
+  "module": "machine",
+  "class_name": "Counter",
+  "import": "from machine import Counter",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Pulse counter using the ESP32 PCNT (Pulse Counter) peripheral. Counts rising/falling edges on GPIO pins. Used for flow meters, frequency measurement, and event counting.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific ESP32 pulse counter.",
+  "classes": [
+    {
+      "name": "Counter",
+      "signature": "machine.Counter(pin, *, edge=Counter.RISING, filter_ns=0)",
+      "constructor_params": [
+        {
+          "name": "pin",
+          "type": "Pin",
+          "description": "Input pin for pulse counting."
+        },
+        {
+          "name": "edge",
+          "type": "int",
+          "description": "Counter.RISING (1) or Counter.FALLING (2). Which edge to count."
+        },
+        {
+          "name": "filter_ns",
+          "type": "int",
+          "description": "Glitch filter in nanoseconds. 0 = disabled."
+        }
+      ],
+      "methods": [
+        {
+          "name": "Counter.init",
+          "signature": "init(*, edge=Counter.RISING, filter_ns=0)",
+          "returns": "None"
+        },
+        {
+          "name": "Counter.deinit",
+          "signature": "deinit()",
+          "returns": "None"
+        },
+        {
+          "name": "Counter.value",
+          "signature": "value([val])",
+          "returns": "int|None",
+          "description": "Get or reset counter value."
+        }
+      ],
+      "constants": {
+        "RISING": 1,
+        "FALLING": 2,
+        "UP": 1,
+        "DOWN": 2,
+        "_INSTANCES": null,
+        "_PCNT": null
+      },
+      "example": "from machine import Pin, Counter\nimport time\n\n# Count pulses on GPIO 4\ncnt = Counter(Pin(4), edge=Counter.RISING)\nprint('Count:', cnt.value())  # current count\ntime.sleep(5)\nprint('Count after 5s:', cnt.value())\ncnt.value(0)  # reset to zero"
+    }
+  ],
+  "esp32_notes": [
+    "Uses ESP32 PCNT hardware peripheral.",
+    "Maximum 8 independent counters (shared with Encoder).",
+    "For quadrature rotary encoders, use machine.Encoder instead.",
+    "filter_ns helps debounce mechanical switches/encoders."
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "name": "drivers-sensor",
+  "category": "sensor",
+  "description": "Sensor drivers for MicroPython — temperature, humidity, pressure, IMU, distance, gas, light, current, magnetometer. Sourced from awesome-micropython.com.",
+  "subcategories": {
+    "temperature_humidity": [
+      {"chip": "BME280", "interface": "I2C/SPI", "measures": "Temp/Humidity/Pressure",
+       "repos": [{"url": "https://github.com/robert-hh/bme280_mpy", "notes": "Popular, well-tested"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null},
+      {"chip": "BME680", "interface": "I2C/SPI", "measures": "Temp/Humidity/Pressure/Gas",
+       "repos": [{"url": "https://github.com/robert-hh/BME680-Micropython", "notes": "Full featured"},
+                 {"url": "https://github.com/octaprog7/BME680", "notes": "Alternative, well-documented"},
+                 {"url": "https://github.com/antirez/bme680-pure-mp", "notes": "Pure Python, minimal deps"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null},
+      {"chip": "SHT30/SHT31/SHT35", "interface": "I2C", "measures": "Temp/Humidity",
+       "repos": [{"url": "https://github.com/rsc1975/micropython-sht30", "notes": "SHT30 driver"},
+                 {"url": "https://github.com/robert-hh/SHT30", "notes": "SHT3x series driver"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null},
+      {"chip": "DHT11/DHT22", "interface": "1-Wire", "measures": "Temp/Humidity",
+       "repos": [{"url": "built-in", "notes": "import dht — built into MicroPython firmware. See api/dht.json"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null},
+      {"chip": "AHT10/AHT20", "interface": "I2C", "measures": "Temp/Humidity",
+       "repos": [{"url": "https://github.com/targetblank/micropython_ahtx0", "notes": "AHT10/AHT20 driver"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null},
+      {"chip": "DS18B20", "interface": "1-Wire", "measures": "Temperature",
+       "repos": [{"url": "built-in", "notes": "import onewire, ds18x20 — built into MicroPython firmware. See api/onewire.json"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null}
+    ],
+    "imu": [
+      {"chip": "MPU6050", "interface": "I2C", "measures": "6-axis Accel/Gyro",
+       "repos": [{"url": "https://github.com/adamjezek98/MPU6050-ESP8266-MicroPython", "notes": "Works on ESP32 too"},
+                 {"url": "https://github.com/gitcnd/MPU6050-ESP32-MicroPython", "notes": "ESP32-specific"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null},
+      {"chip": "MPU9250", "interface": "I2C", "measures": "9-axis Accel/Gyro/Mag",
+       "repos": [{"url": "https://github.com/tuupola/micropython-mpu9250", "notes": "Well-documented"},
+                 {"url": "https://github.com/micropython-IMU/micropython-mpu9x50", "notes": "MPU9x50 series"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null},
+      {"chip": "BNO055", "interface": "I2C", "measures": "9-axis with sensor fusion",
+       "repos": [{"url": "https://github.com/micropython-IMU/micropython-bno055", "notes": "Built-in fusion, absolute orientation"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null}
+    ],
+    "distance": [
+      {"chip": "HC-SR04", "interface": "GPIO", "measures": "Ultrasonic 2cm-4m",
+       "repos": [{"url": "https://github.com/rsc1975/micropython-hcsr04", "notes": "Popular HC-SR04 driver"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null},
+      {"chip": "VL53L0X", "interface": "I2C", "measures": "Laser ToF up to 2m",
+       "repos": [{"url": "https://github.com/uceeatz/VL53L0X", "notes": "Simple VL53L0X driver"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null},
+      {"chip": "VL53L1X", "interface": "I2C", "measures": "Laser ToF up to 4m",
+       "repos": [{"url": "https://github.com/drakxtwo/vl53l1x_pico", "notes": "VL53L1X driver"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null}
+    ],
+    "light_color": [
+      {"chip": "BH1750", "interface": "I2C", "measures": "Ambient light (lux)",
+       "repos": [{"url": "https://github.com/octaprog7/BH1750", "notes": "Well-tested BH1750 driver"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null},
+      {"chip": "TCS34725", "interface": "I2C", "measures": "RGB color sensor",
+       "repos": [{"url": "https://github.com/adafruit/micropython-adafruit-tcs34725", "notes": "Adafruit color sensor driver"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null}
+    ],
+    "gas_air_quality": [
+      {"chip": "CCS811", "interface": "I2C", "measures": "eCO2 + TVOC",
+       "repos": [{"url": "https://github.com/Notthemarsian/CCS811", "notes": "CCS811 air quality sensor"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null},
+      {"chip": "SCD30/SCD40/SCD41", "interface": "I2C", "measures": "CO2 + Temp + Humidity",
+       "repos": [{"url": "https://github.com/agners/micropython-scd30", "notes": "SCD30 driver"},
+                 {"url": "https://github.com/peter-l5/MicroPython_SCD4X", "notes": "SCD40/SCD41 driver"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null},
+      {"chip": "SGP40", "interface": "I2C", "measures": "VOC index",
+       "repos": [{"url": "https://github.com/agners/micropython-sgp40", "notes": "VOC sensor driver"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null}
+    ],
+    "current_power": [
+      {"chip": "INA219", "interface": "I2C", "measures": "Current/Voltage/Power",
+       "repos": [{"url": "https://github.com/octaprog7/INA_TI", "notes": "INA219 + INA226 driver"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null},
+      {"chip": "INA226", "interface": "I2C", "measures": "High-precision Current/Voltage/Power",
+       "repos": [{"url": "https://github.com/elschopi/TI_INA226_micropython", "notes": "INA226 specific driver"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null}
+    ],
+    "magnetometer": [
+      {"chip": "QMC5883L", "interface": "I2C", "measures": "3-axis magnetometer",
+       "repos": [{"url": "https://github.com/robert-hh/QMC5883", "notes": "QMC5883L compass"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null}
+    ],
+    "load_cell": [
+      {"chip": "HX711", "interface": "GPIO", "measures": "Weight/load cell ADC",
+       "repos": [{"url": "https://github.com/robert-hh/hx711", "notes": "Well-tested HX711 driver"}],
+       "upvotes": 0, "downvotes": 0, "analysis_notes": null, "usage_notes": null}
+    ]
+  }
+}

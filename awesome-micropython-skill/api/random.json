@@ -1,0 +1,18 @@
+{
+  "name": "random",
+  "module": "random",
+  "import": "import random",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Random number generation using ESP32 hardware TRNG (True Random Number Generator).",
+  "differences_from_cpython": "Subset of CPython random. Uses hardware TRNG on ESP32 (better than software PRNG).",
+  "functions": [
+    {"name": "random.seed", "signature": "seed(x)", "returns": "None", "description": "Seed the PRNG (ignored on ESP32; always uses TRNG)."},
+    {"name": "random.random", "signature": "random()", "returns": "float", "description": "Random float in [0.0, 1.0)."},
+    {"name": "random.randint", "signature": "randint(a, b)", "returns": "int", "description": "Random integer in [a, b]."},
+    {"name": "random.randrange", "signature": "randrange(start, stop[, step])", "returns": "int"},
+    {"name": "random.uniform", "signature": "uniform(a, b)", "returns": "float", "description": "Random float in [a, b]."},
+    {"name": "random.choice", "signature": "choice(seq)", "returns": "element", "description": "Random element from sequence."},
+    {"name": "random.getrandbits", "signature": "getrandbits(k)", "returns": "int", "description": "k random bits (0 <= k <= 32)."}
+  ]
+}

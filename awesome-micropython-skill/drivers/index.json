@@ -1,0 +1,22 @@
+{
+  "name": "drivers-index",
+  "description": "External MicroPython driver library index — sourced from awesome-micropython.com. Each category has its own JSON listing top community drivers with GitHub URLs, install methods, and community ratings (stars). AI can git-clone cached copies, analyze, and add usage notes.",
+  "source": "https://awesome-micropython.com/ (GitHub: mcauser/awesome-micropython)",
+  "workflow": {
+    "lookup": "Search this index for the sensor/chip → find driver repo URL",
+    "cache": "git clone <repo> into drivers/cache/<name>/ → available offline",
+    "analyze": "Read driver code → write analysis_notes in the category JSON (API, quirks, memory)",
+    "use": "After using in a project → write usage_notes (what worked, what didn't, gotchas)",
+    "vote": "Increment upvotes/downvotes in the driver entry based on real experience"
+  },
+  "categories": {
+    "display": {"file": "display.json", "description": "OLED, TFT, e-Paper, LCD displays"},
+    "sensor": {"file": "sensor.json", "description": "Temperature, humidity, pressure, gas, light, IMU, distance, current — all sensors"},
+    "actuator": {"file": "actuator.json", "description": "Motors, servos, relays, steppers — see also hardware/"},
+    "storage": {"file": "storage.json", "description": "SD cards, EEPROM, FRAM, Flash, databases"},
+    "communication": {"file": "communication.json", "description": "GPS, RFID, NFC, CAN, RS485, radio"},
+    "audio": {"file": "audio.json", "description": "I2S DAC/ADC, MP3 decoders, speech synthesis"},
+    "power": {"file": "power.json", "description": "Battery management, PMIC, energy monitoring"},
+    "utility": {"file": "utility.json", "description": "Logging, scheduling, configuration, data structures"}
+  }
+}

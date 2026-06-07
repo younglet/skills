@@ -1,0 +1,58 @@
+{
+  "name": "hardware-index",
+  "description": "Index of common electronic components with ESP32 MicroPython driver recipes. Each component has a JSON file in this directory with pin requirements, wiring, code example, and pitfalls.",
+  "categories": {
+    "reference": {
+      "description": "Pinouts and board references",
+      "components": {
+        "esp32_pinout": {"file": "esp32-pinout.json", "description": "ESP32 / C3 / S3 GPIO mapping — all pins, functions, restrictions"}
+      }
+    },
+    "light": {
+      "description": "LEDs, strips, displays",
+      "components": {
+        "led": {"file": "led.json", "description": "Basic LED on/off/blink via GPIO"},
+        "rgb_led": {"file": null, "description": "RGB LED (common cathode/anode) — PWM on 3 pins"},
+        "ws2812": {"file": null, "description": "WS2812/NeoPixel addressable LED strip — see also api/neopixel.json"},
+        "oled_ssd1306": {"file": null, "description": "0.96\" I2C OLED display — requires ssd1306.py in lib/"}
+      }
+    },
+    "motion": {
+      "description": "Motors, servos, actuators",
+      "components": {
+        "servo": {"file": "servo.json", "description": "SG90/MG90S servo motor — PWM 50Hz, 0.5-2.5ms pulse"},
+        "motor": {"file": "motor.json", "description": "DC motor via L298N/H-bridge — PWM speed + direction pins"},
+        "stepper": {"file": null, "description": "28BYJ-48 stepper + ULN2003 driver"}
+      }
+    },
+    "sensors": {
+      "description": "Temperature, humidity, distance, motion",
+      "components": {
+        "dht11_dht22": {"file": null, "description": "DHT11/DHT22 temperature/humidity — see api/dht.json"},
+        "hc_sr04": {"file": null, "description": "HC-SR04 ultrasonic distance sensor"},
+        "pir": {"file": null, "description": "HC-SR501 PIR motion sensor — simple GPIO input"},
+        "ldr": {"file": null, "description": "Light-dependent resistor — voltage divider + ADC"},
+        "ds18b20": {"file": null, "description": "DS18B20 1-Wire temperature sensor — see api/onewire.json"}
+      }
+    },
+    "input": {
+      "description": "Buttons, switches, encoders, joysticks",
+      "components": {
+        "button": {"file": null, "description": "Momentary push button — GPIO input with pull-up/down, debounce"},
+        "rotary_encoder": {"file": null, "description": "KY-040 rotary encoder — see api/machine-encoder.json"},
+        "joystick": {"file": null, "description": "Dual-axis joystick — 2x ADC channels + button"}
+      }
+    },
+    "communication": {
+      "description": "Wireless, displays, storage",
+      "components": {
+        "nrf24l01": {"file": null, "description": "NRF24L01 2.4GHz radio — SPI interface"},
+        "rfid_rc522": {"file": null, "description": "MFRC522 RFID reader — SPI interface"},
+        "lcd_i2c": {"file": null, "description": "1602/2004 LCD with I2C backpack"},
+        "sd_card": {"file": null, "description": "MicroSD card SPI adapter — see api/machine-sdcard.json"}
+      }
+    }
+  },
+  "auto_expand": true,
+  "auto_expand_note": "When a component not yet documented is encountered, add a new JSON file here following the format of led.json/servo.json/motor.json. Then update this index."
+}

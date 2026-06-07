@@ -1,0 +1,43 @@
+{
+  "name": "machine-touchpad",
+  "module": "machine",
+  "class_name": "TouchPad",
+  "import": "from machine import TouchPad",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Capacitive touch sensor interface. ESP32 has 10 touch-sensitive GPIO pins. Can also wake from deep sleep.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific. Only available on original ESP32 (not S2/S3/C3).",
+  "classes": [
+    {
+      "name": "TouchPad",
+      "signature": "machine.TouchPad(pin)",
+      "constructor_params": [
+        {"name": "pin", "type": "Pin", "description": "Touch-capable pin: GPIO 0, 2, 4, 12, 13, 14, 15, 27, 32, 33."}
+      ],
+      "methods": [
+        {
+          "name": "TouchPad.read",
+          "signature": "read()",
+          "returns": {"type": "int", "description": "Touch reading. Lower value = more touch. Typical ranges: 100-1000 (no touch), 10-100 (touched)."},
+          "description": "Read capacitive touch value. The exact threshold for 'touched' depends on the board/pin/wiring."
+        },
+        {
+          "name": "TouchPad.config",
+          "signature": "config(value)",
+          "parameters": [{"name": "value", "type": "int", "description": "Touch detection threshold for interrupts/wake."}],
+          "returns": "None",
+          "description": "Set touch detection threshold. Used with esp32.wake_on_touch()."
+        }
+      ],
+      "example": "from machine import TouchPad, Pin\nimport time\n\ntouch = TouchPad(Pin(4))\n\n# Calibrate: read baseline (no touch)\nbaseline = 0\nfor _ in range(100):\n    baseline += touch.read()\n    time.sleep_ms(10)\nbaseline //= 100\nprint(f'Baseline: {baseline}')\n\n# Detect touch\nwhile True:\n    val = touch.read()\n    if val < baseline * 0.7:  # 30% drop = touched\n        print('Touched! Value:', val)\n    time.sleep_ms(100)"
+    }
+  ],
+  "esp32_notes": [
+    "Only on original ESP32 (not ESP32-S2/S3/C3 — those use different touch API).",
+    "10 touch pins: GPIO 0, 2, 4, 12, 13, 14, 15, 27, 32, 33.",
+    "Touch pins can wake from deep sleep via esp32.wake_on_touch(True).",
+    "Touch readings are affected by: proximity to ground plane, trace length, humidity, PCB material.",
+    "For reliable touch, calibrate baseline at startup and use a percentage threshold.",
+    "Can be used as simple capacitive proximity sensor (not just touch buttons)."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "struct",
+  "module": "struct",
+  "import": "import struct",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Binary data packing/unpacking for protocol buffers, sensor data, and binary formats.",
+  "differences_from_cpython": "No 64-bit format support on ESP32 (no 'q', 'Q', 'd'). Use 'i'/'I' for 32-bit.",
+  "functions": [
+    {"name": "struct.pack", "signature": "pack(fmt, v1, v2, ...)", "returns": "bytes", "description": "Pack values into bytes. fmt: '<' little-endian, '>' big-endian. Types: b/B, h/H, i/I, f, s."},
+    {"name": "struct.unpack", "signature": "unpack(fmt, data)", "returns": "tuple", "description": "Unpack bytes into tuple of values."},
+    {"name": "struct.calcsize", "signature": "calcsize(fmt)", "returns": "int", "description": "Calculate byte size of format string."},
+    {"name": "struct.pack_into", "signature": "pack_into(fmt, buffer, offset, v1, v2, ...)", "returns": "None", "description": "Pack into pre-allocated buffer at offset."},
+    {"name": "struct.unpack_from", "signature": "unpack_from(fmt, data, offset=0)", "returns": "tuple", "description": "Unpack from data at offset."}
+  ],
+  "format_chars": {
+    "b": "signed byte",
+    "B": "unsigned byte",
+    "h": "signed short (2 bytes)",
+    "H": "unsigned short (2 bytes)",
+    "i": "signed int (4 bytes)",
+    "I": "unsigned int (4 bytes)",
+    "f": "float (4 bytes)",
+    "s": "string/bytes",
+    "x": "pad byte"
+  }
+}

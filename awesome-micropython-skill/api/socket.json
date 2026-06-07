@@ -1,0 +1,125 @@
+{
+  "name": "socket",
+  "module": "socket",
+  "import": "import socket",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "TCP/UDP socket networking. Limited to ~536 byte TCP recv per call on ESP32.",
+  "differences_from_cpython": [
+    "Non-blocking sockets only with setblocking(False).",
+    "No SSL built into socket; use ssl.wrap_socket().",
+    "TCP recv limited to 536 bytes max (use loop for larger data)."
+  ],
+  "functions": [
+    {
+      "name": "socket.socket",
+      "signature": "socket(family=AF_INET, type=SOCK_STREAM)"
+    },
+    {
+      "name": "socket.getaddrinfo",
+      "signature": "getaddrinfo(host, port, family=0, type=0)",
+      "returns": "list",
+      "description": "Resolve hostname/port to address tuples."
+    }
+  ],
+  "constants": {
+    "AF_INET": null,
+    "AF_INET6": null,
+    "SOCK_STREAM": null,
+    "SOCK_DGRAM": null,
+    "SOCK_RAW": null,
+    "IPPROTO_TCP": null,
+    "IPPROTO_UDP": null,
+    "IPPROTO_IP": null,
+    "SOL_SOCKET": null,
+    "SO_REUSEADDR": null,
+    "SO_BROADCAST": null,
+    "SO_BINDTODEVICE": null,
+    "TCP_NODELAY": null,
+    "IP_ADD_MEMBERSHIP": null,
+    "MSG_PEEK": null,
+    "MSG_DONTWAIT": null,
+    "getaddrinfo": null
+  },
+  "socket_methods": [
+    {
+      "name": "socket.bind",
+      "signature": "bind(address)"
+    },
+    {
+      "name": "socket.listen",
+      "signature": "listen([backlog])"
+    },
+    {
+      "name": "socket.accept",
+      "signature": "accept()",
+      "returns": "(conn, address)"
+    },
+    {
+      "name": "socket.connect",
+      "signature": "connect(address)"
+    },
+    {
+      "name": "socket.send",
+      "signature": "send(bytes)",
+      "returns": "int"
+    },
+    {
+      "name": "socket.sendall",
+      "signature": "sendall(bytes)",
+      "returns": "None"
+    },
+    {
+      "name": "socket.sendto",
+      "signature": "sendto(bytes, address)",
+      "returns": "int"
+    },
+    {
+      "name": "socket.recv",
+      "signature": "recv(bufsize)",
+      "returns": "bytes"
+    },
+    {
+      "name": "socket.recvfrom",
+      "signature": "recvfrom(bufsize)",
+      "returns": "(bytes, address)"
+    },
+    {
+      "name": "socket.read",
+      "signature": "read([nbytes])",
+      "returns": "bytes"
+    },
+    {
+      "name": "socket.write",
+      "signature": "write(buf)",
+      "returns": "int"
+    },
+    {
+      "name": "socket.readline",
+      "signature": "readline()",
+      "returns": "bytes"
+    },
+    {
+      "name": "socket.readinto",
+      "signature": "readinto(buf)",
+      "returns": "int"
+    },
+    {
+      "name": "socket.close",
+      "signature": "close()"
+    },
+    {
+      "name": "socket.setblocking",
+      "signature": "setblocking(flag)"
+    },
+    {
+      "name": "socket.setsockopt",
+      "signature": "setsockopt(level, opt, value)"
+    },
+    {
+      "name": "socket.settimeout",
+      "signature": "settimeout(timeout)",
+      "description": "Set socket timeout in seconds."
+    }
+  ]
+}

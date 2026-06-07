@@ -1,0 +1,97 @@
+{
+  "name": "performance",
+  "description": "ESP32 MicroPython operation costs — time and memory. Use these when deciding: can this run in an ISR? will this fit in memory? is this fast enough for my loop?",
+  "version": "ESP32 MicroPython v1.28.0 @ 160MHz",
+  "measurement_note": "Approximate values. Actual times vary with CPU freq, WiFi activity, and concurrent tasks. WiFi-on adds ~15% overhead to all operations.",
+  "categories": {
+    "gpio": {
+      "description": "Pin operations are extremely fast. Safe for ISRs and high-frequency loops.",
+      "ops": [
+        {"name": "Pin.value() read", "time_us": 0.2, "memory_bytes": 0, "notes": "Direct GPIO register read"},
+        {"name": "Pin.value(1) write", "time_us": 0.3, "memory_bytes": 0},
+        {"name": "Pin.on() / Pin.off()", "time_us": 0.3, "memory_bytes": 0},
+        {"name": "Pin.irq() attach", "time_us": 50, "memory_bytes": 200, "notes": "Allocates IRQ handler object"},
+        {"name": "Pin object creation", "time_us": 30, "memory_bytes": 200, "notes": "Create once, reuse via .init()"}
+      ]
+    },
+    "pwm": {
+      "description": "PWM is hardware-driven — no CPU overhead after setup. Safe for continuous use.",
+      "ops": [
+        {"name": "PWM(Pin, freq=1000) init", "time_us": 200, "memory_bytes": 300},
+        {"name": "PWM.duty(val) set", "time_us": 2, "memory_bytes": 0, "notes": "Just writes a register"},
+        {"name": "PWM.deinit()", "time_us": 100, "memory_bytes": -300, "notes": "Frees PWM channel"}
+      ]
+    },
+    "i2c": {
+      "description": "I2C is slow and blocking. Do NOT use in ISRs. SoftI2C is ~30% slower than hardware I2C.",
+      "ops": [
+        {"name": "I2C.scan() (empty bus)", "time_ms": 15, "memory_bytes": 200, "notes": "Scans 112 addresses, ~0.1ms per address"},
+        {"name": "I2C.readfrom(addr, 1)", "time_us": 500, "memory_bytes": 50},
+        {"name": "I2C.writeto(addr, 1 byte)", "time_us": 400, "memory_bytes": 30},
+        {"name": "I2C object creation", "time_us": 500, "memory_bytes": 500}
+      ]
+    },
+    "spi": {
+      "description": "SPI is fast but blocking. Hardware SPI preferred over SoftSPI (4x faster).",
+      "ops": [
+        {"name": "SPI.write(1 byte)", "time_us": 5, "memory_bytes": 0},
+        {"name": "SPI.read(1024 bytes)", "time_us": 500, "memory_bytes": 1050, "notes": "Returns new bytes object"},
+        {"name": "SPI.readinto(buf) 1024B", "time_us": 400, "memory_bytes": 0, "notes": "Zero-allocation — use for loops"}
+      ]
+    },
+    "adc": {
+      "description": "ADC is moderately slow. ESP32 ADC is nonlinear near 0V and 3.3V — best range is 0.2V–3.1V.",
+      "ops": [
+        {"name": "ADC.read()", "time_us": 20, "memory_bytes": 0},
+        {"name": "ADC.read_uv()", "time_us": 40, "memory_bytes": 0, "notes": "Calibrated microvolt reading — use for accurate values"}
+      ]
+    },
+    "wifi": {
+      "description": "WiFi operations are SLOW and MEMORY-HEAVY. Never in ISRs. Never in tight loops.",
+      "ops": [
+        {"name": "wlan.active(True)", "time_ms": 200, "memory_kb": 40, "notes": "Enables radio — major memory hit"},
+        {"name": "wlan.scan()", "time_s": 2, "memory_kb": 3, "notes": "Blocks for 2 seconds. Returns list of SSIDs."},
+        {"name": "wlan.connect(ssid, pwd)", "time_s": 1, "memory_kb": 5, "notes": "Blocks up to 15s. Use polling pattern."},
+        {"name": "wlan.isconnected()", "time_us": 10, "memory_bytes": 0, "notes": "Cheap — call freely"},
+        {"name": "wlan.ifconfig()", "time_us": 50, "memory_bytes": 100}
+      ]
+    },
+    "socket_http": {
+      "description": "Network operations are the most expensive. Close sockets immediately.",
+      "ops": [
+        {"name": "socket.socket()", "time_ms": 5, "memory_kb": 2},
+        {"name": "socket.connect()", "time_ms": 50, "memory_kb": 1},
+        {"name": "HTTP GET 1KB response", "time_ms": 200, "memory_kb": 5, "notes": "Varies wildly with network latency"},
+        {"name": "socket.close()", "time_us": 100, "memory_kb": -3, "notes": "Reclaims socket memory"}
+      ]
+    },
+    "memory": {
+      "description": "Memory allocation costs. Avoid allocation in loops.",
+      "ops": [
+        {"name": "bytearray(256) creation", "time_us": 50, "memory_bytes": 260},
+        {"name": "bytes(256) creation", "time_us": 50, "memory_bytes": 260},
+        {"name": "gc.collect() (minimal)", "time_ms": 1, "memory_bytes": 0},
+        {"name": "gc.collect() (full heap)", "time_ms": 10, "memory_bytes": 0, "notes": "Slower when heap is fragmented"},
+        {"name": "dict with 10 keys", "time_us": 100, "memory_bytes": 500},
+        {"name": "class instance (simple)", "time_us": 80, "memory_bytes": 300},
+        {"name": "function call overhead", "time_us": 5, "memory_bytes": 0}
+      ]
+    },
+    "filesystem": {
+      "description": "Flash operations are slow and wear-limited. Buffer writes.",
+      "ops": [
+        {"name": "open('file', 'r') + close", "time_us": 200, "memory_bytes": 200},
+        {"name": "read 1KB from file", "time_us": 300, "memory_bytes": 1050},
+        {"name": "write 1KB to file", "time_ms": 5, "memory_bytes": 50, "notes": "Flash write — slow, wears flash (~100K cycles per sector)"},
+        {"name": "os.listdir('/')", "time_ms": 2, "memory_bytes": 300}
+      ]
+    }
+  },
+  "rules_of_thumb": {
+    "isr_safe": "Only GPIO read/write and ticks_ms() are ISR-safe. Nothing else.",
+    "tight_loop": "At 1000Hz loop: keep per-iteration work under 800µs. Use readinto() instead of read().",
+    "battery_life": "WiFi active: ~100mA. WiFi off + light sleep: ~5mA. Deep sleep: ~5µA. Every second of WiFi costs 20,000x more power than deep sleep.",
+    "flash_wear": "Flash sector: ~100K erase cycles. Writing config every second wears flash in ~27 hours. Write config max once per minute.",
+    "heap_fragmentation": "Long-running apps should avoid creating/destroying objects of different sizes. Pre-allocate fixed-size bytearrays."
+  }
+}

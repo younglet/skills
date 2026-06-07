@@ -1,0 +1,31 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Device cache (auto-generated)
+device.json
+
+# Firmware cache (downloaded .bin files)
+firmware/cache/*.bin
+
+# Driver cache (git-cloned repos)
+drivers/cache/*/
+!drivers/cache/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Temp files
+*.tmp
+*.log
+/tmp/

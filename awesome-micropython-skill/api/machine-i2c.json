@@ -1,0 +1,405 @@
+{
+  "name": "machine-i2c",
+  "module": "machine",
+  "class_name": "I2C / SoftI2C",
+  "import": "from machine import I2C, SoftI2C",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "I2C (Inter-Integrated Circuit) bus communication. Both hardware I2C (machine.I2C) and software/bit-banged (machine.SoftI2C) available. ESP32 has 2 hardware I2C peripherals.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific I2C interface.",
+  "classes": [
+    {
+      "name": "SoftI2C",
+      "signature": "machine.SoftI2C(scl, sda, *, freq=400000, timeout=50000)",
+      "description": "Software (bit-banged) I2C. Works on any GPIO pins. Slightly slower than hardware I2C.",
+      "constructor_params": [
+        {
+          "name": "scl",
+          "type": "Pin",
+          "description": "SCL clock pin."
+        },
+        {
+          "name": "sda",
+          "type": "Pin",
+          "description": "SDA data pin."
+        },
+        {
+          "name": "freq",
+          "type": "int",
+          "description": "I2C clock frequency in Hz. Default 400000 (400KHz). Use 100000 for longer wires."
+        },
+        {
+          "name": "timeout",
+          "type": "int",
+          "description": "I2C operation timeout in microseconds. Default 50000 (50ms)."
+        }
+      ],
+      "methods": [
+        {
+          "name": "I2C.init",
+          "signature": "init(id, *, scl, sda, freq=400000, timeout=50000)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Initialize I2C peripheral."
+        },
+        {
+          "name": "I2C.scan",
+          "signature": "scan()",
+          "returns": {
+            "type": "list[int]"
+          },
+          "description": "Scan I2C bus for devices. Returns list of 7-bit addresses."
+        },
+        {
+          "name": "I2C.start",
+          "signature": "start()",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Generate START condition on I2C bus."
+        },
+        {
+          "name": "I2C.stop",
+          "signature": "stop()",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Generate STOP condition on I2C bus."
+        },
+        {
+          "name": "I2C.readinto",
+          "signature": "readinto(buf, nack=True)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Read bytes into buffer. nack=True sends NACK after last byte."
+        },
+        {
+          "name": "I2C.write",
+          "signature": "write(buf)",
+          "returns": {
+            "type": "int",
+            "description": "Number of bytes written."
+          },
+          "description": "Write bytes to I2C bus."
+        },
+        {
+          "name": "I2C.readfrom",
+          "signature": "readfrom(addr, nbytes, stop=True)",
+          "returns": {
+            "type": "bytes"
+          },
+          "description": "Read nbytes from device at addr. Returns bytes object."
+        },
+        {
+          "name": "I2C.readfrom_into",
+          "signature": "readfrom_into(addr, buf, stop=True)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Read into buffer from device at addr."
+        },
+        {
+          "name": "I2C.readfrom_mem",
+          "signature": "readfrom_mem(addr, memaddr, nbytes, *, addrsize=8)",
+          "returns": {
+            "type": "bytes"
+          },
+          "description": "Read from memory register of I2C device."
+        },
+        {
+          "name": "I2C.readfrom_mem_into",
+          "signature": "readfrom_mem_into(addr, memaddr, buf, *, addrsize=8)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Read from memory register into buffer."
+        },
+        {
+          "name": "I2C.writeto",
+          "signature": "writeto(addr, buf, stop=True)",
+          "returns": {
+            "type": "int",
+            "description": "Number of bytes written."
+          },
+          "description": "Write bytes to device at addr."
+        },
+        {
+          "name": "I2C.writeto_mem",
+          "signature": "writeto_mem(addr, memaddr, buf, *, addrsize=8)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Write to memory register of I2C device."
+        },
+        {
+          "name": "I2C.writevto",
+          "signature": "writevto(addr, vector, stop=True)",
+          "returns": {
+            "type": "int",
+            "description": "Number of bytes written."
+          },
+          "description": "Scattered write from vector of buffers to device at addr."
+        }
+      ]
+    },
+    {
+      "name": "I2C",
+      "signature": "machine.I2C(id, *, scl, sda, freq=400000, timeout=50000)",
+      "description": "Hardware I2C. ESP32 has two hardware I2C peripherals (id=0, id=1). Faster and more reliable than SoftI2C.",
+      "constructor_params": [
+        {
+          "name": "id",
+          "type": "int",
+          "description": "I2C peripheral ID. ESP32: 0 or 1."
+        },
+        {
+          "name": "scl",
+          "type": "Pin",
+          "description": "SCL clock pin (keyword-only)."
+        },
+        {
+          "name": "sda",
+          "type": "Pin",
+          "description": "SDA data pin (keyword-only)."
+        },
+        {
+          "name": "freq",
+          "type": "int",
+          "description": "Frequency in Hz. Default 400000."
+        },
+        {
+          "name": "timeout",
+          "type": "int",
+          "description": "Timeout in microseconds. Default 50000."
+        }
+      ],
+      "default_pins": {
+        "I2C0": {
+          "scl": 22,
+          "sda": 21
+        },
+        "I2C1": {
+          "scl": 32,
+          "sda": 33
+        }
+      },
+      "methods": [
+        {
+          "name": "I2C.init",
+          "signature": "init(id, *, scl, sda, freq=400000, timeout=50000)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Initialize I2C peripheral."
+        },
+        {
+          "name": "I2C.scan",
+          "signature": "scan()",
+          "returns": {
+            "type": "list[int]"
+          },
+          "description": "Scan I2C bus for devices. Returns list of 7-bit addresses."
+        },
+        {
+          "name": "I2C.start",
+          "signature": "start()",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Generate START condition on I2C bus."
+        },
+        {
+          "name": "I2C.stop",
+          "signature": "stop()",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Generate STOP condition on I2C bus."
+        },
+        {
+          "name": "I2C.readinto",
+          "signature": "readinto(buf, nack=True)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Read bytes into buffer. nack=True sends NACK after last byte."
+        },
+        {
+          "name": "I2C.write",
+          "signature": "write(buf)",
+          "returns": {
+            "type": "int",
+            "description": "Number of bytes written."
+          },
+          "description": "Write bytes to I2C bus."
+        },
+        {
+          "name": "I2C.readfrom",
+          "signature": "readfrom(addr, nbytes, stop=True)",
+          "returns": {
+            "type": "bytes"
+          },
+          "description": "Read nbytes from device at addr. Returns bytes object."
+        },
+        {
+          "name": "I2C.readfrom_into",
+          "signature": "readfrom_into(addr, buf, stop=True)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Read into buffer from device at addr."
+        },
+        {
+          "name": "I2C.readfrom_mem",
+          "signature": "readfrom_mem(addr, memaddr, nbytes, *, addrsize=8)",
+          "returns": {
+            "type": "bytes"
+          },
+          "description": "Read from memory register of I2C device."
+        },
+        {
+          "name": "I2C.readfrom_mem_into",
+          "signature": "readfrom_mem_into(addr, memaddr, buf, *, addrsize=8)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Read from memory register into buffer."
+        },
+        {
+          "name": "I2C.writeto",
+          "signature": "writeto(addr, buf, stop=True)",
+          "returns": {
+            "type": "int",
+            "description": "Number of bytes written."
+          },
+          "description": "Write bytes to device at addr."
+        },
+        {
+          "name": "I2C.writeto_mem",
+          "signature": "writeto_mem(addr, memaddr, buf, *, addrsize=8)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Write to memory register of I2C device."
+        },
+        {
+          "name": "I2C.writevto",
+          "signature": "writevto(addr, vector, stop=True)",
+          "returns": {
+            "type": "int",
+            "description": "Number of bytes written."
+          },
+          "description": "Scattered write from vector of buffers to device at addr."
+        }
+      ]
+    }
+  ],
+  "shared_methods": [
+    {
+      "name": "I2C.init",
+      "signature": "init(scl, sda, *, freq=400000, timeout=50000)",
+      "returns": "None",
+      "description": "Re-initialize (SoftI2C)."
+    },
+    {
+      "name": "I2C.deinit",
+      "signature": "deinit()",
+      "returns": "None",
+      "description": "Release pins."
+    },
+    {
+      "name": "I2C.scan",
+      "signature": "scan()",
+      "returns": {
+        "type": "list[int]",
+        "description": "List of 7-bit I2C addresses found on the bus."
+      },
+      "description": "Scan I2C bus for devices. Returns list of addresses."
+    },
+    {
+      "name": "I2C.start",
+      "signature": "start()",
+      "returns": "None",
+      "description": "Send START condition (primitive)."
+    },
+    {
+      "name": "I2C.stop",
+      "signature": "stop()",
+      "returns": "None",
+      "description": "Send STOP condition (primitive)."
+    },
+    {
+      "name": "I2C.readinto",
+      "signature": "readinto(buf, nack=True)",
+      "returns": "None",
+      "description": "Read into buffer (primitive)."
+    },
+    {
+      "name": "I2C.write",
+      "signature": "write(buf)",
+      "returns": {
+        "type": "int",
+        "description": "Number of ACKs received."
+      },
+      "description": "Write buffer bytes (primitive)."
+    },
+    {
+      "name": "I2C.readfrom",
+      "signature": "readfrom(addr, nbytes, stop=True)",
+      "returns": {
+        "type": "bytes",
+        "description": "Bytes read from device."
+      },
+      "description": "Read nbytes from given I2C address. Convenience method."
+    },
+    {
+      "name": "I2C.readfrom_into",
+      "signature": "readfrom_into(addr, buf, stop=True)",
+      "returns": "None",
+      "description": "Read into buffer from address."
+    },
+    {
+      "name": "I2C.writeto",
+      "signature": "writeto(addr, buf, stop=True)",
+      "returns": "None",
+      "description": "Write bytes to address. Convenience method."
+    },
+    {
+      "name": "I2C.writevto",
+      "signature": "writevto(addr, seq, stop=True)",
+      "returns": "None",
+      "description": "Write bytes from sequence to address."
+    },
+    {
+      "name": "I2C.readfrom_mem",
+      "signature": "readfrom_mem(addr, memaddr, nbytes, *, addrsize=8)",
+      "returns": {
+        "type": "bytes",
+        "description": "Data read from register."
+      },
+      "description": "Read from register memaddr at device addr."
+    },
+    {
+      "name": "I2C.readfrom_mem_into",
+      "signature": "readfrom_mem_into(addr, memaddr, buf, *, addrsize=8)",
+      "returns": "None",
+      "description": "Read from register into buffer."
+    },
+    {
+      "name": "I2C.writeto_mem",
+      "signature": "writeto_mem(addr, memaddr, buf, *, addrsize=8)",
+      "returns": "None",
+      "description": "Write to register memaddr at device addr."
+    }
+  ],
+  "example": "from machine import Pin, I2C, SoftI2C\n\n# Hardware I2C (uses I2C0 peripheral)\ni2c = I2C(0, scl=Pin(22), sda=Pin(21), freq=100000)\n\n# Software I2C (any pins)\n# i2c = SoftI2C(scl=Pin(22), sda=Pin(21), freq=100000)\n\ndevices = i2c.scan()\nprint('I2C devices found:', [hex(addr) for addr in devices])\n\n# Read from SSD1306 OLED (addr 0x3C)\nif 0x3c in devices:\n    i2c.writeto(0x3c, b'\\x00\\xAE')  # display off cmd\n\n# Read register from sensor\n# data = i2c.readfrom_mem(0x76, 0xD0, 2)  # read 2 bytes from register 0xD0",
+  "esp32_notes": [
+    "Hardware I2C id=0 uses pins 18,19 or 21,22. id=1 uses pins 25,26 or 32,33.",
+    "Default SDA/SCL on most ESP32 dev boards: 21/22 (I2C0).",
+    "SoftI2C works on any GPIO pins — essential when default pins conflict.",
+    "Standard I2C speeds: 100KHz (standard), 400KHz (fast). ESP32 also supports 1MHz+.",
+    "I2C requires external pull-up resistors (typically 4.7kΩ to 3.3V) on SDA and SCL."
+  ]
+}

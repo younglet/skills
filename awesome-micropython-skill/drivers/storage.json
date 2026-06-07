@@ -1,0 +1,6 @@
+{
+  "name": "drivers-storage",
+  "category": "storage",
+  "description": "storage drivers sourced from awesome-micropython.com",
+  "drivers": {}
+}

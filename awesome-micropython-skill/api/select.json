@@ -1,0 +1,62 @@
+{
+  "name": "select",
+  "module": "select",
+  "import": "import select",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "I/O multiplexing: poll for non-blocking socket and stream monitoring.",
+  "differences_from_cpython": "Subset: poll() and select() available. No epoll/kqueue.",
+  "functions": [
+    {
+      "name": "select.poll",
+      "signature": "poll()",
+      "returns": "Poll object"
+    },
+    {
+      "name": "select.select",
+      "signature": "select(rlist, wlist, xlist[, timeout])",
+      "returns": "tuple",
+      "description": "Wait for I/O readiness. rlist/wlist/xlist are lists of objects with fileno()."
+    }
+  ],
+  "classes": [
+    {
+      "name": "Poll",
+      "methods": [
+        {
+          "name": "poll.register",
+          "signature": "register(obj, eventmask=POLLIN|POLLOUT)",
+          "returns": "None"
+        },
+        {
+          "name": "poll.unregister",
+          "signature": "unregister(obj)",
+          "returns": "None"
+        },
+        {
+          "name": "poll.modify",
+          "signature": "modify(obj, eventmask)",
+          "returns": "None"
+        },
+        {
+          "name": "poll.poll",
+          "signature": "poll([timeout_ms])",
+          "returns": "list[(obj, event)]",
+          "description": "Wait for events. timeout_ms=-1 = forever."
+        }
+      ],
+      "constants": {
+        "POLLERR": null,
+        "POLLHUP": null,
+        "POLLIN": null,
+        "POLLOUT": null
+      }
+    }
+  ],
+  "constants": {
+    "POLLIN": null,
+    "POLLOUT": null,
+    "POLLERR": null,
+    "POLLHUP": null
+  }
+}

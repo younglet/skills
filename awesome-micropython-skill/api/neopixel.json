@@ -1,0 +1,79 @@
+{
+  "name": "neopixel",
+  "module": "neopixel",
+  "import": "from neopixel import NeoPixel",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "WS2812 (NeoPixel) and similar RGB LED strip control using ESP32 RMT peripheral.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific LED driver.",
+  "classes": [
+    {
+      "name": "NeoPixel",
+      "signature": "neopixel.NeoPixel(pin, n, *, bpp=3, timing=1)",
+      "constructor_params": [
+        {
+          "name": "pin",
+          "type": "Pin",
+          "description": "Data pin (any GPIO)."
+        },
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Number of LEDs in the strip."
+        },
+        {
+          "name": "bpp",
+          "type": "int",
+          "description": "Bytes per pixel: 3=RGB, 4=RGBW. Default 3."
+        },
+        {
+          "name": "timing",
+          "type": "int",
+          "description": "Timing mode: 0=400KHz, 1=800KHz (default)."
+        }
+      ],
+      "methods": [
+        {
+          "name": "NeoPixel.fill",
+          "signature": "fill(color)",
+          "returns": "None",
+          "description": "Set all LEDs to same color. (r,g,b) or (r,g,b,w) tuple."
+        },
+        {
+          "name": "NeoPixel.write",
+          "signature": "write()",
+          "returns": "None",
+          "description": "Send buffer to LED strip. MUST call after setting colors."
+        },
+        {
+          "name": "NeoPixel.__setitem__",
+          "signature": "np[i] = (r, g, b)  # set LED i color",
+          "returns": "None"
+        },
+        {
+          "name": "NeoPixel.__getitem__",
+          "signature": "np[i]  # get LED i color as tuple",
+          "returns": "tuple"
+        }
+      ],
+      "example": "from machine import Pin\nfrom neopixel import NeoPixel\n\nnp = NeoPixel(Pin(18), 8)  # 8 LEDs on GPIO 18\nnp[0] = (255, 0, 0)  # red\nnp[1] = (0, 255, 0)  # green\nnp[2] = (0, 0, 255)  # blue\nnp.write()",
+      "constants": {
+        "ORDER": null
+      }
+    }
+  ],
+  "esp32_notes": [
+    "Uses ESP32 RMT peripheral internally.",
+    "Creates one RMT channel per NeoPixel object.",
+    "Maximum ~256 LEDs per strip (limited by RAM).",
+    "For APA106/SK6812, use bpp=4 for RGBW."
+  ],
+  "functions": [
+    {
+      "name": "neopixel.bitstream",
+      "signature": "bitstream(pin, timing, buf)",
+      "returns": "None",
+      "description": "Low-level raw bitbang. Internal use."
+    }
+  ]
+}

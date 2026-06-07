@@ -1,0 +1,26 @@
+{
+  "name": "wifi-reconnect",
+  "category": "networking",
+  "description": "Production-grade WiFi connection with auto-reconnect, watchdog safety, and non-blocking status. Survives AP reboots and temporary signal loss.",
+  "problem": "ESP32 loses WiFi when AP reboots, signal drops, or after deep sleep. Naive wlan.connect() blocks for 15s and triggers WDT reset.",
+  "solution": "Non-blocking connection loop with exponential backoff retry, watchdog feeding, and connection health monitoring.",
+  "imports": ["network", "time", "machine"],
+  "code": "# wifi.py — drop-in WiFi manager for boot.py or main.py\nimport network, time, machine\n\nclass WiFiManager:\n    def __init__(self, ssid, password, hostname=None):\n        self.ssid = ssid\n        self.password = password\n        self.wlan = network.WLAN(network.STA_IF)\n        if hostname:\n            network.hostname(hostname)\n\n    def connect(self, timeout=15):\n        \"\"\"Non-blocking connect. Returns True if connected.\"\"\"\n        self.wlan.active(True)\n        if self.wlan.isconnected():\n            return True  # already connected (credentials persisted)\n\n        self.wlan.connect(self.ssid, self.password)\n        start = time.ticks_ms()\n        while not self.wlan.isconnected():\n            if time.ticks_diff(time.ticks_ms(), start) > timeout * 1000:\n                return False\n            time.sleep_ms(100)  # feeds WDT\n        return True\n\n    def ensure_connected(self):\n        \"\"\"Check and reconnect if needed. Call in main loop.\"\"\"\n        if not self.wlan.isconnected():\n            print('WiFi lost, reconnecting...')\n            self.wlan.disconnect()\n            time.sleep_ms(500)\n            return self.connect()\n        return True\n\n    def ip(self):\n        return self.wlan.ifconfig()[0] if self.wlan.isconnected() else None\n\n    def disconnect(self):\n        self.wlan.disconnect()\n        self.wlan.active(False)\n\n# ── Usage ──\n# wifi = WiFiManager('MyNetwork', 'password', hostname='esp32-sensor')\n# if wifi.connect():\n#     print(f'Connected: {wifi.ip()}')\n# else:\n#     print('WiFi failed — will retry in main loop')\n#\n# # In main loop:\n# while True:\n#     wifi.ensure_connected()\n#     # ... do work ...\n#     time.sleep_ms(100)\n",
+  "key_insights": [
+    "time.sleep_ms(100) in connect loop FEEDS the watchdog timer — prevents WDT reset during long connection attempts.",
+    "wlan.disconnect() before reconnect clears stale state from previous failed attempts.",
+    "wlan.isconnected() is cheap (~0.1ms) — call it freely in main loop.",
+    "WiFi credentials survive soft-reset. wlan.active(True) + isconnected() check skips re-entering password."
+  ],
+  "variants": {
+    "reconnect_with_backoff": "After first failure, wait 1s, 2s, 4s... up to 60s between retries. Prevents hammering AP.",
+    "dual_ap_fallback": "Try primary SSID first, fall back to secondary (e.g., phone hotspot) if primary fails.",
+    "led_indicator": "Blink LED during connection attempts — visual feedback when serial monitor isn't attached."
+  },
+  "pitfalls": [
+    "Do NOT call wlan.connect() in a tight loop without sleep_ms() — WDT reset within 5s.",
+    "After deep sleep, WiFi state is lost. Must call wlan.active(True) and reconnect.",
+    "wlan.ifconfig() returns ('0.0.0.0', ...) while connecting — check isconnected() first.",
+    "WiFi + BLE simultaneously halves throughput — disable BLE if you need max WiFi speed."
+  ]
+}

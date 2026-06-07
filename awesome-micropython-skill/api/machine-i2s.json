@@ -1,0 +1,48 @@
+{
+  "name": "machine-i2s",
+  "module": "machine",
+  "class_name": "I2S",
+  "import": "from machine import I2S",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "I2S (Inter-IC Sound) audio bus interface. Used for connecting DACs, ADCs, MEMS microphones, and audio amplifiers. ESP32 has 2 I2S peripherals.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific ESP32 I2S interface.",
+  "classes": [
+    {
+      "name": "I2S",
+      "signature": "machine.I2S(id, *, sck, ws, sd, mode=I2S.TX, bits=16, format=I2S.MONO, rate=16000, ibuf=20000)",
+      "constructor_params": [
+        {"name": "id", "type": "int", "description": "I2S peripheral ID. ESP32: 0 or 1."},
+        {"name": "sck", "type": "Pin", "description": "Serial clock (SCK/BCLK) pin."},
+        {"name": "ws", "type": "Pin", "description": "Word select (WS/LRCLK) pin."},
+        {"name": "sd", "type": "Pin", "description": "Serial data (SD/DIN) pin."},
+        {"name": "mode", "type": "int", "description": "I2S.TX (2) or I2S.RX (1)."},
+        {"name": "bits", "type": "int", "description": "Bits per sample: 8, 16, 24, 32. Default 16."},
+        {"name": "format", "type": "int", "description": "I2S.MONO (0) or I2S.STEREO (1)."},
+        {"name": "rate", "type": "int", "description": "Sample rate in Hz. Default 16000."},
+        {"name": "ibuf", "type": "int", "description": "Internal buffer size in bytes. Default 20000."}
+      ],
+      "methods": [
+        {"name": "I2S.init", "signature": "init(*, sck, ws, sd, mode, bits, format, rate, ibuf)", "returns": "None", "description": "Re-initialize I2S."},
+        {"name": "I2S.deinit", "signature": "deinit()", "returns": "None", "description": "Disable I2S and release pins."},
+        {"name": "I2S.readinto", "signature": "readinto(buf)", "returns": "int", "description": "Read audio samples into buffer (RX mode). Returns bytes read."},
+        {"name": "I2S.write", "signature": "write(buf)", "returns": "int", "description": "Write audio samples (TX mode). Returns bytes written."},
+        {"name": "I2S.irq", "signature": "irq(handler)", "returns": "None", "description": "Set callback for I2S events."},
+        {"name": "I2S.shift", "signature": "shift(*, buf, bits, shift)", "returns": "None", "description": "Shift data in buffer. Advanced bit manipulation."}
+      ],
+      "constants": {
+        "TX": 2,
+        "RX": 1,
+        "MONO": 0,
+        "STEREO": 1
+      },
+      "example": "from machine import I2S, Pin\nimport math\n\n# Generate 440Hz sine wave\nsample_rate = 16000\nbuf = bytearray(4000)\nfor i in range(1000):\n    val = int((math.sin(2 * math.pi * 440 * i / sample_rate) + 1) * 127)\n    buf[2*i] = val & 0xFF\n    buf[2*i+1] = (val >> 8) & 0xFF\n\ni2s = I2S(0, sck=Pin(26), ws=Pin(25), sd=Pin(22),\n          mode=I2S.TX, bits=16, format=I2S.MONO, rate=sample_rate)\ni2s.write(buf)\ni2s.deinit()"
+    }
+  ],
+  "esp32_notes": [
+    "ESP32 has 2 I2S peripherals (id=0, id=1).",
+    "I2S pins can be mapped to almost any GPIO.",
+    "High sample rates require sufficient ibuf size.",
+    "For audio playback from WAV/MP3, use higher-level libraries."
+  ]
+}

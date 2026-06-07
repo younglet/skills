@@ -1,0 +1,6 @@
+{
+  "name": "drivers-actuator",
+  "category": "actuator",
+  "description": "actuator drivers sourced from awesome-micropython.com",
+  "drivers": {}
+}

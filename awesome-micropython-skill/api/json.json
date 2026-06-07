@@ -1,0 +1,49 @@
+{
+  "name": "json",
+  "module": "json",
+  "import": "import json",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "JSON encoding and decoding. Use standard 'json' module name (NOT 'ujson').",
+  "differences_from_cpython": [
+    "Always use 'import json'. The 'ujson' legacy name is deprecated and must never be used.",
+    "No json.dumps() indent or sort_keys parameters.",
+    "No json.JSONEncoder/JSONDecoder classes.",
+    "Memory constrained: large JSON may cause MemoryError."
+  ],
+  "functions": [
+    {
+      "name": "json.dumps",
+      "signature": "dumps(obj)",
+      "parameters": [{"name": "obj", "type": "dict|list|tuple|str|int|float|bool|None", "description": "Object to serialize."}],
+      "returns": {"type": "str", "description": "JSON string."},
+      "note": "No indent or sort_keys support in MicroPython."
+    },
+    {
+      "name": "json.dump",
+      "signature": "dump(obj, stream)",
+      "parameters": [
+        {"name": "obj", "type": "varies", "description": "Object to serialize."},
+        {"name": "stream", "type": "file-like", "description": "Stream to write to."}
+      ],
+      "returns": "None"
+    },
+    {
+      "name": "json.loads",
+      "signature": "loads(str)",
+      "parameters": [{"name": "str", "type": "str", "description": "JSON string to parse."}],
+      "returns": {"type": "dict|list|str|int|float|bool|None", "description": "Parsed Python object."},
+      "note": "Raises ValueError on malformed JSON."
+    },
+    {
+      "name": "json.load",
+      "signature": "load(stream)",
+      "parameters": [{"name": "stream", "type": "file-like"}],
+      "returns": {"type": "varies"},
+      "description": "Read JSON from stream."
+    }
+  ],
+  "notes": [
+    "Always use 'import json'. The 'ujson' legacy name is deprecated and must never be used."
+  ]
+}

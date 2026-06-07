@@ -1,0 +1,19 @@
+{
+  "name": "gc",
+  "module": "gc",
+  "import": "import gc",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Garbage collector control: manual collection, memory stats, and threshold configuration.",
+  "differences_from_cpython": "gc module is critical on memory-constrained ESP32. Call gc.collect() before memory-intensive operations.",
+  "functions": [
+    {"name": "gc.collect", "signature": "collect()", "returns": "int", "description": "Force garbage collection. Returns bytes freed."},
+    {"name": "gc.mem_free", "signature": "mem_free()", "returns": "int", "description": "Bytes of free heap RAM."},
+    {"name": "gc.mem_alloc", "signature": "mem_alloc()", "returns": "int", "description": "Bytes of allocated heap RAM."},
+    {"name": "gc.threshold", "signature": "threshold([amount])", "returns": "int", "description": "Get/set GC threshold. GC triggers when allocation exceeds threshold."},
+    {"name": "gc.enable", "signature": "enable()", "returns": "None", "description": "Enable automatic GC."},
+    {"name": "gc.disable", "signature": "disable()", "returns": "None", "description": "Disable automatic GC. Use carefully!"},
+    {"name": "gc.isenabled", "signature": "isenabled()", "returns": "bool", "description": "Check if automatic GC is enabled."}
+  ],
+  "example": "import gc\ngc.collect()\nprint('Free:', gc.mem_free(), 'Allocated:', gc.mem_alloc())"
+}

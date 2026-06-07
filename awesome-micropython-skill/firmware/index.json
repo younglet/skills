@@ -1,0 +1,30 @@
+{
+  "name": "firmware-index",
+  "description": "ESP32 firmware management — download, cache, flash. Caches .bin files locally to avoid re-downloading.",
+  "status": "planned",
+  "supported_boards": [
+    {"board": "ESP32_GENERIC", "chip": "ESP32", "flash": "4MB", "psram": false},
+    {"board": "ESP32_GENERIC-S3", "chip": "ESP32-S3", "flash": "8MB", "psram": true},
+    {"board": "ESP32_GENERIC-C3", "chip": "ESP32-C3", "flash": "4MB", "psram": false}
+  ],
+  "cache": {
+    "directory": "firmware/cache/",
+    "naming": "{board}-{version}.bin",
+    "validation": "SHA256 checksum verified before flashing"
+  },
+  "flash_workflow": {
+    "steps": [
+      "1. Determine board type (from device-info or user input)",
+      "2. Check firmware/cache/ for matching .bin — use cached if available",
+      "3. If not cached, download from micropython.org/download/{board}/",
+      "4. Verify SHA256 checksum",
+      "5. Erase flash: esptool.py --port {PORT} erase_flash",
+      "6. Flash firmware: esptool.py --port {PORT} --baud 460800 write_flash 0x1000 {bin}"
+    ],
+    "tools_required": ["esptool (pip install esptool)", "mpremote (pip install mpremote)"]
+  },
+  "microport_releases": {
+    "stable": "https://micropython.org/download/ESP32_GENERIC/",
+    "nightly": "https://micropython.org/resources/firmware/ESP32_GENERIC-latest.bin"
+  }
+}

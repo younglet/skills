@@ -1,0 +1,180 @@
+{
+  "name": "io",
+  "module": "io",
+  "import": "import io",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "In-memory streams: BytesIO, StringIO, BufferedWriter. File I/O via open(). DO NOT use 'uio'.",
+  "differences_from_cpython": "Subset: BytesIO, StringIO, BufferedWriter only.",
+  "classes": [
+    {
+      "name": "BytesIO",
+      "signature": "io.BytesIO([initial_bytes])",
+      "methods": [
+        {
+          "name": "read",
+          "signature": "read([nbytes])",
+          "returns": "bytes"
+        },
+        {
+          "name": "readinto",
+          "signature": "readinto(buf)",
+          "returns": "int"
+        },
+        {
+          "name": "readline",
+          "signature": "readline()",
+          "returns": "bytes"
+        },
+        {
+          "name": "write",
+          "signature": "write(buf)",
+          "returns": "int"
+        },
+        {
+          "name": "seek",
+          "signature": "seek(offset, whence=0)",
+          "returns": "int"
+        },
+        {
+          "name": "tell",
+          "signature": "tell()",
+          "returns": "int"
+        },
+        {
+          "name": "flush",
+          "signature": "flush()",
+          "returns": "None"
+        },
+        {
+          "name": "close",
+          "signature": "close()",
+          "returns": "None"
+        },
+        {
+          "name": "getvalue",
+          "signature": "getvalue()",
+          "returns": "bytes",
+          "note": "MicroPython extension."
+        }
+      ]
+    },
+    {
+      "name": "StringIO",
+      "signature": "io.StringIO([initial_string])",
+      "methods": [
+        "Same as BytesIO but returns str instead of bytes.",
+        {
+          "name": "StringIO.close",
+          "signature": "close()",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Close the stream."
+        },
+        {
+          "name": "StringIO.flush",
+          "signature": "flush()",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Flush the stream."
+        },
+        {
+          "name": "StringIO.getvalue",
+          "signature": "getvalue()",
+          "returns": {
+            "type": "str"
+          },
+          "description": "Get the current contents as a string."
+        },
+        {
+          "name": "StringIO.read",
+          "signature": "read([n])",
+          "returns": {
+            "type": "str"
+          },
+          "description": "Read up to n characters."
+        },
+        {
+          "name": "StringIO.readinto",
+          "signature": "readinto(buf)",
+          "returns": {
+            "type": "int",
+            "description": "Bytes read."
+          },
+          "description": "Read into a buffer."
+        },
+        {
+          "name": "StringIO.readline",
+          "signature": "readline()",
+          "returns": {
+            "type": "str"
+          },
+          "description": "Read a line."
+        },
+        {
+          "name": "StringIO.seek",
+          "signature": "seek(pos, whence=0)",
+          "returns": {
+            "type": "int"
+          },
+          "description": "Seek to position. whence: 0=start, 1=current, 2=end."
+        },
+        {
+          "name": "StringIO.tell",
+          "signature": "tell()",
+          "returns": {
+            "type": "int"
+          },
+          "description": "Get current stream position."
+        },
+        {
+          "name": "StringIO.write",
+          "signature": "write(s)",
+          "returns": {
+            "type": "int",
+            "description": "Characters written."
+          },
+          "description": "Write string to stream."
+        }
+      ]
+    },
+    {
+      "name": "BufferedWriter",
+      "signature": "io.BufferedWriter(stream, buffer_size=256)",
+      "description": "Buffered write wrapper for streams.",
+      "methods": [
+        {
+          "name": "BufferedWriter.flush",
+          "signature": "flush()",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Flush buffered data to underlying stream."
+        },
+        {
+          "name": "BufferedWriter.write",
+          "signature": "write(buf)",
+          "returns": {
+            "type": "int",
+            "description": "Bytes written."
+          },
+          "description": "Write bytes to buffer."
+        }
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "name": "io.open",
+      "signature": "open(name, mode='r', ...)",
+      "returns": "file",
+      "description": "Alias for built-in open()."
+    }
+  ],
+  "constants": {
+    "BufferedWriter": null,
+    "IOBase": null
+  }
+}

@@ -1,0 +1,339 @@
+{
+  "name": "os",
+  "module": "os",
+  "import": "import os",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Filesystem and OS-level operations: directory listing, file management, mounting, and random bytes.",
+  "differences_from_cpython": [
+    "No os.environ, os.system(), or subprocess support.",
+    "No os.path submodule — use string operations.",
+    "os.listdir() takes POSITIONAL argument only."
+  ],
+  "functions": [
+    {
+      "name": "os.uname",
+      "signature": "uname()",
+      "returns": "tuple",
+      "description": "(sysname, nodename, release, version, machine)."
+    },
+    {
+      "name": "os.listdir",
+      "signature": "listdir([dir])",
+      "returns": "list[str]",
+      "description": "List directory. POSITIONAL arg only."
+    },
+    {
+      "name": "os.ilistdir",
+      "signature": "ilistdir([dir])",
+      "returns": "iterator",
+      "description": "Like listdir but yields (name, type, inode, size)."
+    },
+    {
+      "name": "os.mkdir",
+      "signature": "mkdir(path)",
+      "returns": "None"
+    },
+    {
+      "name": "os.rmdir",
+      "signature": "rmdir(path)",
+      "returns": "None"
+    },
+    {
+      "name": "os.remove",
+      "signature": "remove(path)",
+      "returns": "None",
+      "description": "Delete a file."
+    },
+    {
+      "name": "os.unlink",
+      "signature": "unlink(path)",
+      "returns": "None",
+      "description": "Alias for remove()."
+    },
+    {
+      "name": "os.rename",
+      "signature": "rename(old, new)",
+      "returns": "None"
+    },
+    {
+      "name": "os.chdir",
+      "signature": "chdir(path)",
+      "returns": "None"
+    },
+    {
+      "name": "os.getcwd",
+      "signature": "getcwd()",
+      "returns": "str"
+    },
+    {
+      "name": "os.stat",
+      "signature": "stat(path)",
+      "returns": "tuple",
+      "description": "(mode, ino, dev, nlink, uid, gid, size, atime, mtime, ctime)."
+    },
+    {
+      "name": "os.statvfs",
+      "signature": "statvfs(path)",
+      "returns": "tuple"
+    },
+    {
+      "name": "os.sync",
+      "signature": "sync()",
+      "returns": "None"
+    },
+    {
+      "name": "os.mount",
+      "signature": "mount(fsobj, mount_point, *, readonly=False)",
+      "returns": "None"
+    },
+    {
+      "name": "os.umount",
+      "signature": "umount(mount_point)",
+      "returns": "None"
+    },
+    {
+      "name": "os.urandom",
+      "signature": "urandom(n)",
+      "returns": "bytes",
+      "description": "n random bytes from hardware TRNG."
+    },
+    {
+      "name": "os.dupterm",
+      "signature": "dupterm(stream, index=0)",
+      "returns": "None"
+    },
+    {
+      "name": "os.dupterm_notify",
+      "signature": "dupterm_notify()",
+      "returns": "None"
+    }
+  ],
+  "classes": [
+    {
+      "name": "VfsFat",
+      "description": "FAT12/16/32 filesystem. Use os.mount(os.VfsFat(block_dev), '/').",
+      "methods": [
+        {
+          "name": "VfsFat.open",
+          "signature": "open(path, mode='r')",
+          "returns": {
+            "type": "file object"
+          },
+          "description": "Open a file on the filesystem."
+        },
+        {
+          "name": "VfsFat.remove",
+          "signature": "remove(path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Delete a file."
+        },
+        {
+          "name": "VfsFat.chdir",
+          "signature": "chdir(path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Change current working directory."
+        },
+        {
+          "name": "VfsFat.getcwd",
+          "signature": "getcwd()",
+          "returns": {
+            "type": "str"
+          },
+          "description": "Get current working directory path."
+        },
+        {
+          "name": "VfsFat.ilistdir",
+          "signature": "ilistdir([path])",
+          "returns": {
+            "type": "iterator"
+          },
+          "description": "List directory contents: yields (name, type, inode, size) tuples."
+        },
+        {
+          "name": "VfsFat.mkdir",
+          "signature": "mkdir(path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Create a directory."
+        },
+        {
+          "name": "VfsFat.mkfs",
+          "signature": "mkfs()",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Format the filesystem (DESTROYS all data)."
+        },
+        {
+          "name": "VfsFat.mount",
+          "signature": "mount(vfs, path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Mount a virtual filesystem at path."
+        },
+        {
+          "name": "VfsFat.rename",
+          "signature": "rename(old_path, new_path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Rename a file or directory."
+        },
+        {
+          "name": "VfsFat.rmdir",
+          "signature": "rmdir(path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Remove an empty directory."
+        },
+        {
+          "name": "VfsFat.stat",
+          "signature": "stat(path)",
+          "returns": {
+            "type": "tuple"
+          },
+          "description": "Get file/directory status: (mode, size, ...)."
+        },
+        {
+          "name": "VfsFat.statvfs",
+          "signature": "statvfs(path)",
+          "returns": {
+            "type": "tuple"
+          },
+          "description": "Get filesystem statistics: (block_size, total_blocks, free_blocks, ...)."
+        },
+        {
+          "name": "VfsFat.umount",
+          "signature": "umount(path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Unmount a virtual filesystem."
+        }
+      ]
+    },
+    {
+      "name": "VfsLfs2",
+      "description": "LittleFS v2 filesystem. Better wear-leveling for flash.",
+      "methods": [
+        {
+          "name": "VfsLfs2.open",
+          "signature": "open(path, mode='r')",
+          "returns": {
+            "type": "file object"
+          },
+          "description": "Open a file on the filesystem."
+        },
+        {
+          "name": "VfsLfs2.remove",
+          "signature": "remove(path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Delete a file."
+        },
+        {
+          "name": "VfsLfs2.chdir",
+          "signature": "chdir(path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Change current working directory."
+        },
+        {
+          "name": "VfsLfs2.getcwd",
+          "signature": "getcwd()",
+          "returns": {
+            "type": "str"
+          },
+          "description": "Get current working directory path."
+        },
+        {
+          "name": "VfsLfs2.ilistdir",
+          "signature": "ilistdir([path])",
+          "returns": {
+            "type": "iterator"
+          },
+          "description": "List directory contents: yields (name, type, inode, size) tuples."
+        },
+        {
+          "name": "VfsLfs2.mkdir",
+          "signature": "mkdir(path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Create a directory."
+        },
+        {
+          "name": "VfsLfs2.mkfs",
+          "signature": "mkfs()",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Format the filesystem (DESTROYS all data)."
+        },
+        {
+          "name": "VfsLfs2.mount",
+          "signature": "mount(vfs, path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Mount a virtual filesystem at path."
+        },
+        {
+          "name": "VfsLfs2.rename",
+          "signature": "rename(old_path, new_path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Rename a file or directory."
+        },
+        {
+          "name": "VfsLfs2.rmdir",
+          "signature": "rmdir(path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Remove an empty directory."
+        },
+        {
+          "name": "VfsLfs2.stat",
+          "signature": "stat(path)",
+          "returns": {
+            "type": "tuple"
+          },
+          "description": "Get file/directory status: (mode, size, ...)."
+        },
+        {
+          "name": "VfsLfs2.statvfs",
+          "signature": "statvfs(path)",
+          "returns": {
+            "type": "tuple"
+          },
+          "description": "Get filesystem statistics: (block_size, total_blocks, free_blocks, ...)."
+        },
+        {
+          "name": "VfsLfs2.umount",
+          "signature": "umount(path)",
+          "returns": {
+            "type": "None"
+          },
+          "description": "Unmount a virtual filesystem."
+        }
+      ]
+    }
+  ],
+  "constants": {
+    "sep": "/",
+    "VfsFat": null,
+    "VfsLfs2": null
+  }
+}

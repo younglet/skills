@@ -1,0 +1,82 @@
+{
+  "name": "drivers-display",
+  "category": "display",
+  "description": "OLED, TFT, e-Paper, LCD, LED matrix drivers for MicroPython. Sourced from awesome-micropython.com community list.",
+  "drivers": {
+    "oled_ssd1306": {
+      "chip": "SSD1306",
+      "interface": "I2C/SPI",
+      "resolution": "128x64, 128x32",
+      "repos": [
+        {"url": "https://github.com/micropython/micropython-lib/tree/master/micropython/drivers/display/ssd1306", "official": true, "stars": null, "notes": "Official MicroPython driver", "install": "mip.install('ssd1306')"},
+        {"url": "https://github.com/adafruit/micropython-adafruit-ssd1306", "official": false, "stars": null, "notes": "Adafruit fork, widely used"}
+      ],
+      "upvotes": 0, "downvotes": 0,
+      "analysis_notes": null,
+      "usage_notes": null
+    },
+    "oled_sh1106": {
+      "chip": "SH1106",
+      "interface": "I2C/SPI",
+      "resolution": "128x64",
+      "repos": [
+        {"url": "https://github.com/robert-hh/SH1106", "official": false, "stars": null, "notes": "Popular SH1106 driver, I2C and SPI"}
+      ],
+      "upvotes": 0, "downvotes": 0,
+      "analysis_notes": null,
+      "usage_notes": null
+    },
+    "tft_st7789": {
+      "chip": "ST7789",
+      "interface": "SPI",
+      "resolution": "240x240, 240x320",
+      "repos": [
+        {"url": "https://github.com/russhughes/st7789_mpy", "official": false, "stars": null, "notes": "Fast ST7789 driver with framebuf integration"}
+      ],
+      "upvotes": 0, "downvotes": 0,
+      "analysis_notes": null,
+      "usage_notes": null
+    },
+    "tft_ili9341": {
+      "chip": "ILI9341",
+      "interface": "SPI",
+      "resolution": "240x320",
+      "repos": [
+        {"url": "https://github.com/rdagger/micropython-ili9341", "official": false, "stars": null, "notes": "Full-featured ILI9341 with fonts and shapes"}
+      ],
+      "upvotes": 0, "downvotes": 0,
+      "analysis_notes": null,
+      "usage_notes": null
+    },
+    "epaper_waveshare": {
+      "chip": "Various Waveshare e-Paper",
+      "interface": "SPI",
+      "repos": [
+        {"url": "https://github.com/mcauser/micropython-waveshare-epaper", "official": false, "stars": null, "notes": "Multi-model Waveshare e-Paper driver"}
+      ],
+      "upvotes": 0, "downvotes": 0,
+      "analysis_notes": null,
+      "usage_notes": null
+    },
+    "lcd_i2c": {
+      "chip": "HD44780 + PCF8574 I2C backpack",
+      "interface": "I2C",
+      "repos": [
+        {"url": "https://github.com/dhylands/python_lcd", "official": false, "stars": null, "notes": "Classic HD44780 I2C LCD driver"}
+      ],
+      "upvotes": 0, "downvotes": 0,
+      "analysis_notes": null,
+      "usage_notes": null
+    },
+    "led_matrix_max7219": {
+      "chip": "MAX7219",
+      "interface": "SPI",
+      "repos": [
+        {"url": "https://github.com/mcauser/micropython-max7219", "official": false, "stars": null, "notes": "8x8 LED matrix driver"}
+      ],
+      "upvotes": 0, "downvotes": 0,
+      "analysis_notes": null,
+      "usage_notes": null
+    }
+  }
+}

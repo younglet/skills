@@ -1,0 +1,55 @@
+{
+  "name": "motor",
+  "category": "motion",
+  "description": "DC motor control via L298N H-bridge driver. Speed control via PWM, direction via two GPIO pins. For simple on/off, a relay or MOSFET also works.",
+  "complexity": "intermediate",
+  "parts": [
+    {"name": "DC motor", "spec": "3-12V, any RPM"},
+    {"name": "L298N motor driver", "spec": "Dual H-bridge, up to 2A per channel"},
+    {"name": "External power", "spec": "6-12V DC (battery or adapter matching motor voltage)"},
+    {"name": "Jumper wires", "spec": "6x M-F"},
+    {"name": "Optional: capacitor", "spec": "100µF electrolytic across motor terminals for noise reduction"}
+  ],
+  "wiring": {
+    "L298N_12V": "External power + (6-12V)",
+    "L298N_GND": "External power GND AND ESP32 GND (common ground!)",
+    "L298N_5V": "Option A: ESP32 5V pin (if jumper on L298N 5V-EN is set). Option B: leave disconnected if using >12V.",
+    "L298N_IN1": "ESP32 GPIO (direction A)",
+    "L298N_IN2": "ESP32 GPIO (direction B)",
+    "L298N_ENA": "ESP32 GPIO (PWM speed) — jumper must be REMOVED from L298N ENA pins",
+    "L298N_OUT1": "Motor terminal 1",
+    "L298N_OUT2": "Motor terminal 2",
+    "diagram": "External Power(+) → L298N 12V\nExternal Power(-) → L298N GND → ESP32 GND\nESP32 GPIO(D1)  → L298N IN1\nESP32 GPIO(D2)  → L298N IN2\nESP32 GPIO(PWM) → L298N ENA (with jumper removed)\nL298N OUT1 → Motor(+)\nL298N OUT2 → Motor(-)"
+  },
+  "esp32_constraints": {
+    "pwm_channels": "ESP32 has 16 independent PWM channels. Each motor uses 1 channel.",
+    "gpio_choice": "Any output-capable GPIO for IN1/IN2. Any PWM-capable GPIO for ENA.",
+    "power_isolation": "Motor power MUST be separate from ESP32 power. Only GND is shared.",
+    "noise": "DC motors generate electrical noise. Add 100µF capacitor across motor terminals. Avoid long parallel runs of motor and signal wires."
+  },
+  "code": {
+    "imports": ["from machine import Pin, PWM"],
+    "example": "from machine import Pin, PWM\nimport time\n\nclass DCMotor:\n    def __init__(self, in1_pin, in2_pin, en_pin, freq=1000):\n        self.in1 = Pin(in1_pin, Pin.OUT)\n        self.in2 = Pin(in2_pin, Pin.OUT)\n        self.en = PWM(Pin(en_pin), freq=freq, duty=0)\n\n    def forward(self, speed):\n        \"\"\"speed: 0-1023 (10-bit PWM)\"\"\"\n        self.in1.on()\n        self.in2.off()\n        self.en.duty(speed)\n\n    def backward(self, speed):\n        \"\"\"speed: 0-1023\"\"\"\n        self.in1.off()\n        self.in2.on()\n        self.en.duty(speed)\n\n    def stop(self):\n        self.en.duty(0)\n        self.in1.off()\n        self.in2.off()\n\n    def brake(self):\n        \"\"\"Short brake — motor resists movement.\"\"\"\n        self.in1.on()\n        self.in2.on()\n        self.en.duty(0)\n\n    def deinit(self):\n        self.en.deinit()\n\n# Usage\nmotor = DCMotor(in1_pin=25, in2_pin=26, en_pin=27)\n\nmotor.forward(512)   # half speed forward\ntime.sleep(2)\nmotor.stop()\ntime.sleep(0.5)\nmotor.backward(768)  # 75% speed backward\ntime.sleep(2)\nmotor.brake()\nmotor.deinit()",
+    "methods_used": ["Pin.on()", "Pin.off()", "PWM.duty()", "PWM.deinit()"],
+    "pwm_note": "PWM frequency 100-1000Hz works well. Below 100Hz = audible whine. Above 20kHz = silent but may reduce torque."
+  },
+  "l298n_channel2": {
+    "description": "L298N has two channels (A and B). Use the same pattern for IN3/IN4/ENB on the second channel.",
+    "pins": "IN3, IN4 (direction) + ENB (PWM speed) — same wiring pattern as channel A."
+  },
+  "alternative_drivers": {
+    "l293d": "Similar to L298N but lower current (600mA). Same pin logic.",
+    "drv8833": "Smaller, 1.5A, dual H-bridge. Same control logic.",
+    "mosfet_irlz44n": "Single transistor for unidirectional control. PWM on gate. Simpler but no reverse.",
+    "relay": "On/off only, no speed control. Use relay module with optocoupler."
+  },
+  "pitfalls": [
+    "FORGETTING common GND between ESP32 and L298N — motor won't spin, possible damage.",
+    "Leaving ENA jumper on — PWM won't work (motor always at full speed). REMOVE the jumper cap.",
+    "Motor voltage too high for L298N (>12V may overheat). Check motor specs and L298N datasheet.",
+    "Duty cycle of 0 = motor off. Very low duty (<100) may not overcome static friction — motor hums but doesn't spin.",
+    "brake() shorts motor terminals through H-bridge — motor resists turning. Do NOT use brake() for long periods (heats up driver).",
+    "ESP32 PWM channels are shared — if another peripheral uses the same channel, motor may behave erratically."
+  ],
+  "extensions": ["encoder_motor", "stepper", "pid_speed_control"]
+}

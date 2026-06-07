@@ -1,0 +1,142 @@
+{
+  "name": "re",
+  "module": "re",
+  "import": "import re  # OR: import ure as re",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Simple regular expressions. Subset of CPython's re module; MicroPython name is 'ure'.",
+  "differences_from_cpython": [
+    "Module is 'ure' internally; 're' is an alias on ESP32.",
+    "No re.compile() flags (re.DOTALL, re.IGNORECASE, etc.) - use inline (?i), (?s) instead.",
+    "No re.subn(), re.finditer(), re.fullmatch().",
+    "No look-ahead (?=...), look-behind (?<=...), or named groups (?P<name>...).",
+    "No re.split().",
+    "Groups supported via (...), access via match.group(n)."
+  ],
+  "functions": [
+    {
+      "name": "re.compile",
+      "signature": "compile(pattern_str, flags=0, ...)",
+      "parameters": [
+        {
+          "name": "pattern_str",
+          "type": "str",
+          "description": "Regex pattern string."
+        },
+        {
+          "name": "flags",
+          "type": "int",
+          "description": "0, re.IGNORECASE(1), re.MULTILINE(2), re.DOTALL(4). Can OR together. ESP32-specific."
+        }
+      ],
+      "returns": {
+        "type": "regex object",
+        "description": "Compiled regex. Methods: match(), search(), sub(), split()."
+      }
+    },
+    {
+      "name": "re.match",
+      "signature": "match(pattern, string)",
+      "parameters": [
+        {
+          "name": "pattern",
+          "type": "str|regex"
+        },
+        {
+          "name": "string",
+          "type": "str"
+        }
+      ],
+      "returns": {
+        "type": "match object|None",
+        "description": "Match at beginning of string, or None."
+      }
+    },
+    {
+      "name": "re.search",
+      "signature": "search(pattern, string)",
+      "parameters": [
+        {
+          "name": "pattern",
+          "type": "str|regex"
+        },
+        {
+          "name": "string",
+          "type": "str"
+        }
+      ],
+      "returns": {
+        "type": "match object|None",
+        "description": "First match anywhere in string, or None."
+      }
+    },
+    {
+      "name": "re.sub",
+      "signature": "sub(pattern, repl, string, count=0, flags=0)",
+      "parameters": [
+        {
+          "name": "pattern",
+          "type": "str|regex"
+        },
+        {
+          "name": "repl",
+          "type": "str",
+          "description": "Replacement string. Supports \\1, \\2 backreferences."
+        },
+        {
+          "name": "string",
+          "type": "str"
+        },
+        {
+          "name": "count",
+          "type": "int",
+          "description": "Max replacements. 0 = all."
+        }
+      ],
+      "returns": {
+        "type": "str"
+      }
+    }
+  ],
+  "match_object_methods": [
+    {
+      "name": "group",
+      "signature": "match.group([n])",
+      "description": "Return matched group. 0=whole match, n>0=nth group."
+    },
+    {
+      "name": "groups",
+      "signature": "match.groups()",
+      "description": "Return tuple of all groups."
+    },
+    {
+      "name": "start",
+      "signature": "match.start([n])",
+      "description": "Start index of group n."
+    },
+    {
+      "name": "end",
+      "signature": "match.end([n])",
+      "description": "End index of group n."
+    },
+    {
+      "name": "span",
+      "signature": "match.span([n])",
+      "description": "Return (start, end) tuple."
+    }
+  ],
+  "inline_flags": [
+    {
+      "pattern": "(?i)",
+      "description": "Case-insensitive match (equivalent to re.IGNORECASE)"
+    },
+    {
+      "pattern": "(?s)",
+      "description": "Dot matches newline (equivalent to re.DOTALL)"
+    },
+    {
+      "pattern": "(?m)",
+      "description": "Multiline ^ and $ (equivalent to re.MULTILINE)"
+    }
+  ]
+}

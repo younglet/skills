@@ -1,0 +1,19 @@
+{
+  "name": "binascii",
+  "module": "binascii",
+  "import": "import binascii",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Binary/ASCII conversions: hexadecimal, base64, and CRC32. DO NOT use 'ubinascii'.",
+  "differences_from_cpython": [
+    "Subset: hexlify, unhexlify, a2b_base64, b2a_base64, crc32.",
+    "hexlify() returns bytes, not str."
+  ],
+  "functions": [
+    {"name": "binascii.hexlify", "signature": "hexlify(data, [sep])", "returns": "bytes", "description": "Convert binary to hex bytes. sep separates bytes."},
+    {"name": "binascii.unhexlify", "signature": "unhexlify(hexstr)", "returns": "bytes", "description": "Convert hex string to bytes."},
+    {"name": "binascii.a2b_base64", "signature": "a2b_base64(data)", "returns": "bytes", "description": "Decode base64 to bytes."},
+    {"name": "binascii.b2a_base64", "signature": "b2a_base64(data, *, newline=True)", "returns": "bytes", "description": "Encode bytes to base64."},
+    {"name": "binascii.crc32", "signature": "crc32([data, value=0])", "returns": "int", "description": "Compute CRC32 checksum."}
+  ]
+}

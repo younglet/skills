@@ -1,0 +1,68 @@
+{
+  "name": "machine-encoder",
+  "module": "machine",
+  "class_name": "Encoder",
+  "import": "from machine import Encoder",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Quadrature rotary encoder interface using ESP32 PCNT peripheral. Tracks position and direction from 2-phase encoders.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific ESP32 encoder interface.",
+  "classes": [
+    {
+      "name": "Encoder",
+      "signature": "machine.Encoder(pin_a, pin_b, *, filter_ns=0)",
+      "constructor_params": [
+        {
+          "name": "pin_a",
+          "type": "Pin",
+          "description": "Phase A pin."
+        },
+        {
+          "name": "pin_b",
+          "type": "Pin",
+          "description": "Phase B pin."
+        },
+        {
+          "name": "filter_ns",
+          "type": "int",
+          "description": "Glitch filter in nanoseconds. Default 0."
+        }
+      ],
+      "methods": [
+        {
+          "name": "Encoder.init",
+          "signature": "init(*, filter_ns=0)",
+          "returns": "None"
+        },
+        {
+          "name": "Encoder.deinit",
+          "signature": "deinit()",
+          "returns": "None"
+        },
+        {
+          "name": "Encoder.value",
+          "signature": "value([val])",
+          "returns": "int|None",
+          "description": "Get or set encoder position."
+        },
+        {
+          "name": "Encoder.phases",
+          "signature": "phases()",
+          "returns": "tuple",
+          "description": "Return (phase_a, phase_b) raw values."
+        }
+      ],
+      "example": "from machine import Pin, Encoder\n\n# Rotary encoder on GPIO 4 (A) and 5 (B)\nenc = Encoder(Pin(4), Pin(5), filter_ns=1000)\n\nlast = enc.value()\nwhile True:\n    pos = enc.value()\n    if pos != last:\n        print('Position:', pos)\n        last = pos",
+      "constants": {
+        "_INSTANCES": null,
+        "_PCNT": null
+      }
+    }
+  ],
+  "esp32_notes": [
+    "Uses one ESP32 PCNT unit in quadrature mode.",
+    "Each encoder uses 2 GPIO pins + 1 PCNT unit.",
+    "filter_ns helps debounce mechanical encoders (try 1000ns = 1us).",
+    "For simple pulse counting (not quadrature), use machine.Counter."
+  ]
+}

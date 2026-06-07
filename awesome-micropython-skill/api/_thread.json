@@ -1,0 +1,68 @@
+{
+  "name": "_thread",
+  "module": "_thread",
+  "import": "import _thread",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Low-level threading: start_new_thread, Lock, stack control. ESP32 supports limited threading (~8KB stack per thread).",
+  "differences_from_cpython": "Very limited compared to CPython threading. No Thread class, no daemon, no join.",
+  "functions": [
+    {
+      "name": "_thread.start_new_thread",
+      "signature": "start_new_thread(func, args, kwargs=None)",
+      "returns": "None",
+      "description": "Start function in new thread."
+    },
+    {
+      "name": "_thread.allocate_lock",
+      "signature": "allocate_lock()",
+      "returns": "Lock"
+    },
+    {
+      "name": "_thread.exit",
+      "signature": "exit()",
+      "returns": "None",
+      "description": "Exit current thread."
+    },
+    {
+      "name": "_thread.get_ident",
+      "signature": "get_ident()",
+      "returns": "int",
+      "description": "Get current thread ID."
+    },
+    {
+      "name": "_thread.stack_size",
+      "signature": "stack_size([size])",
+      "returns": "int",
+      "description": "Get/set thread stack size. Min ~4096."
+    }
+  ],
+  "classes": [
+    {
+      "name": "LockType",
+      "methods": [
+        {
+          "name": "acquire",
+          "signature": "acquire([wait=1])",
+          "returns": "bool"
+        },
+        {
+          "name": "release",
+          "signature": "release()",
+          "returns": "None"
+        },
+        {
+          "name": "locked",
+          "signature": "locked()",
+          "returns": "bool"
+        }
+      ]
+    }
+  ],
+  "esp32_notes": [
+    "Thread stack default ~8KB. Can increase via stack_size().",
+    "Use micropython.alloc_emergency_exception_buf(100) for thread debugging.",
+    "GIL is present; threads do NOT run truly concurrently.",
+    "Memory is shared between threads; use locks for shared data."
+  ]
+}

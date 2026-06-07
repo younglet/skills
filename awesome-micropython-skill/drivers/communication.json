@@ -1,0 +1,6 @@
+{
+  "name": "drivers-communication",
+  "category": "communication",
+  "description": "communication drivers sourced from awesome-micropython.com",
+  "drivers": {}
+}

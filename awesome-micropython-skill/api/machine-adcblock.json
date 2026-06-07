@@ -1,0 +1,26 @@
+{
+  "name": "machine-adcblock",
+  "module": "machine",
+  "class_name": "ADCBlock",
+  "import": "from machine import ADCBlock",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Advanced ADC block configuration. Provides access to ADC hardware calibration and channel-specific settings. Obtained via ADC.block().",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific ESP32 advanced ADC interface.",
+  "classes": [
+    {
+      "name": "ADCBlock",
+      "signature": "Obtained via adc.block(), not constructed directly.",
+      "methods": [
+        {"name": "ADCBlock.init", "signature": "init(*, bits=12)", "parameters": [{"name": "bits", "type": "int", "description": "Resolution: 9, 10, 11, or 12 bits."}], "returns": "None", "description": "Configure the ADC block resolution."},
+        {"name": "ADCBlock.connect", "signature": "connect(pin_or_channel)", "returns": "ADC", "description": "Connect a pin or channel to this ADC block and return an ADC object."}
+      ],
+      "example": "from machine import ADC, Pin\n\nadc = ADC(Pin(34))\nblock = adc.block()\nblock.init(bits=10)  # set 10-bit resolution\n\n# Connect another pin\nadc2 = block.connect(Pin(35))"
+    }
+  ],
+  "esp32_notes": [
+    "ESP32 has 2 ADC blocks: ADC1 (GPIO 32-39) and ADC2 (GPIO 0,2,4,12-15,25-27).",
+    "Changing bits affects all ADC channels on the same block.",
+    "ADC.block() returns the ADCBlock this ADC channel belongs to."
+  ]
+}

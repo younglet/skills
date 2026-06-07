@@ -1,0 +1,83 @@
+{
+  "name": "machine-timer",
+  "module": "machine",
+  "class_name": "Timer",
+  "import": "from machine import Timer",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Hardware timer for periodic or one-shot callback execution. ESP32 provides 4 virtual timers.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific timer interface.",
+  "classes": [
+    {
+      "name": "Timer",
+      "signature": "machine.Timer(id)",
+      "constructor_params": [
+        {
+          "name": "id",
+          "type": "int",
+          "description": "Timer ID. ESP32: 0-3 for virtual timers. Use any unused ID."
+        }
+      ],
+      "methods": [
+        {
+          "name": "Timer.init",
+          "signature": "init(*, mode=Timer.PERIODIC, freq=-1, period=-1, callback=None)",
+          "parameters": [
+            {
+              "name": "mode",
+              "type": "int",
+              "description": "Timer.ONE_SHOT (0) or Timer.PERIODIC (1)."
+            },
+            {
+              "name": "freq",
+              "type": "int",
+              "description": "Frequency in Hz. Use EITHER freq OR period, not both."
+            },
+            {
+              "name": "period",
+              "type": "int",
+              "description": "Period in milliseconds. Use EITHER freq OR period, not both."
+            },
+            {
+              "name": "callback",
+              "type": "callable|None",
+              "description": "Function called on timer event. Receives 1 arg: the Timer object."
+            }
+          ],
+          "returns": "None",
+          "description": "Initialize and start timer."
+        },
+        {
+          "name": "Timer.deinit",
+          "signature": "deinit()",
+          "returns": "None",
+          "description": "Stop and de-initialize the timer."
+        },
+        {
+          "name": "Timer.value",
+          "signature": "value()",
+          "returns": "int",
+          "description": "Get current timer counter value."
+        }
+      ],
+      "constants": {
+        "ONE_SHOT": 0,
+        "PERIODIC": 1
+      }
+    }
+  ],
+  "callback_signature_warning": {
+    "title": "Timer callback MUST accept exactly 1 argument",
+    "explanation": "The callback function receives the Timer object as its only argument. A callback with no arguments will crash.",
+    "WRONG": "def my_callback():\n    print('tick')\ntimer.init(period=1000, callback=my_callback)  # CRASHES!",
+    "CORRECT": "def my_callback(timer):\n    print('tick')\ntimer.init(period=1000, callback=my_callback)"
+  },
+  "example": "from machine import Timer\nfrom micropython import alloc_emergency_exception_buf\n\nalloc_emergency_exception_buf(100)  # recommended for timer callbacks\n\ndef tick(timer):\n    print('1 second passed')\n\ntimer = Timer(0)\ntimer.init(period=1000, mode=Timer.PERIODIC, callback=tick)\n\n# Later:\n# timer.deinit()  # stop timer",
+  "esp32_notes": [
+    "ESP32 provides 4 virtual timers (id 0-3).",
+    "Timer callbacks execute in interrupt context — keep them short and non-blocking.",
+    "Cannot allocate memory inside a timer callback (no object creation).",
+    "Always call alloc_emergency_exception_buf(100) at startup for timer debugging.",
+    "Virtual timers use the ESP32's high-resolution timer (1µs resolution)."
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "name": "pitfalls",
+  "description": "Common ESP32 MicroPython errors → ranked fixes. AI can upvote/downvote fixes based on real device results. Highest (upvotes - downvotes) fixes are tried first. This is a self-healing knowledge base.",
+  "healing_mechanism": {
+    "how_it_works": "When AI applies a fix and it works, increment upvotes. When it fails, increment downvotes. Over time, the most reliable fixes per error/device/version float to the top.",
+    "how_to_vote": "Edit this JSON: increment upvotes or downvotes on the fix you tried. Add device/version info to 'confirmed_on' or 'failed_on'.",
+    "vote_threshold": "Fixes with (upvotes - downvotes) < -3 should be removed or marked deprecated."
+  },
+  "errors": {
+    "MemoryError": {
+      "description": "Heap exhausted. Typical on ESP32 with ~160KB free.",
+      "quick_check": "import gc; gc.collect(); print(gc.mem_free())",
+      "fixes": [
+        {
+          "action": "Call gc.collect() before allocating large objects",
+          "code": "import gc; gc.collect()",
+          "upvotes": 0,
+          "downvotes": 0,
+          "when_to_use": "Before creating large bytearrays, loading JSON, or opening sockets",
+          "confirmed_on": [],
+          "failed_on": []
+        },
+        {
+          "action": "Use bytearray pre-allocation instead of repeated allocations",
+          "code": "buf = bytearray(1024)  # allocate once, reuse\n# instead of: buf = bytes(1024) in a loop",
+          "upvotes": 0,
+          "downvotes": 0,
+          "when_to_use": "When reading sensor data or network packets in a loop",
+          "confirmed_on": [],
+          "failed_on": []
+        },
+        {
+          "action": "Stream large data instead of loading into memory",
+          "code": "import urequests\nr = urequests.get(url)\nfor chunk in r.iter_content(512):  # 512 bytes at a time\n    process(chunk)",
+          "upvotes": 0,
+          "downvotes": 0,
+          "when_to_use": "Downloading files > 10KB or reading large JSON APIs",
+          "confirmed_on": [],
+          "failed_on": []
+        },
+        {
+          "action": "Delete unused objects and collect",
+          "code": "del large_object; gc.collect()",
+          "upvotes": 0,
+          "downvotes": 0,
+          "when_to_use": "After finishing with a temporary large object",
+          "confirmed_on": [],
+          "failed_on": []
+        }
+      ]
+    },
+    "OSError: [Errno 12] ENOMEM": {
+      "description": "Out of socket memory. Too many open sockets or socket buffers too large.",
+      "quick_check": "import gc; print(gc.mem_free())",
+      "fixes": [
+        {
+          "action": "Close sockets immediately after use",
+          "code": "s = socket.socket()\ntry:\n    # ... use socket ...\nfinally:\n    s.close()",
+          "upvotes": 0,
+          "downvotes": 0,
+          "when_to_use": "Always. Never rely on garbage collection for sockets.",
+          "confirmed_on": [],
+          "failed_on": []
+        },
+        {
+          "action": "Reduce socket receive buffer",
+          "code": "s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 256)",
+          "upvotes": 0,
+          "downvotes": 0,
+          "when_to_use": "When making multiple simultaneous connections",
+          "confirmed_on": [],
+          "failed_on": []
+        }
+      ]
+    },
+    "OSError: [Errno 110] ETIMEDOUT": {
+      "description": "I2C/SPI/UART operation timed out. Bus hang or device not responding.",
+      "quick_check": "Check wiring, power, and pull-up resistors. Run i2c.scan() to verify.",
+      "fixes": [
+        {
+          "action": "Re-initialize I2C peripheral",
+          "code": "from machine import I2C, Pin\ni2c = I2C(0, scl=Pin(22), sda=Pin(21))\n# Or use SoftI2C which auto-recovers:\ni2c = SoftI2C(scl=Pin(22), sda=Pin(21))",
+          "upvotes": 0,
+          "downvotes": 0,
+          "when_to_use": "After I2C bus lockup. Hardware I2C needs re-init; SoftI2C handles this.",
+          "confirmed_on": [],
+          "failed_on": []
+        },
+        {
+          "action": "Check pull-up resistors (4.7kΩ on SDA/SCL to 3.3V)",
+          "code": "# Physical fix — no code change. Add 4.7kΩ resistors:\n# 3.3V → [4.7kΩ] → SDA\n# 3.3V → [4.7kΩ] → SCL",
+          "upvotes": 0,
+          "downvotes": 0,
+          "when_to_use": "I2C works intermittently or fails after cable length > 10cm",
+          "confirmed_on": [],
+          "failed_on": []
+        }
+      ]
+    },
+    "WDT (Watchdog) Reset": {
+      "description": "CPU blocked for >5 seconds. Usually from wlan.connect() or a tight loop.",
+      "quick_check": "Add print statements to find where code blocks.",
+      "fixes": [
+        {
+          "action": "Add time.sleep_ms(10) in long loops to feed watchdog",
+          "code": "while True:\n    do_work()\n    time.sleep_ms(10)  # ← this feeds WDT",
+          "upvotes": 0,
+          "downvotes": 0,
+          "when_to_use": "Any loop that runs longer than 1 second",
+          "confirmed_on": [],
+          "failed_on": []
+        },
+        {
+          "action": "Replace blocking wlan.connect() with non-blocking poll",
+          "code": "wlan.connect(ssid, password)\nfor _ in range(150):  # 15 second timeout\n    if wlan.isconnected():\n        break\n    time.sleep_ms(100)  # feeds WDT",
+          "upvotes": 0,
+          "downvotes": 0,
+          "when_to_use": "Startup WiFi connection or reconnection after signal loss",
+          "confirmed_on": [],
+          "failed_on": []
+        },
+        {
+          "action": "Disable watchdog for long operations (then re-enable)",
+          "code": "wdt = machine.WDT(timeout=30000)  # 30 second timeout\n# ... long operation ...\nwdt.feed()  # manually reset timer",
+          "upvotes": 0,
+          "downvotes": 0,
+          "when_to_use": "Long flash writes, OTA updates, or large file transfers",
+          "confirmed_on": [],
+          "failed_on": []
+        }
+      ]
+    },
+    "ValueError: pin is input-only": {
+      "description": "GPIO 34-39 used as output or PWM. These pins are input-only by design.",
+      "quick_check": "Check pin number against forbidden list.",
+      "fixes": [
+        {
+          "action": "Use a different GPIO pin (not 34-39) for output",
+          "code": "# GPIO 34-39: INPUT ONLY — ADC, touch, buttons\n# GPIO 0-33: INPUT or OUTPUT — LEDs, servos, relays\n# GPIO 6-11: FORBIDDEN — internal flash",
+          "upvotes": 0,
+          "downvotes": 0,
+          "when_to_use": "Always check pin before assigning output/PWM",
+          "confirmed_on": [],
+          "failed_on": []
+        }
+      ]
+    },
+    "AttributeError: 'module' object has no attribute '...'": {
+      "description": "Using CPython method that doesn't exist in MicroPython, or using deprecated 'u' prefix.",
+      "quick_check": "Check api/builtin-types.json for type methods, api/<module>.json for module functions.",
+      "fixes": [
+        {
+          "action": "Check api/builtin-types.json for missing methods",
+          "code": "# Example: str.removeprefix() doesn't exist\n# Check api/builtin-types.json → use startswith() + slicing",
+          "upvotes": 0,
+          "downvotes": 0,
+          "when_to_use": "Any AttributeError on built-in types (str, bytes, int, float)",
+          "confirmed_on": [],
+          "failed_on": []
+        }
+      ]
+    }
+  },
+  "healing_example": {
+    "scenario": "User reports MemoryError when loading a 50KB JSON file",
+    "ai_workflow": [
+      "1. Read pitfalls.json → 'MemoryError' section",
+      "2. Try fix #1: gc.collect() — works, upvote it",
+      "3. Try fix #2: bytearray pre-allocation — also helps, upvote",
+      "4. Fix #3: streaming — json.loads() can't stream, so downvote (don't use for JSON parsing)",
+      "5. User reports code now works. Fixes #1 and #2 gain upvotes."
+    ],
+    "next_time": "AI sees upvoted fixes first, tries gc.collect() immediately, saves diagnostic time."
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "name": "ssl",
+  "module": "ssl",
+  "import": "import ssl",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "SSL/TLS socket wrapping for secure network communication. Includes SSLContext for certificate management. Requires mbedtls firmware support.",
+  "differences_from_cpython": [
+    "Very minimal compared to CPython's ssl module.",
+    "SSLContext available for certificate/key loading.",
+    "Supports TLS client, TLS server, DTLS client, DTLS server."
+  ],
+  "constants": {
+    "CERT_NONE": null,
+    "CERT_OPTIONAL": null,
+    "CERT_REQUIRED": null,
+    "PROTOCOL_TLS_CLIENT": null,
+    "PROTOCOL_TLS_SERVER": null,
+    "PROTOCOL_DTLS_CLIENT": null,
+    "PROTOCOL_DTLS_SERVER": null
+  },
+  "functions": [
+    {
+      "name": "ssl.wrap_socket",
+      "signature": "wrap_socket(sock, *, server_side=False, keyfile=None, certfile=None, server_hostname=None, cert_reqs=ssl.CERT_NONE, ca_certs=None)",
+      "returns": "SSL socket",
+      "description": "Wrap an existing TCP socket with TLS/SSL encryption."
+    },
+    {
+      "name": "ssl.tls",
+      "signature": "tls",
+      "description": "Alias for wrap_socket function."
+    },
+    {
+      "name": "ssl.MBEDTLS_VERSION",
+      "signature": "ssl.MBEDTLS_VERSION",
+      "description": "String with mbedTLS library version (e.g., 'Mbed TLS 3.6.4'). Read-only attribute."
+    }
+  ],
+  "classes": [
+    {
+      "name": "SSLContext",
+      "signature": "ssl.SSLContext(protocol=ssl.PROTOCOL_TLS_CLIENT)",
+      "methods": [
+        {
+          "name": "SSLContext.wrap_socket",
+          "signature": "wrap_socket(sock, *, server_side=False, server_hostname=None)",
+          "returns": "SSL socket"
+        },
+        {
+          "name": "SSLContext.load_cert_chain",
+          "signature": "load_cert_chain(certfile, keyfile)",
+          "returns": "None",
+          "description": "Load certificate + private key for server mode."
+        },
+        {
+          "name": "SSLContext.load_verify_locations",
+          "signature": "load_verify_locations(cafile=None)",
+          "returns": "None",
+          "description": "Load CA certificate for client verification."
+        },
+        {
+          "name": "SSLContext.verify_mode",
+          "signature": "verify_mode",
+          "returns": "int",
+          "description": "Get/set CERT_NONE, CERT_OPTIONAL, or CERT_REQUIRED."
+        }
+      ],
+      "constants": {}
+    }
+  ],
+  "ssl_socket_methods": [
+    {
+      "name": "read",
+      "signature": "read([nbytes])",
+      "returns": "bytes"
+    },
+    {
+      "name": "write",
+      "signature": "write(buf)",
+      "returns": "int"
+    },
+    {
+      "name": "readinto",
+      "signature": "readinto(buf)",
+      "returns": "int"
+    },
+    {
+      "name": "setblocking",
+      "signature": "setblocking(flag)",
+      "returns": "None"
+    },
+    {
+      "name": "close",
+      "signature": "close()",
+      "returns": "None"
+    }
+  ],
+  "example": "import socket\nimport ssl\n\nsock = socket.socket()\naddr = socket.getaddrinfo('httpbin.org', 443)[0][-1]\nsock.connect(addr)\nssl_sock = ssl.wrap_socket(sock, server_hostname='httpbin.org')\nssl_sock.write(b'GET /get HTTP/1.1\\r\\nHost: httpbin.org\\r\\n\\r\\n')\nprint(ssl_sock.read(200))\nssl_sock.close()",
+  "esp32_notes": [
+    "TLS support requires MICROPY_SSL_MBEDTLS=y in firmware (most builds have it).",
+    "TLS handshake requires ~30-50KB free heap.",
+    "For HTTPS, consider using the 'requests' module (mip install requests).",
+    "DTLS (UDP-based TLS) available with PROTOCOL_DTLS_CLIENT/SERVER."
+  ]
+}

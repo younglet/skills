@@ -1,0 +1,118 @@
+{
+  "name": "requests",
+  "module": "requests",
+  "import": "import requests",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "HTTP client for REST APIs and web services. On some ESP32 firmware builds (custom-compiled), requests is frozen into the firmware and available without installation. On standard MicroPython builds, install via mip: 'mip.install(\"requests\")'. DO NOT use 'urequests'.",
+  "differences_from_cpython": "MicroPython implementation. No sessions, no streaming upload. Supports HTTP and HTTPS.",
+  "functions": [
+    {
+      "name": "requests.get",
+      "signature": "get(url, **kwargs)",
+      "returns": "Response",
+      "description": "HTTP GET request."
+    },
+    {
+      "name": "requests.post",
+      "signature": "post(url, **kwargs)",
+      "returns": "Response",
+      "description": "HTTP POST request."
+    },
+    {
+      "name": "requests.put",
+      "signature": "put(url, **kwargs)",
+      "returns": "Response",
+      "description": "HTTP PUT request."
+    },
+    {
+      "name": "requests.patch",
+      "signature": "patch(url, **kwargs)",
+      "returns": "Response",
+      "description": "HTTP PATCH request."
+    },
+    {
+      "name": "requests.delete",
+      "signature": "delete(url, **kwargs)",
+      "returns": "Response",
+      "description": "HTTP DELETE request."
+    },
+    {
+      "name": "requests.head",
+      "signature": "head(url, **kwargs)",
+      "returns": "Response",
+      "description": "HTTP HEAD request."
+    },
+    {
+      "name": "requests.request",
+      "signature": "request(method, url, **kwargs)",
+      "returns": "Response",
+      "description": "Generic HTTP request."
+    }
+  ],
+  "kwargs": [
+    "data: bytes/str/dict for request body",
+    "json: dict to JSON-encode as body",
+    "headers: dict of headers",
+    "auth: (user, pass) tuple for Basic Auth"
+  ],
+  "classes": [
+    {
+      "name": "Response",
+      "methods": [
+        {
+          "name": "Response.text",
+          "signature": "text",
+          "type": "str",
+          "description": "Response body as string."
+        },
+        {
+          "name": "Response.content",
+          "signature": "content",
+          "type": "bytes",
+          "description": "Response body as bytes."
+        },
+        {
+          "name": "Response.json",
+          "signature": "json()",
+          "returns": "dict",
+          "description": "Parse JSON response."
+        },
+        {
+          "name": "Response.close",
+          "signature": "close()",
+          "description": "Close the response and release the socket.",
+          "returns": "None"
+        }
+      ],
+      "constants": {},
+      "instance_attributes": [
+        {
+          "name": "Response.status_code",
+          "type": "int",
+          "description": "HTTP status code (200, 404, etc.)."
+        },
+        {
+          "name": "Response.headers",
+          "type": "dict",
+          "description": "Response headers dict (lowercase keys)."
+        }
+      ]
+    }
+  ],
+  "example": "import requests\n\nr = requests.get('https://httpbin.org/get')\nprint(r.status_code)\nprint(r.json())\n\nr = requests.post('https://httpbin.org/post', json={'key': 'value'})\nprint(r.text)",
+  "availability": {
+    "standard_firmware": "NOT built-in. Install via: import mip; mip.install('requests')",
+    "custom_firmware": "May be frozen into firmware. Check with: help('modules') | grep requests",
+    "this_device_verified": "Frozen into firmware (custom build with requests, urequests, umqtt, websocket, aioespnow, etc.)"
+  },
+  "esp32_notes": [
+    "HTTPS requires TLS support (memory: ~30KB for handshake).",
+    "Large responses may cause MemoryError. Use streaming if available.",
+    "Always use 'requests', never 'urequests'."
+  ],
+  "constants": {
+    "Response": null
+  },
+  "attributes_note": "Response.headers and Response.status_code are instance attributes (not in dir()), accessible after making a request."
+}

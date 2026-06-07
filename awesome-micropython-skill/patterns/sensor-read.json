@@ -1,0 +1,25 @@
+{
+  "name": "sensor-read",
+  "category": "input",
+  "description": "Robust sensor reading pattern — timeout, retry, error recovery, stale-data detection. Prevents a single sensor failure from crashing the entire device.",
+  "problem": "Sensors fail. I2C bus hangs. DHT misses timing. Naive code crashes with unhandled OSError or returns garbage data.",
+  "solution": "Wrap every sensor read in timeout + retry logic. Maintain a 'last good value' so the system degrades gracefully instead of crashing.",
+  "imports": ["time", "machine"],
+  "code": "# Robust sensor wrapper — survives I2C hangs, DHT timeouts, ADC noise\nimport time\n\nclass SafeSensor:\n    def __init__(self, read_fn, max_age_ms=5000, retries=3):\n        \"\"\"\n        read_fn: callable that returns a value or raises on failure\n        max_age_ms: how old data can be before it's considered stale\n        retries: how many times to retry before giving up\n        \"\"\"\n        self._read = read_fn\n        self._max_age = max_age_ms\n        self._retries = retries\n        self._value = None\n        self._timestamp = 0\n        self._errors = 0\n        self._last_error = None\n\n    def read(self):\n        \"\"\"Read sensor. Returns (value, is_fresh, error).\"\"\"\n        for attempt in range(self._retries):\n            try:\n                self._value = self._read()\n                self._timestamp = time.ticks_ms()\n                self._errors = 0\n                return (self._value, True, None)\n            except Exception as e:\n                self._errors += 1\n                self._last_error = str(e)\n                if attempt < self._retries - 1:\n                    time.sleep_ms(50 * (attempt + 1))  # progressive backoff\n\n        # All retries failed — return last known value with staleness info\n        if self._value is not None:\n            age = time.ticks_diff(time.ticks_ms(), self._timestamp)\n            return (self._value, age < self._max_age, self._last_error)\n        return (None, False, self._last_error)\n\n    def is_healthy(self):\n        \"\"\"True if last read succeeded.\"\"\"\n        return self._errors == 0\n\n    def error_count(self):\n        return self._errors\n\n# ── Usage ──\n# import dht\n# from machine import Pin\n#\n# dht_sensor = dht.DHT22(Pin(15))\n#\n# def read_temp():\n#     dht_sensor.measure()\n#     return dht_sensor.temperature()\n#\n# temp = SafeSensor(read_temp, max_age_ms=10000, retries=3)\n#\n# while True:\n#     value, fresh, error = temp.read()\n#     if error:\n#         print(f'Sensor error: {error}')\n#     if not fresh:\n#         print(f'Using stale data: {value}°C')\n#     else:\n#         print(f'Temperature: {value}°C')\n#     time.sleep_ms(2000)\n",
+  "sensor_specific_patterns": {
+    "i2c": "from machine import I2C, SoftI2C\n# Wrap I2C reads with try/except OSError — bus can hang\n# Recovery: i2c_obj = I2C(...)  # re-init after OSError\n# Or use SoftI2C which recovers automatically",
+    "dht": "import dht\n# DHT is timing-sensitive — disable interrupts during read:\n# state = machine.disable_irq()\n# sensor.measure()\n# machine.enable_irq(state)",
+    "adc": "from machine import ADC\n# ADC is noisy — take N samples, discard outliers, average\n# samples = [adc.read() for _ in range(10)]\n# samples.sort()\n# value = sum(samples[2:-2]) // 6  # trim 20% outliers"
+  },
+  "key_insights": [
+    "Progressive backoff (50ms, 100ms, 150ms) gives transient errors time to clear without wasting too much time.",
+    "Returning (value, fresh, error) lets the caller decide: use stale data? alert user? enter safe mode?",
+    "is_healthy() allows the main loop to switch to degraded mode when a sensor fails persistently.",
+    "Never crash on a sensor error — the ESP32 might be in a remote location with no one to press reset."
+  ],
+  "pitfalls": [
+    "DHT22 needs 2 seconds between reads. SafeSensor doesn't enforce this — call read() at appropriate interval.",
+    "I2C bus can lock up requiring hardware reset. SoftI2C is more forgiving than hardware I2C.",
+    "ADC.read() returns 0-4095 (12-bit). Always calibrate with known voltages — ESP32 ADC is nonlinear near 0V and 3.3V."
+  ]
+}

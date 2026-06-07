@@ -1,0 +1,95 @@
+{
+  "name": "sys",
+  "module": "sys",
+  "import": "import sys",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "System-specific parameters and functions: platform info, version, path, stdin/stdout, exit.",
+  "differences_from_cpython": [
+    "Limited sys.modules, no sys.getsizeof().",
+    "sys.exit() works but may not clean up hardware."
+  ],
+  "attributes": [
+    {
+      "name": "sys.platform",
+      "type": "str",
+      "description": "'esp32' on ESP32."
+    },
+    {
+      "name": "sys.version",
+      "type": "str",
+      "description": "Full version string."
+    },
+    {
+      "name": "sys.version_info",
+      "type": "tuple",
+      "description": "(major, minor, patch)."
+    },
+    {
+      "name": "sys.implementation",
+      "type": "tuple",
+      "description": "(name, (major, minor, patch))."
+    },
+    {
+      "name": "sys.path",
+      "type": "list",
+      "description": "Module search paths. '/lib' is included."
+    },
+    {
+      "name": "sys.modules",
+      "type": "dict",
+      "description": "Loaded modules dict."
+    },
+    {
+      "name": "sys.argv",
+      "type": "list",
+      "description": "Command line args (usually empty on ESP32)."
+    },
+    {
+      "name": "sys.byteorder",
+      "type": "str",
+      "description": "'little' on ESP32."
+    },
+    {
+      "name": "sys.maxsize",
+      "type": "int",
+      "description": "Max integer value (2**30-1 on ESP32)."
+    },
+    {
+      "name": "sys.stdin",
+      "type": "stream"
+    },
+    {
+      "name": "sys.stdout",
+      "type": "stream"
+    },
+    {
+      "name": "sys.stderr",
+      "type": "stream"
+    },
+    {
+      "name": "sys.ps1",
+      "type": "str",
+      "description": "REPL primary prompt ('>>> ')."
+    },
+    {
+      "name": "sys.ps2",
+      "type": "str",
+      "description": "REPL continuation prompt ('... ')."
+    }
+  ],
+  "functions": [
+    {
+      "name": "sys.exit",
+      "signature": "exit([retcode])",
+      "returns": "None",
+      "description": "Exit the program."
+    },
+    {
+      "name": "sys.print_exception",
+      "signature": "print_exception(exc, file=sys.stderr)",
+      "returns": "None",
+      "description": "Print exception traceback to file."
+    }
+  ]
+}

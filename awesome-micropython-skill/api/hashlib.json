@@ -1,0 +1,70 @@
+{
+  "name": "hashlib",
+  "module": "hashlib",
+  "import": "import hashlib",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "SHA-1, SHA-256 and MD5 hash algorithms. DO NOT use 'uhashlib' — always import as 'hashlib'.",
+  "differences_from_cpython": [
+    "Only SHA-1, SHA-256 and MD5 are available (CPython has many more: SHA-512, blake2, etc.).",
+    "No hashlib.new() factory function."
+  ],
+  "functions": [
+    {
+      "name": "hashlib.sha256",
+      "signature": "sha256([data])",
+      "parameters": [
+        {"name": "data", "type": "bytes|None", "description": "Optional initial data to hash."}
+      ],
+      "returns": {"type": "hash_object", "description": "SHA-256 hash object."},
+      "description": "Create a new SHA-256 hash object."
+    },
+    {
+      "name": "hashlib.sha1",
+      "signature": "sha1([data])",
+      "parameters": [
+        {"name": "data", "type": "bytes|None", "description": "Optional initial data to hash."}
+      ],
+      "returns": {"type": "hash_object", "description": "SHA-1 hash object (20 bytes digest)."},
+      "description": "Create a new SHA-1 hash object."
+    },
+    {
+      "name": "hashlib.md5",
+      "signature": "md5([data])",
+      "parameters": [
+        {"name": "data", "type": "bytes|None", "description": "Optional initial data to hash."}
+      ],
+      "returns": {"type": "hash_object", "description": "MD5 hash object."},
+      "description": "Create a new MD5 hash object.",
+      "note": "MD5 may not be available on all ESP32 firmware builds (depends on mbedtls config)."
+    }
+  ],
+  "hash_object_methods": [
+    {
+      "name": "update",
+      "signature": "update(data)",
+      "parameters": [{"name": "data", "type": "bytes|bytearray", "description": "Data to add to the hash."}],
+      "returns": "None",
+      "description": "Add more data to the hash computation."
+    },
+    {
+      "name": "digest",
+      "signature": "digest()",
+      "returns": {"type": "bytes", "description": "Hash digest as raw bytes. SHA-256: 32 bytes, MD5: 16 bytes."},
+      "description": "Return the hash digest. Hash object state is NOT reset."
+    },
+    {
+      "name": "hexdigest",
+      "signature": "hexdigest()",
+      "returns": {"type": "str", "description": "Hash digest as lowercase hexadecimal string."},
+      "description": "Return the hash digest as hex string."
+    }
+  ],
+  "example": "import hashlib\n\n# SHA-256\nh = hashlib.sha256(b'hello')\nprint(h.digest())     # b'...'  (32 bytes)\nprint(h.hexdigest())  # '2cf24dba...'\n\n# Incremental\nh = hashlib.sha256()\nh.update(b'hel')\nh.update(b'lo')\nprint(h.hexdigest())  # same as above\n\n# MD5 (if available)\ntry:\n    h = hashlib.md5(b'hello')\n    print(h.hexdigest())  # '5d41402abc4b2a76b9719d911017c592'\nexcept AttributeError:\n    print('MD5 not available on this firmware')",
+  "esp32_notes": [
+    "SHA-256 is always available (backed by mbedtls).",
+    "MD5 may be disabled in some firmware builds to save flash space.",
+    "Hash object cannot be reused — you must create a new one after calling digest().",
+    "Memory: SHA-256 state is ~208 bytes, MD5 is ~128 bytes."
+  ]
+}

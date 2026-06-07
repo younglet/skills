@@ -1,0 +1,203 @@
+{
+  "name": "machine-uart",
+  "module": "machine",
+  "class_name": "UART",
+  "import": "from machine import UART",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "UART (Universal Asynchronous Receiver-Transmitter) serial communication. ESP32 has 3 UART peripherals (UART0=REPL, UART1, UART2).",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific UART interface. UART0 is shared with REPL.",
+  "classes": [
+    {
+      "name": "UART",
+      "signature": "machine.UART(id, *, baudrate=115200, bits=8, parity=None, stop=1, tx=None, rx=None, timeout=0, timeout_char=0, invert=0, flow=0)",
+      "constructor_params": [
+        {
+          "name": "id",
+          "type": "int",
+          "description": "UART peripheral ID. ESP32: 0, 1, 2."
+        },
+        {
+          "name": "baudrate",
+          "type": "int",
+          "description": "Baud rate. Default 115200. Common: 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600."
+        },
+        {
+          "name": "bits",
+          "type": "int",
+          "description": "Data bits: 7 or 8. Default 8."
+        },
+        {
+          "name": "parity",
+          "type": "int|None",
+          "description": "None, 0 (even), or 1 (odd)."
+        },
+        {
+          "name": "stop",
+          "type": "int",
+          "description": "Stop bits: 1 or 2. Default 1."
+        },
+        {
+          "name": "tx",
+          "type": "Pin|None",
+          "description": "TX pin. None = use default."
+        },
+        {
+          "name": "rx",
+          "type": "Pin|None",
+          "description": "RX pin. None = use default."
+        },
+        {
+          "name": "timeout",
+          "type": "int",
+          "description": "Read timeout in ms. 0 = non-blocking."
+        },
+        {
+          "name": "timeout_char",
+          "type": "int",
+          "description": "Inter-character timeout in ms."
+        },
+        {
+          "name": "invert",
+          "type": "int",
+          "description": "Invert signals: 0=normal, UART.INV_TX, UART.INV_RX, or OR'd."
+        },
+        {
+          "name": "flow",
+          "type": "int",
+          "description": "Hardware flow control: 0=none, UART.RTS, UART.CTS, or UART.RTS|UART.CTS."
+        }
+      ],
+      "methods": [
+        {
+          "name": "UART.init",
+          "signature": "init(baudrate=115200, bits=8, parity=None, stop=1, *, ...)",
+          "returns": "None",
+          "description": "Re-initialize UART."
+        },
+        {
+          "name": "UART.deinit",
+          "signature": "deinit()",
+          "returns": "None",
+          "description": "Disable UART and release pins."
+        },
+        {
+          "name": "UART.any",
+          "signature": "any()",
+          "returns": {
+            "type": "int",
+            "description": "Number of bytes available to read."
+          },
+          "description": "Check how many bytes are in the receive buffer."
+        },
+        {
+          "name": "UART.read",
+          "signature": "read([nbytes])",
+          "returns": {
+            "type": "bytes|None",
+            "description": "Read data. Returns None if no data available."
+          },
+          "description": "Read up to nbytes. If no data and timeout=0, returns None."
+        },
+        {
+          "name": "UART.readline",
+          "signature": "readline()",
+          "returns": {
+            "type": "bytes|None",
+            "description": "Line ending in \\n. None if no line available."
+          },
+          "description": "Read one line."
+        },
+        {
+          "name": "UART.readinto",
+          "signature": "readinto(buf, [nbytes])",
+          "returns": {
+            "type": "int|None",
+            "description": "Bytes read into buffer."
+          },
+          "description": "Read into buffer."
+        },
+        {
+          "name": "UART.write",
+          "signature": "write(buf)",
+          "returns": {
+            "type": "int|None",
+            "description": "Number of bytes written."
+          },
+          "description": "Write buffer to UART."
+        },
+        {
+          "name": "UART.txdone",
+          "signature": "txdone()",
+          "returns": {
+            "type": "bool",
+            "description": "True if all data has been transmitted."
+          },
+          "description": "Check if transmit complete."
+        },
+        {
+          "name": "UART.sendbreak",
+          "signature": "sendbreak()",
+          "returns": "None",
+          "description": "Send break condition."
+        },
+        {
+          "name": "UART.flush",
+          "signature": "flush()",
+          "returns": "None",
+          "description": "Wait until all data is transmitted."
+        },
+        {
+          "name": "UART.irq",
+          "signature": "irq(handler, trigger=UART.IRQ_RXIDLE, *, priority=1, wake=None)",
+          "returns": "IRQ object",
+          "description": "Set interrupt handler for UART events. ESP32-specific."
+        }
+      ],
+      "constants": {
+        "INV_TX": 1,
+        "INV_RX": 2,
+        "RTS": 1,
+        "CTS": 2,
+        "IRQ_RXIDLE": 16,
+        "INV_CTS": null,
+        "INV_RTS": null,
+        "IRQ_BREAK": null,
+        "IRQ_RX": null
+      },
+      "irq_triggers": {
+        "IRQ_RXIDLE": 16,
+        "IRQ_TXIDLE": 32,
+        "IRQ_BREAK": 64
+      }
+    }
+  ],
+  "esp32_uart_pins": [
+    {
+      "id": 0,
+      "default_tx": "GPIO1",
+      "default_rx": "GPIO3",
+      "notes": "USB serial / REPL. Avoid reusing unless REPL moved."
+    },
+    {
+      "id": 1,
+      "default_tx": "GPIO10",
+      "default_rx": "GPIO9",
+      "notes": "Available for user. Often used for GSM/GPS modules."
+    },
+    {
+      "id": 2,
+      "default_tx": "GPIO17",
+      "default_rx": "GPIO16",
+      "notes": "Available for user. Common choice for external serial."
+    }
+  ],
+  "example": "from machine import UART, Pin\n\n# UART2 on GPIO 17 (TX) and 16 (RX)\nuart = UART(2, baudrate=115200, tx=17, rx=16)\n\n# Write data\nuart.write(b'AT\\r\\n')\n\n# Read with polling\nimport time\nwhile True:\n    if uart.any():\n        data = uart.read()\n        print('Received:', data)\n    time.sleep_ms(100)",
+  "esp32_notes": [
+    "ESP32 can remap UART to almost any GPIO via GPIO matrix.",
+    "UART0 is usually used by REPL on GPIO1(TX) and GPIO3(RX) — avoid unless REPL moved.",
+    "Hardware flow control (RTS/CTS) available via flow parameter.",
+    "IRQ support (uart.irq()) is available on ESP32 for non-blocking receive.",
+    "UART uses hardware FIFO (128 bytes TX, 128 bytes RX)."
+  ]
+}

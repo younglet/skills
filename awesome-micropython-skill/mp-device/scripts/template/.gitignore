@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+device.json
+.env
+*.tmp

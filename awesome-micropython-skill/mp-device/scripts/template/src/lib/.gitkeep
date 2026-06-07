@@ -1,0 +1,3 @@
+# This file ensures the lib/ directory is tracked by git.
+# Place third-party .py files here (requests, ssd1306, etc.).
+# Import them without 'lib.' prefix:  import mymodule

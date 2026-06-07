@@ -1,0 +1,252 @@
+{
+  "name": "math",
+  "module": "math",
+  "import": "import math",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Mathematical functions. Full set including erf, gamma, factorial, isclose. 32-bit float precision.",
+  "differences_from_cpython": [
+    "Floating point is single precision (32-bit) on ESP32, NOT double (64-bit).",
+    "All special functions available on ESP32: erf(), erfc(), gamma(), lgamma(), factorial(), isclose().",
+    "nan, inf, tau constants are available."
+  ],
+  "constants": [
+    {
+      "name": "math.pi",
+      "value": 3.141593,
+      "description": "pi"
+    },
+    {
+      "name": "math.e",
+      "value": 2.718282,
+      "description": "e"
+    },
+    {
+      "name": "math.tau",
+      "value": 6.283185,
+      "description": "tau = 2*pi"
+    },
+    {
+      "name": "math.inf",
+      "value": "inf",
+      "description": "Positive infinity (float)"
+    },
+    {
+      "name": "math.nan",
+      "value": "nan",
+      "description": "Not a Number (float)"
+    }
+  ],
+  "functions": [
+    {
+      "name": "math.sqrt",
+      "signature": "sqrt(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.pow",
+      "signature": "pow(x, y)",
+      "returns": "float"
+    },
+    {
+      "name": "math.exp",
+      "signature": "exp(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.expm1",
+      "signature": "expm1(x)",
+      "returns": "float",
+      "note": "exp(x) - 1, accurate for small x"
+    },
+    {
+      "name": "math.log",
+      "signature": "log(x)",
+      "returns": "float",
+      "description": "Natural log"
+    },
+    {
+      "name": "math.log10",
+      "signature": "log10(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.log2",
+      "signature": "log2(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.cos",
+      "signature": "cos(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.sin",
+      "signature": "sin(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.tan",
+      "signature": "tan(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.acos",
+      "signature": "acos(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.asin",
+      "signature": "asin(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.atan",
+      "signature": "atan(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.atan2",
+      "signature": "atan2(y, x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.cosh",
+      "signature": "cosh(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.sinh",
+      "signature": "sinh(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.tanh",
+      "signature": "tanh(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.acosh",
+      "signature": "acosh(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.asinh",
+      "signature": "asinh(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.atanh",
+      "signature": "atanh(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.ceil",
+      "signature": "ceil(x)",
+      "returns": "int"
+    },
+    {
+      "name": "math.floor",
+      "signature": "floor(x)",
+      "returns": "int"
+    },
+    {
+      "name": "math.trunc",
+      "signature": "trunc(x)",
+      "returns": "int"
+    },
+    {
+      "name": "math.fabs",
+      "signature": "fabs(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.fmod",
+      "signature": "fmod(x, y)",
+      "returns": "float"
+    },
+    {
+      "name": "math.modf",
+      "signature": "modf(x)",
+      "returns": "tuple(float, float)"
+    },
+    {
+      "name": "math.frexp",
+      "signature": "frexp(x)",
+      "returns": "tuple(float, int)"
+    },
+    {
+      "name": "math.ldexp",
+      "signature": "ldexp(x, exp)",
+      "returns": "float"
+    },
+    {
+      "name": "math.degrees",
+      "signature": "degrees(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.radians",
+      "signature": "radians(x)",
+      "returns": "float"
+    },
+    {
+      "name": "math.isfinite",
+      "signature": "isfinite(x)",
+      "returns": "bool"
+    },
+    {
+      "name": "math.isinf",
+      "signature": "isinf(x)",
+      "returns": "bool"
+    },
+    {
+      "name": "math.isnan",
+      "signature": "isnan(x)",
+      "returns": "bool"
+    },
+    {
+      "name": "math.isclose",
+      "signature": "isclose(a, b, *, rel_tol=1e-09, abs_tol=0.0)",
+      "returns": "bool",
+      "description": "Check if values are close within tolerance"
+    },
+    {
+      "name": "math.copysign",
+      "signature": "copysign(x, y)",
+      "returns": "float",
+      "description": "x with sign of y"
+    },
+    {
+      "name": "math.erf",
+      "signature": "erf(x)",
+      "returns": "float",
+      "description": "Error function"
+    },
+    {
+      "name": "math.erfc",
+      "signature": "erfc(x)",
+      "returns": "float",
+      "description": "Complementary error function"
+    },
+    {
+      "name": "math.gamma",
+      "signature": "gamma(x)",
+      "returns": "float",
+      "description": "Gamma function"
+    },
+    {
+      "name": "math.lgamma",
+      "signature": "lgamma(x)",
+      "returns": "float",
+      "description": "Log gamma function"
+    },
+    {
+      "name": "math.factorial",
+      "signature": "factorial(n)",
+      "returns": "int",
+      "description": "n! for integer n"
+    }
+  ],
+  "single_precision_note": "ESP32 MicroPython uses 32-bit float. max value ~3.4e38, min positive ~1.17e-38. Use decimal string handling for higher precision."
+}

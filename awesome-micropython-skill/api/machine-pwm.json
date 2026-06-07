@@ -1,0 +1,37 @@
+{
+  "name": "machine-pwm",
+  "module": "machine",
+  "class_name": "PWM",
+  "import": "from machine import PWM",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Pulse Width Modulation output via ESP32 LEDC peripheral. Control LED brightness, servo motors, and analog-like outputs.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific PWM via ESP32 hardware LEDC controller.",
+  "classes": [
+    {
+      "name": "PWM",
+      "signature": "machine.PWM(pin, *, freq=50, duty=0)",
+      "constructor_params": [
+        {"name": "pin", "type": "Pin", "description": "Pin object. Required. Must have Pin object, not raw GPIO number."},
+        {"name": "freq", "type": "int", "description": "PWM frequency in Hz. Default 50Hz."},
+        {"name": "duty", "type": "int", "description": "Initial duty cycle 0-1023 (10-bit). Default 0."}
+      ],
+      "methods": [
+        {"name": "PWM.init", "signature": "init(*, freq=50, duty=0)", "returns": "None", "description": "Re-initialize PWM parameters."},
+        {"name": "PWM.deinit", "signature": "deinit()", "returns": "None", "description": "Turn off PWM on this pin. Releases LEDC channel."},
+        {"name": "PWM.freq", "signature": "freq([x])", "returns": "int", "description": "Get or set PWM frequency in Hz."},
+        {"name": "PWM.duty", "signature": "duty([x])", "returns": "int", "description": "Get or set duty cycle 0-1023 (10-bit)."},
+        {"name": "PWM.duty_u16", "signature": "duty_u16([x])", "returns": "int", "description": "Get or set duty cycle as 16-bit value (0-65535)."},
+        {"name": "PWM.duty_ns", "signature": "duty_ns([x])", "returns": "int", "description": "Get or set duty cycle in nanoseconds. Requires freq to be set first."}
+      ],
+      "example": "from machine import Pin, PWM\n\n# LED brightness control\nled = PWM(Pin(2), freq=1000)\nled.duty(512)    # ~50% brightness\nled.duty(0)      # off\nled.duty(1023)   # full brightness\n\n# Servo control (50Hz)\nservo = PWM(Pin(15), freq=50)\nservo.duty_ns(1500000)  # 1.5ms pulse = center position\nservo.duty_ns(1000000)  # 1.0ms = 0 degrees\nservo.duty_ns(2000000)  # 2.0ms = 180 degrees"
+    }
+  ],
+  "esp32_notes": [
+    "ESP32 has 8 independent PWM channels (LEDC).",
+    "Frequency range: 1Hz - 40MHz (practical max ~100KHz with 10-bit resolution).",
+    "Higher frequencies reduce duty resolution: freq * 2^bit_depth <= 80MHz.",
+    "duty_ns() requires freq to be set first — otherwise Unknown.",
+    "Each PWM object consumes one LEDC channel; deinit() to free it."
+  ]
+}

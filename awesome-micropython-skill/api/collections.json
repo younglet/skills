@@ -1,0 +1,145 @@
+{
+  "name": "collections",
+  "module": "collections",
+  "import": "import collections  # OR: import ucollections as collections",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Collection and container types. Provides OrderedDict, namedtuple, deque.",
+  "differences_from_cpython": [
+    "Module is 'ucollections' internally; 'collections' is an alias on ESP32.",
+    "Only OrderedDict, namedtuple(), deque. No defaultdict, Counter, ChainMap."
+  ],
+  "classes": [
+    {
+      "name": "OrderedDict",
+      "description": "Dictionary that remembers insertion order. ESP32: built-in dict is already ordered (since MicroPython 1.19), so this is redundant but available for compatibility.",
+      "methods": [
+        {
+          "name": "OrderedDict.clear",
+          "signature": "clear(...)",
+          "description": "Standard dict clear method.",
+          "returns": "varies"
+        },
+        {
+          "name": "OrderedDict.copy",
+          "signature": "copy(...)",
+          "description": "Standard dict copy method.",
+          "returns": "varies"
+        },
+        {
+          "name": "OrderedDict.fromkeys",
+          "signature": "fromkeys(...)",
+          "description": "Standard dict fromkeys method.",
+          "returns": "varies"
+        },
+        {
+          "name": "OrderedDict.get",
+          "signature": "get(...)",
+          "description": "Standard dict get method.",
+          "returns": "varies"
+        },
+        {
+          "name": "OrderedDict.items",
+          "signature": "items(...)",
+          "description": "Standard dict items method.",
+          "returns": "varies"
+        },
+        {
+          "name": "OrderedDict.keys",
+          "signature": "keys(...)",
+          "description": "Standard dict keys method.",
+          "returns": "varies"
+        },
+        {
+          "name": "OrderedDict.popitem",
+          "signature": "popitem(...)",
+          "description": "Standard dict popitem method.",
+          "returns": "varies"
+        },
+        {
+          "name": "OrderedDict.setdefault",
+          "signature": "setdefault(...)",
+          "description": "Standard dict setdefault method.",
+          "returns": "varies"
+        },
+        {
+          "name": "OrderedDict.update",
+          "signature": "update(...)",
+          "description": "Standard dict update method.",
+          "returns": "varies"
+        },
+        {
+          "name": "OrderedDict.values",
+          "signature": "values(...)",
+          "description": "Standard dict values method.",
+          "returns": "varies"
+        },
+        {
+          "name": "OrderedDict.pop",
+          "signature": "pop(key[, default])",
+          "returns": "varies",
+          "description": "Remove and return item with key. Raises KeyError if not found and no default."
+        }
+      ]
+    },
+    {
+      "name": "namedtuple",
+      "signature": "collections.namedtuple(name, fields)",
+      "parameters": [
+        {
+          "name": "name",
+          "type": "str",
+          "description": "Name of the new type."
+        },
+        {
+          "name": "fields",
+          "type": "str|list",
+          "description": "Space-separated string or list of field names."
+        }
+      ],
+      "returns": "New namedtuple class",
+      "example": "from collections import namedtuple\nPoint = namedtuple('Point', ['x', 'y'])\np = Point(10, 20)\nprint(p.x, p.y)  # 10 20\nprint(p[0], p[1])  # 10 20"
+    },
+    {
+      "name": "deque",
+      "signature": "collections.deque(iterable, maxlen=0)",
+      "parameters": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "Initial items."
+        },
+        {
+          "name": "maxlen",
+          "type": "int",
+          "description": "Maximum length. 0 = unlimited."
+        }
+      ],
+      "methods": [
+        {
+          "name": "deque.append",
+          "signature": "append(x)"
+        },
+        {
+          "name": "deque.appendleft",
+          "signature": "appendleft(x)"
+        },
+        {
+          "name": "deque.pop",
+          "signature": "pop()"
+        },
+        {
+          "name": "deque.popleft",
+          "signature": "popleft()"
+        },
+        {
+          "name": "deque.__bool__",
+          "signature": "bool(deque)",
+          "description": "Raises NotImplementedError - use len() > 0 instead"
+        }
+      ],
+      "example": "from collections import deque\nd = deque([1, 2, 3], maxlen=5)\nd.append(4)\nd.appendleft(0)\nprint(list(d))  # [0, 1, 2, 3, 4]"
+    }
+  ],
+  "note": "ESP32 MicroPython 1.28.0: standard dict() is already insertion-ordered. collections.OrderedDict exists only for compatibility."
+}

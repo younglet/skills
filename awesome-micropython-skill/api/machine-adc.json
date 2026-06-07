@@ -1,0 +1,131 @@
+{
+  "name": "machine-adc",
+  "module": "machine",
+  "class_name": "ADC",
+  "import": "from machine import ADC",
+  "version": "1.28.0",
+  "category": "standard",
+  "description": "Analog-to-Digital Converter. Read analog voltages on ADC-capable GPIO pins. 12-bit SAR ADC.",
+  "differences_from_cpython": "Does NOT exist in CPython. MicroPython-specific ESP32 ADC interface.",
+  "classes": [
+    {
+      "name": "ADC",
+      "signature": "machine.ADC(pin, *, atten=ADC.ATTN_11DB)",
+      "constructor_params": [
+        {
+          "name": "pin",
+          "type": "int|Pin",
+          "description": "ADC-capable pin. ESP32: GPIO 32-39 (ADC1), GPIO 0,2,4,12-15,25-27 (ADC2)."
+        },
+        {
+          "name": "atten",
+          "type": "int",
+          "description": "Attenuation level. Controls voltage input range."
+        }
+      ],
+      "methods": [
+        {
+          "name": "ADC.init",
+          "signature": "init(*, atten=ADC.ATTN_11DB)",
+          "returns": "None",
+          "description": "Re-initialize ADC with new attenuation."
+        },
+        {
+          "name": "ADC.read",
+          "signature": "read()",
+          "returns": {
+            "type": "int",
+            "description": "0-4095 (12-bit resolution)."
+          },
+          "description": "Read raw ADC value."
+        },
+        {
+          "name": "ADC.read_u16",
+          "signature": "read_u16()",
+          "returns": {
+            "type": "int",
+            "description": "0-65535 (scaled to 16-bit)."
+          },
+          "description": "Read ADC value scaled to 16-bit range."
+        },
+        {
+          "name": "ADC.read_uv",
+          "signature": "read_uv()",
+          "returns": {
+            "type": "int",
+            "description": "Microvolts. Returns calibrated voltage if efuse calibration data is available."
+          },
+          "description": "Read calibrated voltage in microvolts. ESP32-specific."
+        },
+        {
+          "name": "ADC.block",
+          "signature": "block()",
+          "returns": {
+            "type": "ADCBlock",
+            "description": "ADCBlock object for advanced channel configuration."
+          },
+          "description": "Return ADCBlock for advanced settings. ESP32-specific."
+        },
+        {
+          "name": "ADC.atten",
+          "signature": "atten([value])",
+          "returns": "int|None",
+          "description": "Get or set attenuation. value: ADC.ATTN_0DB, ATTN_2_5DB, ATTN_6DB, ATTN_11DB."
+        },
+        {
+          "name": "ADC.deinit",
+          "signature": "deinit()",
+          "returns": "None|int",
+          "description": "De-initialize ADC, release resources."
+        },
+        {
+          "name": "ADC.width",
+          "signature": "width([bits])",
+          "returns": "None|int",
+          "description": "Get/set ADC resolution. bits: WIDTH_9BIT to WIDTH_12BIT."
+        }
+      ],
+      "constants": {
+        "ATTN_0DB": 0,
+        "ATTN_2_5DB": 1,
+        "ATTN_6DB": 2,
+        "ATTN_11DB": 3,
+        "WIDTH_10BIT": null,
+        "WIDTH_11BIT": null,
+        "WIDTH_12BIT": null,
+        "WIDTH_9BIT": null
+      },
+      "atten_table": [
+        {
+          "name": "ATTN_0DB",
+          "value": 0,
+          "range": "0 - 1.1V",
+          "notes": "Best for low-voltage sensors"
+        },
+        {
+          "name": "ATTN_2_5DB",
+          "value": 1,
+          "range": "0 - 1.5V"
+        },
+        {
+          "name": "ATTN_6DB",
+          "value": 2,
+          "range": "0 - 2.2V"
+        },
+        {
+          "name": "ATTN_11DB",
+          "value": 3,
+          "range": "0 - 3.3V (full range)",
+          "notes": "Default. Full 0-3.3V input."
+        }
+      ],
+      "example": "from machine import Pin, ADC\n\nadc = ADC(Pin(34))\nadc.atten(ADC.ATTN_11DB)\nval = adc.read()       # 0-4095\nuv = adc.read_uv()     # microvolts (if calibrated)\nprint(f'Raw: {val}, Voltage: {uv/1e6:.3f}V')"
+    }
+  ],
+  "esp32_notes": [
+    "ADC2 cannot be used when Wi-Fi is active (use ADC1 pins: 32-39).",
+    "ADC is non-linear; calibrate for accurate voltage readings.",
+    "read_uv() requires calibration data stored in efuse (may not be present on all boards).",
+    "ADC input impedance is ~100kΩ; use a buffer for high-impedance sources."
+  ]
+}

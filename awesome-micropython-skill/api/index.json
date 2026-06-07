@@ -1,0 +1,336 @@
+{
+  "name": "api-index",
+  "title": "MicroPython v1.28.0 ESP32 API Index",
+  "version": "1.28.0",
+  "platform": "ESP32 (Generic ESP32 module with ESP32)",
+  "heap_free": "~160KB after boot",
+  "flash_size": "Typically 4MB",
+  "modules": [
+    {
+      "file": "builtins.json",
+      "module": "builtins",
+      "category": "standard",
+      "description": "Built-in functions, types, and exceptions — always available"
+    },
+    {
+      "file": "import-guide.json",
+      "module": "IMPORT RULES",
+      "category": "meta",
+      "description": "Critical import rules, lib/ prefix trap, and common AI mistakes. READ FIRST."
+    },
+    {
+      "file": "builtin-types.json",
+      "module": "builtins (types)",
+      "category": "standard",
+      "description": "str/list/dict/bytes/bytearray/int/float/memoryview method availability vs CPython. CRITICAL: AI often uses missing methods."
+    },
+    {
+      "file": "machine.json",
+      "module": "machine",
+      "category": "standard",
+      "description": "Core functions: CPU freq, reset, sleep modes, unique_id. See machine-*.json for peripheral classes."
+    },
+    {
+      "file": "machine-pin.json",
+      "module": "machine.Pin",
+      "category": "standard",
+      "description": "GPIO pin control: input, output, interrupts, pull-up/down"
+    },
+    {
+      "file": "machine-adc.json",
+      "module": "machine.ADC",
+      "category": "standard",
+      "description": "Analog-to-Digital Converter: 12-bit, 0-3.3V, attenuation levels"
+    },
+    {
+      "file": "machine-dac.json",
+      "module": "machine.DAC",
+      "category": "standard",
+      "description": "Digital-to-Analog Converter: 8-bit, GPIO 25/26 only"
+    },
+    {
+      "file": "machine-pwm.json",
+      "module": "machine.PWM",
+      "category": "standard",
+      "description": "Pulse Width Modulation: LED brightness, servo control, 8 channels"
+    },
+    {
+      "file": "machine-i2c.json",
+      "module": "machine.I2C / SoftI2C",
+      "category": "standard",
+      "description": "I2C bus: hardware (2 peripherals) and software (any pins)"
+    },
+    {
+      "file": "machine-spi.json",
+      "module": "machine.SPI / SoftSPI",
+      "category": "standard",
+      "description": "SPI bus: hardware (HSPI, VSPI) and software (any pins)"
+    },
+    {
+      "file": "machine-uart.json",
+      "module": "machine.UART",
+      "category": "standard",
+      "description": "Serial UART: 3 peripherals, hardware flow control, IRQ"
+    },
+    {
+      "file": "machine-timer.json",
+      "module": "machine.Timer",
+      "category": "standard",
+      "description": "Hardware timer: periodic/one-shot callbacks, 4 virtual timers"
+    },
+    {
+      "file": "machine-rtc.json",
+      "module": "machine.RTC",
+      "category": "standard",
+      "description": "Real-Time Clock: datetime, RTC memory (survives deep sleep)"
+    },
+    {
+      "file": "machine-wdt.json",
+      "module": "machine.WDT",
+      "category": "standard",
+      "description": "Watchdog Timer: auto-reset on hang, feed() to prevent"
+    },
+    {
+      "file": "machine-sdcard.json",
+      "module": "machine.SDCard",
+      "category": "standard",
+      "description": "SD card over SPI: mount as filesystem for storage"
+    },
+    {
+      "file": "machine-touchpad.json",
+      "module": "machine.TouchPad",
+      "category": "standard",
+      "description": "Capacitive touch sensor: 10 pins, deep-sleep wake (ESP32 only)"
+    },
+    {
+      "file": "machine-signal.json",
+      "module": "machine.Signal",
+      "category": "standard",
+      "description": "Logical signal: active-low abstraction on top of Pin"
+    },
+    {
+      "file": "machine-i2s.json",
+      "module": "machine.I2S",
+      "category": "standard",
+      "description": "I2S audio bus: DAC/ADC, MEMS microphones, amplifiers"
+    },
+    {
+      "file": "machine-counter.json",
+      "module": "machine.Counter",
+      "category": "standard",
+      "description": "Pulse counter using ESP32 PCNT peripheral"
+    },
+    {
+      "file": "machine-encoder.json",
+      "module": "machine.Encoder",
+      "category": "standard",
+      "description": "Quadrature rotary encoder via ESP32 PCNT"
+    },
+    {
+      "file": "machine-adcblock.json",
+      "module": "machine.ADCBlock",
+      "category": "standard",
+      "description": "Advanced ADC block configuration and calibration"
+    },
+    {
+      "file": "network.json",
+      "module": "network",
+      "category": "standard",
+      "description": "WLAN (Wi-Fi), LAN (Ethernet), PPP (cellular). STA, AP, security."
+    },
+    {
+      "file": "esp32.json",
+      "module": "esp32",
+      "category": "esp32",
+      "description": "ESP32-specific: NVS, RMT, PCNT, wake sources, Partition, ULP, deep sleep"
+    },
+    {
+      "file": "esp.json",
+      "module": "esp",
+      "category": "standard",
+      "description": "ESP8266/ESP32 shared: flash access, osdebug control"
+    },
+    {
+      "file": "time.json",
+      "module": "time",
+      "category": "standard",
+      "description": "sleep, ticks_ms, ticks_diff (non-blocking timing), epoch 2000"
+    },
+    {
+      "file": "gc.json",
+      "module": "gc",
+      "category": "standard",
+      "description": "Garbage collector: collect(), mem_free(), mem_alloc(), enable/disable"
+    },
+    {
+      "file": "sys.json",
+      "module": "sys",
+      "category": "standard",
+      "description": "System info: platform, version, path, print_exception()"
+    },
+    {
+      "file": "os.json",
+      "module": "os",
+      "category": "standard",
+      "description": "Filesystem: listdir, mount, stat, VfsFat, VfsLfs2, uname"
+    },
+    {
+      "file": "json.json",
+      "module": "json",
+      "category": "standard",
+      "description": "JSON encode/decode: dumps, loads. DO NOT use 'ujson'."
+    },
+    {
+      "file": "re.json",
+      "module": "re",
+      "category": "standard",
+      "description": "Regex: match, search, sub (no fullmatch, no look-ahead). DO NOT use 'ure'."
+    },
+    {
+      "file": "struct.json",
+      "module": "struct",
+      "category": "standard",
+      "description": "Binary pack/unpack (no q/Q/d on ESP32)"
+    },
+    {
+      "file": "random.json",
+      "module": "random",
+      "category": "standard",
+      "description": "Random numbers: randint, choice, getrandbits (uses TRNG)"
+    },
+    {
+      "file": "math.json",
+      "module": "math",
+      "category": "standard",
+      "description": "Math: full set including erf, gamma, factorial. 32-bit float."
+    },
+    {
+      "file": "collections.json",
+      "module": "collections",
+      "category": "standard",
+      "description": "namedtuple, deque, OrderedDict"
+    },
+    {
+      "file": "requests.json",
+      "module": "requests",
+      "category": "standard",
+      "description": "HTTP client (mip install requests). get(), post(), json(). DO NOT use 'urequests'."
+    },
+    {
+      "file": "socket.json",
+      "module": "socket",
+      "category": "standard",
+      "description": "TCP/UDP sockets, max 536B TCP recv"
+    },
+    {
+      "file": "select.json",
+      "module": "select",
+      "category": "standard",
+      "description": "I/O multiplexing: poll() and select() with POLLIN/POLLOUT/POLLERR"
+    },
+    {
+      "file": "_thread.json",
+      "module": "_thread",
+      "category": "standard",
+      "description": "Threading: start_new_thread, Lock (limited stack)"
+    },
+    {
+      "file": "asyncio.json",
+      "module": "asyncio",
+      "category": "standard",
+      "description": "Async I/O: create_task, gather, Lock, Event, open_connection, start_server"
+    },
+    {
+      "file": "micropython.json",
+      "module": "micropython",
+      "category": "standard",
+      "description": "Internals: const(), mem_info(), schedule(), alloc_emergency_exception_buf()"
+    },
+    {
+      "file": "neopixel.json",
+      "module": "neopixel",
+      "category": "standard",
+      "description": "WS2812 LED strip control via RMT"
+    },
+    {
+      "file": "framebuf.json",
+      "module": "framebuf",
+      "category": "standard",
+      "description": "Frame buffer drawing for OLED/LCD displays"
+    },
+    {
+      "file": "bluetooth.json",
+      "module": "bluetooth",
+      "category": "standard",
+      "description": "BLE: GATT server/client, advertising, scanning. DO NOT use 'ubluetooth'."
+    },
+    {
+      "file": "dht.json",
+      "module": "dht",
+      "category": "standard",
+      "description": "DHT11/DHT22 temperature and humidity sensors"
+    },
+    {
+      "file": "onewire.json",
+      "module": "onewire",
+      "category": "standard",
+      "description": "Dallas 1-Wire bus: DS18B20 and other OneWire devices"
+    },
+    {
+      "file": "ntptime.json",
+      "module": "ntptime",
+      "category": "standard",
+      "description": "NTP time synchronization (requires Wi-Fi)"
+    },
+    {
+      "file": "hashlib.json",
+      "module": "hashlib",
+      "category": "standard",
+      "description": "SHA-256 and MD5 hashing. DO NOT use 'uhashlib'."
+    },
+    {
+      "file": "binascii.json",
+      "module": "binascii",
+      "category": "standard",
+      "description": "Hexadecimal and base64 conversions. DO NOT use 'ubinascii'."
+    },
+    {
+      "file": "io.json",
+      "module": "io",
+      "category": "standard",
+      "description": "BytesIO and StringIO in-memory streams. DO NOT use 'uio'."
+    },
+    {
+      "file": "ssl.json",
+      "module": "ssl",
+      "category": "standard",
+      "description": "SSL/TLS: wrap_socket, SSLContext, PROTOCOL_TLS/DTLS"
+    },
+    {
+      "file": "cryptolib.json",
+      "module": "cryptolib",
+      "category": "standard",
+      "description": "AES encryption/decryption. DO NOT use 'ucryptolib'."
+    },
+    {
+      "file": "espnow.json",
+      "module": "espnow",
+      "category": "esp32",
+      "description": "ESP-NOW P2P wireless communication between ESP32s"
+    }
+  ],
+  "not_included_modules": [
+    {
+      "module": "btree",
+      "reason": "BTree database; requires external flash"
+    },
+    {
+      "module": "gzip",
+      "reason": "gzip compression; standard subset"
+    },
+    {
+      "module": "zlib",
+      "reason": "Decompression (decompress() only, no compress)"
+    }
+  ]
+}
