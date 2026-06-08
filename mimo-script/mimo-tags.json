@@ -1,0 +1,145 @@
+{
+  "voices": {
+    "冰糖": { "lang": "zh", "gender": "F", "style": "甜美" },
+    "茉莉": { "lang": "zh", "gender": "F", "style": "温柔" },
+    "苏打": { "lang": "zh", "gender": "M", "style": "慵懒" },
+    "白桦": { "lang": "zh", "gender": "M", "style": "低沉" },
+    "Mia": { "lang": "en", "gender": "F", "style": "活泼" },
+    "Chloe": { "lang": "en", "gender": "F", "style": "温柔" },
+    "Milo": { "lang": "en", "gender": "M", "style": "磁性" },
+    "Dean": { "lang": "en", "gender": "M", "style": "严肃" }
+  },
+
+  "emotions": {
+    "开心": "happy / cheerful",
+    "悲伤": "sad / sorrowful",
+    "愤怒": "angry",
+    "温柔": "gentle / soft",
+    "慵懒": "lazy / relaxed",
+    "磁性": "magnetic / deep",
+    "甜美": "sweet / cute",
+    "严肃": "serious / formal",
+    "活泼": "lively / energetic",
+    "低沉": "low / deep",
+    "冷淡": "cold / indifferent",
+    "激动": "excited / passionate"
+  },
+
+  "dialects": {
+    "东北话": "Dongbei accent",
+    "四川话": "Sichuan accent",
+    "河南话": "Henan accent",
+    "粤语": "Cantonese accent",
+    "唱歌": "singing style",
+    "夹子音": "high-pitched cute voice",
+    "大叔音": "middle-aged uncle voice",
+    "御姐音": "mature sister voice"
+  },
+
+  "effects": {
+    "深吸一口气": "deep breath in",
+    "叹气": "sigh",
+    "轻声笑": "soft laugh / chuckle",
+    "大笑": "loud laugh",
+    "啜泣": "sob / weep",
+    "颤抖": "tremble / quiver",
+    "咳嗽": "cough",
+    "停顿": "pause ~0.3-0.5s"
+  },
+
+  "roles": {
+    "tutorial": {
+      "description": "教程讲解",
+      "defaultVoice": "冰糖",
+      "defaultEmotion": "严肃",
+      "emphasis": "严肃",
+      "transition": "停顿",
+      "rules": {
+        "opening": "首句前加 (严肃)",
+        "keyPoint": "句首加 (严肃)",
+        "listItem": "每条后加 [停顿]",
+        "warning": "句首加 (严肃)，后面加 [停顿]",
+        "codeBlock": "前后各加 [停顿]",
+        "density": "每3-5句一个标注"
+      }
+    },
+    "storytelling": {
+      "description": "讲故事 / 叙述",
+      "defaultVoice": "茉莉",
+      "defaultEmotion": "温柔",
+      "emphasis": "磁性",
+      "transition": "停顿",
+      "rules": {
+        "opening": "首句前加 (温柔)[深吸一口气]",
+        "keyPoint": "句首加 (磁性)",
+        "emotional": "句首加对应的情感标签",
+        "dialogue": "切换为对应的角色标签",
+        "density": "每2-3句一个标注，情感变化处加标签"
+      }
+    },
+    "productIntro": {
+      "description": "产品介绍 / 宣传",
+      "defaultVoice": "苏打",
+      "defaultEmotion": "磁性",
+      "emphasis": "激动",
+      "transition": "停顿",
+      "rules": {
+        "opening": "首句前加 (磁性)[深吸一口气]",
+        "highlight": "句首加 (激动)",
+        "feature": "每条后加 [停顿]",
+        "density": "关键句加情感标签，其余克制"
+      }
+    },
+    "casual": {
+      "description": "闲聊 / vlog",
+      "defaultVoice": "冰糖",
+      "defaultEmotion": "活泼",
+      "emphasis": "开心",
+      "transition": "停顿",
+      "rules": {
+        "opening": "首句前加 (活泼)",
+        "joke": "句末加 [轻声笑]",
+        "expression": "自然穿插情感标签",
+        "density": "稀疏，只在有明显情绪变化处加"
+      }
+    }
+  },
+
+  "subtitle": {
+    "maxCharsPerLine": 24,
+    "keepPunctuation": ["，", ",", "？", "?"],
+    "removePunctuation": ["。", "！", "；", "：", "、", "…", "～", "~"],
+    "timingPrecision": "milliseconds",
+    "format": "SRT"
+  },
+
+  "commandPronunciation": {
+    "ssh": "S S H",
+    "ip addr": "IP addr",
+    "wlan0": "W LAN 零",
+    "nmcli": "N M C L I",
+    "pip": "pip",
+    "git": "git",
+    "sudo": "sudo",
+    "apt": "apt",
+    "WiFi": "WiFi",
+    "VSCode": "VS Code",
+    "Ctrl+Shift+P": "Control Shift P",
+    "Settings Sync": "Settings Sync",
+    "GitGraph": "Git Graph",
+    "GitLens": "Git Lens",
+    "README": "read me",
+    "ARM": "arm",
+    "whl": "wheel",
+    "PowerShell": "Power Shell"
+  },
+
+  "commandRules": {
+    "readAsIs": "由常见单词组成的命令，保持原样，如 git clone、sudo apt install",
+    "spellOut": "缩写无对应单词时，逐字母写开，如 ssh → S S H、nmcli → N M C L I",
+    "ipAddress": "IP 地址逐位数字朗读，点写成中文「点」，如 192.168.55.1 → 一 九 二 点 一 六 八 点 五 五 点 一",
+    "flags": "命令参数去掉短横，如 --version → version",
+    "keys": "快捷键展开，如 Ctrl+C → Control C",
+    "wrapInPause": "命令前后各加 [停顿]"
+  }
+}
