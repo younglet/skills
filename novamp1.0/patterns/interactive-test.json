@@ -1,0 +1,84 @@
+{
+  "name": "interactive-test",
+  "title": "Interactive Hardware Validation with .test()",
+  "version": "1.0.0",
+  "category": "test",
+  "description": "All 16 NovaMP v1.0 classes support .test() — an interactive REPL wizard that validates hardware before writing application code.",
+  "modules_used": ["all 16 modules"],
+
+  "pattern": {
+    "workflow": "When wiring a new module, ALWAYS run its .test() first",
+    "rationale": "Verifies pinout, power, and basic functionality before investing time in application code"
+  },
+
+  "code": "# Generic pattern — works for any NovaMP class\nfrom <module> import <Class>\n<Class>.test()\n\n# Example 1: LED\nfrom led import LED\nLED.test()\n# Prompts: pin number, then runs on/off/blink/fade/breathe sequence\n\n# Example 2: HCSR04\nfrom hcsr04 import HCSR04\nHCSR04.test()\n# Prompts: trig pin, echo pin, then loops printing distance\n\n# Example 3: WiFi\nfrom wifi import WiFi\nWiFi.test()\n# Scans networks → prompts SSID/password → connects → prints IP\n",
+
+  "test_session_examples": [
+    {
+      "module": "LED",
+      "session": [
+        ">>> from led import LED",
+        ">>> LED.test()",
+        "【LED测试程序】",
+        "请输入 LED 的引脚号（如 4）: 4",
+        "🚩 开始测试 LED(GPIO4) 功能...",
+        "💡 正在打开 LED",
+        "💡 正在关闭 LED",
+        "🎉 所有 LED 功能测试完成！"
+      ]
+    },
+    {
+      "module": "HCSR04",
+      "session": [
+        ">>> from hcsr04 import HCSR04",
+        ">>> HCSR04.test()",
+        "请输入 Trig 引脚连接的 GPIO（建议 GPIO14）: 14",
+        "请输入 Echo 引脚连接的 GPIO（建议 GPIO12）: 12",
+        "📏 当前距离: 25.3 cm",
+        "📏 当前距离: 25.4 cm",
+        "(Ctrl+C to stop)"
+      ]
+    },
+    {
+      "module": "WiFi",
+      "session": [
+        ">>> from wifi import WiFi",
+        ">>> WiFi.test()",
+        "请输入 Wi-Fi 名称 (SSID): mywifi",
+        "请输入 Wi-Fi 密码: mypass",
+        "📡 正在尝试连接 Wi-Fi: mywifi......",
+        "🎉 成功连接到 Wi-Fi:mywifi",
+        "📶 IP 地址: 192.168.1.42"
+      ]
+    }
+  ],
+
+  "best_practices": [
+    "Always run .test() before writing application code — verifies hardware",
+    "If .test() fails, do NOT proceed — fix wiring first",
+    "Use the .test() prompts to discover the right GPIO for your wiring",
+    "After .test() succeeds, use the prompts' defaults as starting points for your code",
+    ".test() is interactive — requires REPL connection. Cannot be called from main.py directly."
+  ],
+
+  "esp32_notes": [
+    "All .test() methods use input() — requires active REPL connection via mpremote/Thonny",
+    ".test() blocks the main thread — do not call from main.py without redirection",
+    "Most .test() methods use try/finally to release PWM resources even on Ctrl+C"
+  ],
+
+  "common_mistakes": [
+    {
+      "mistake": "Skipping .test() and jumping straight to application code",
+      "fix": "Run .test() first — saves debugging time on wiring issues"
+    },
+    {
+      "mistake": "Calling .test() inside main.py loop",
+      "fix": ".test() is for interactive REPL only. Use .help() to learn API, then write app code."
+    },
+    {
+      "mistake": "Not releasing resources after .test()",
+      "fix": "Most .test() methods auto-deinit on Ctrl+C. If they don't, manually call .deinit()."
+    }
+  ]
+}

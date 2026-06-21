@@ -1,0 +1,88 @@
+{
+  "name": "rgb_matrix",
+  "module": "rgb_matrix",
+  "class": "RGBMatrix",
+  "import": "from rgb_matrix import RGBMatrix",
+  "version": "1.0.0",
+  "category": "output",
+  "description": "8x8 WS2812B/NeoPixel LED matrix driver. Supports pixel-level control, bitmap rendering, screen rotation, and brightness. Three indexing styles: set_color(), [x,y]=, [x][y]=.",
+
+  "constructor_params": [
+    {"name": "pin", "type": "Pin|int", "description": "Data-in pin (any GPIO)"},
+    {"name": "rotation", "type": "int", "default": 0, "description": "Initial rotation: 0, 90, 180, 270 degrees"}
+  ],
+
+  "properties": [
+    {"name": "brightness", "type": "float", "read": true, "write": true, "description": "Global brightness 0.0-1.0. Setting re-renders entire matrix."}
+  ],
+
+  "methods": [
+    {"name": "fill", "signature": "fill(color)", "parameters": [{"name": "color", "type": "tuple", "description": "(r,g,b)"}], "returns": "None", "description": "Fill entire matrix with one color"},
+    {"name": "clear", "signature": "clear()", "returns": "None", "description": "Set all pixels to black"},
+    {
+      "name": "set_color",
+      "signature": "set_color(position, color, immediate=True)",
+      "parameters": [
+        {"name": "position", "type": "list|tuple", "description": "[x, y] coordinate (0-7)"},
+        {"name": "color", "type": "tuple", "description": "(r,g,b)"},
+        {"name": "immediate", "type": "bool", "default": true, "description": "If False, only update buffer (call write() later)"}
+      ],
+      "returns": "None",
+      "description": "Set pixel color"
+    },
+    {
+      "name": "get_color",
+      "signature": "get_color(position)",
+      "parameters": [{"name": "position", "type": "list|tuple"}],
+      "returns": "tuple",
+      "description": "Get pixel color"
+    },
+    {
+      "name": "set_direction",
+      "signature": "set_direction(direction)",
+      "parameters": [{"name": "direction", "type": "int", "description": "0, 90, 180, 270"}],
+      "returns": "None",
+      "description": "Rotate display orientation"
+    },
+    {
+      "name": "set_bitmap",
+      "signature": "set_bitmap(bitmap)",
+      "parameters": [{"name": "bitmap", "type": "list", "description": "8x8 list of (r,g,b) tuples"}],
+      "returns": "None",
+      "description": "Render entire 8x8 bitmap at once"
+    },
+    {"name": "set_brightness", "signature": "set_brightness(value)", "returns": "None", "description": "Alias for brightness property"},
+    {"name": "write", "signature": "write()", "returns": "None", "description": "Flush buffer to hardware (after batched set_color with immediate=False)"},
+    {"name": "deinit", "signature": "deinit()", "returns": "None", "description": "Release NeoPixel and clear screen"},
+    {"name": "test", "signature": "test() (classmethod)", "returns": "None", "description": "Interactive test"},
+    {"name": "help", "signature": "help() (staticmethod)", "returns": "None", "description": "Print docs"}
+  ],
+
+  "magic_methods": [
+    {"name": "__getitem__", "signature": "screen[x, y] or screen[x][y]", "description": "Read pixel color"},
+    {"name": "__setitem__", "signature": "screen[x, y] = color or screen[x][y] = color", "description": "Write pixel color"}
+  ],
+
+  "example": "from machine import Pin\nfrom rgb_matrix import RGBMatrix\nfrom colors import RED, GREEN, BLUE\n\nscreen = RGBMatrix(Pin(4), rotation=0)\nscreen[3, 3] = GREEN\nscreen.fill(RED)\nscreen.clear()\nscreen.brightness = 0.5\nscreen.deinit()",
+
+  "help_method": "RGBMatrix.help()",
+  "test_method": "RGBMatrix.test()",
+
+  "esp32_notes": [
+    "Coordinates (x, y) must be 0-7. Out-of-range raises ValueError.",
+    "rotation must be 0, 90, 180, or 270. Other values raise ValueError.",
+    "Three indexing styles all work: set_color([x,y], c), screen[x,y] = c, screen[x][y] = c",
+    "Batch updates with immediate=False + write() at the end is ~10x faster than per-pixel writes",
+    "WS2812B needs precise timing — only certain pins work reliably. GPIO 4-5 are typically OK."
+  ],
+
+  "hardware_notes": [
+    "8x8 WS2812B matrix: 5V power, GND, DIN signal. Full-white draws ~3A — external 5V supply required.",
+    "Add 1000μF capacitor across power pins for stability",
+    "Data line: 470Ω resistor in series, close to matrix DIN"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard NeoPixel API only exposes single-pixel ops. RGBMatrix adds 2D indexing, bitmap, and rotation."
+  ]
+}

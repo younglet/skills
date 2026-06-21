@@ -1,0 +1,131 @@
+{
+  "name": "colors",
+  "module": "colors",
+  "class": "(module functions)",
+  "import": "from colors import *",
+  "version": "1.0.0",
+  "category": "utility",
+  "description": "Color utility module providing 22 predefined RGB constants, gradient generation, rainbow sequences, brightness manipulation, and value-to-color mapping. Designed for NeoPixel and RGB LED projects.",
+
+  "constants": {
+    "WHITE": [255, 255, 255],
+    "BLACK": [0, 0, 0],
+    "GRAY": [128, 128, 128],
+    "GREY": [128, 128, 128],
+    "RED": [255, 0, 0],
+    "ORANGE": [255, 165, 0],
+    "YELLOW": [255, 255, 0],
+    "GREEN": [0, 255, 0],
+    "CYAN": [0, 255, 255],
+    "BLUE": [0, 0, 255],
+    "PURPLE": [128, 0, 128],
+    "PINK": [255, 105, 180],
+    "MAGENTA": [255, 0, 255],
+    "LIME": [50, 205, 50],
+    "TEAL": [0, 128, 128],
+    "INDIGO": [99, 102, 241],
+    "VIOLET": [139, 92, 246],
+    "FUCHSIA": [236, 72, 153],
+    "ROSE": [244, 63, 94],
+    "BROWN": [139, 69, 19],
+    "MAROON": [128, 0, 0],
+    "NAVY": [0, 0, 128],
+    "OLIVE": [128, 128, 0],
+    "COLORS": "[all 22 colors as list]",
+    "RAINBOW": "[[255,0,0], [255,165,0], [255,255,0], [0,255,0], [0,255,255], [0,0,255], [128,0,128]]",
+    "VOLUME_BAR": "[[BLUE, CYAN, TEAL, GREEN, LIME, YELLOW, ORANGE, RED] — cool-to-warm gradient]"
+  },
+
+  "functions": [
+    {"name": "is_qualified_color", "signature": "is_qualified_color(color)", "returns": "bool", "description": "Check if color is valid (r,g,b) tuple with each component 0-255"},
+    {"name": "generate_random_color", "signature": "generate_random_color()", "returns": "tuple", "description": "Return a random color from COLORS list"},
+    {"name": "generate_random_rgb", "signature": "generate_random_rgb(min_val=0, max_val=255)", "returns": "tuple", "description": "Return random (r, g, b) with each component in [min_val, max_val]"},
+    {
+      "name": "generate_gradient_colors",
+      "signature": "generate_gradient_colors(start_color, end_color, steps, mid_color=None)",
+      "parameters": [
+        {"name": "start_color", "type": "tuple", "description": "Starting RGB color"},
+        {"name": "end_color", "type": "tuple", "description": "Ending RGB color"},
+        {"name": "steps", "type": "int", "description": "Number of colors to generate (positive integer)"},
+        {"name": "mid_color", "type": "tuple|None", "default": null, "description": "Optional middle color for two-stage gradient"}
+      ],
+      "returns": "list",
+      "description": "Generate linearly-interpolated color gradient. With mid_color, creates two-stage gradient through middle point."
+    },
+    {
+      "name": "generate_rainbow_colors",
+      "signature": "generate_rainbow_colors(n)",
+      "parameters": [{"name": "n", "type": "int", "description": "Number of colors (non-negative integer)"}],
+      "returns": "list",
+      "description": "Generate n rainbow colors by interpolating between RAINBOW keypoints"
+    },
+    {
+      "name": "offset_colors",
+      "signature": "offset_colors(colors, steps=1)",
+      "parameters": [
+        {"name": "colors", "type": "list", "description": "List of RGB tuples"},
+        {"name": "steps", "type": "int", "default": 1, "description": "Positive: shift right; negative: shift left"}
+      ],
+      "returns": "list",
+      "description": "Rotate a color list by `steps` positions (modular shift)"
+    },
+    {
+      "name": "map_value_to_color",
+      "signature": "map_value_to_color(value, value_min, value_max, gradient_colors)",
+      "returns": "tuple",
+      "description": "Map a numeric value to a color from gradient_colors list. Clamps to boundaries if value out of range."
+    },
+    {
+      "name": "dim_color",
+      "signature": "dim_color(color, factor=0.9)",
+      "parameters": [
+        {"name": "color", "type": "tuple", "description": "Input RGB color"},
+        {"name": "factor", "type": "float", "default": 0.9, "description": "0.0=black, 1.0=no change"}
+      ],
+      "returns": "tuple",
+      "description": "Darken color by factor (multiply each channel)"
+    },
+    {
+      "name": "brighten_color",
+      "signature": "brighten_color(color, factor=0.9)",
+      "parameters": [
+        {"name": "color", "type": "tuple", "description": "Input RGB color"},
+        {"name": "factor", "type": "float", "default": 0.9, "description": "0.0=white, 1.0=no change"}
+      ],
+      "returns": "tuple",
+      "description": "Brighten color toward white by factor"
+    },
+    {
+      "name": "scale_color",
+      "signature": "scale_color(color, scale)",
+      "parameters": [
+        {"name": "color", "type": "tuple", "description": "Input RGB color"},
+        {"name": "scale", "type": "float", "description": "Multiplication factor (>1=brighten, <1=dim, 0=black)"}
+      ],
+      "returns": "tuple",
+      "description": "Scale color brightness by multiplication (clamped to 255)"
+    },
+    {
+      "name": "is_same_color",
+      "signature": "is_same_color(color1, color2)",
+      "returns": "bool",
+      "description": "Check if two colors are exactly equal (component-wise)"
+    },
+    {"name": "help", "signature": "help()", "returns": "None", "description": "Print module documentation"}
+  ],
+
+  "example": "from colors import RED, BLUE, generate_gradient_colors, map_value_to_color\n\ngradient = generate_gradient_colors(RED, BLUE, steps=10)\nmapped = map_value_to_color(50, 0, 100, gradient)",
+
+  "help_method": "help()    # module-level function — prints docs",
+  "test_method": "N/A — colors is a function module, no interactive hardware to test",
+
+  "esp32_notes": [
+    "All colors are (r, g, b) tuples with int components 0-255 — match NeoPixel format",
+    "No I/O performed — pure compute module, safe in ISR",
+    "Memory: storing 100 gradient colors uses ~600 bytes"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard MicroPython has no color module — NovaMP adds this utility"
+  ]
+}

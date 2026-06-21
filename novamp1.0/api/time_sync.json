@@ -1,0 +1,120 @@
+{
+  "name": "time_sync",
+  "module": "time_sync",
+  "class": "TimeSyncer",
+  "import": "from time_sync import TimeSyncer",
+  "version": "1.0.0",
+  "category": "network",
+  "description": "NTP-based RTC synchronization with timezone support, HTTP time formatting, and 4-hour cache to avoid redundant network calls. Wraps ntptime.settime() with friendly API.",
+
+  "constructor_params": [
+    {
+      "name": "timezone",
+      "type": "int",
+      "default": 8,
+      "description": "Local timezone offset from UTC in hours (8 = Beijing UTC+8, 0 = UTC, -5 = EST)"
+    }
+  ],
+
+  "properties": [
+    {
+      "name": "is_synchronized",
+      "type": "bool",
+      "read": true,
+      "write": false,
+      "description": "True if RTC has a valid time (after 2020-01-01 UTC). Equivalent to time.time() > 1577836800."
+    },
+    {
+      "name": "_last_sync_timestamp",
+      "type": "int",
+      "read": false,
+      "write": false,
+      "description": "INTERNAL: timestamp of last successful sync (Unix seconds, UTC)"
+    }
+  ],
+
+  "methods": [
+    {
+      "name": "sync",
+      "signature": "sync(timeout=5, force=False)",
+      "parameters": [
+        {"name": "timeout", "type": "int", "default": 5, "description": "NTP request timeout in seconds (sets ntptime.timeout)"},
+        {"name": "force", "type": "bool", "default": false, "description": "If True, sync even if last sync was < 4h ago. If False, skip sync when RTC is valid AND within 4h of last sync."}
+      ],
+      "returns": "bool",
+      "description": "Synchronize RTC from NTP server. Returns True on success, False on OSError (timeout, no DNS, etc). Internally calls ntptime.settime() which sets RTC to UTC."
+    },
+    {
+      "name": "now",
+      "signature": "now(formatted=True)",
+      "parameters": [
+        {"name": "formatted", "type": "bool", "default": true, "description": "If True, returns 'YYYY-MM-DD HH:MM:SS' string. If False, returns time.localtime() tuple."}
+      ],
+      "returns": "str|tuple",
+      "description": "Get current local time adjusted by timezone offset. NOTE: uses time.mktime() + offset, which interprets the tuple as local time — may produce drift if RTC is UTC. Use http_time() for UTC formatting."
+    },
+    {
+      "name": "http_time",
+      "signature": "http_time()",
+      "returns": "str",
+      "description": "Get current time formatted as HTTP/1.1 RFC 1123 UTC string (e.g. 'Sun, 21 Jun 2026 06:32:18 GMT'). Use for HTTP request headers like If-Modified-Since."
+    },
+    {
+      "name": "status",
+      "signature": "status()",
+      "returns": "None",
+      "description": "Print current local time, HTTP time, and sync status"
+    },
+    {
+      "name": "test",
+      "signature": "test() (classmethod)",
+      "returns": "None",
+      "description": "Create instance with timezone=8, call sync(force=True), and print status"
+    },
+    {
+      "name": "help",
+      "signature": "help() (staticmethod)",
+      "returns": "None",
+      "description": "Print full module documentation"
+    }
+  ],
+
+  "class_constants": {
+    "_SECONDS_IN_4H": 14400,
+    "EPOCH_VALIDATION_THRESHOLD": 1577836800
+  },
+
+  "example": "from time_sync import TimeSyncer\n\nts = TimeSyncer(timezone=8)   # Beijing UTC+8\nif ts.sync():\n    print('Local:', ts.now())           # '2026-06-21 14:32:18'\n    print('HTTP:', ts.http_time())      # 'Sun, 21 Jun 2026 06:32:18 GMT'\n    print('Synced:', ts.is_synchronized)\n\n# Force re-sync if needed\nts.sync(force=True)",
+
+  "help_method": "TimeSyncer.help()    # prints full docs",
+  "test_method": "TimeSyncer.test()    # sync + print status",
+
+  "esp32_notes": [
+    "Requires ntptime module — built into MicroPython but may need mip install 'ntptime' on some ports",
+    "NTP server defaults to pool.ntp.org (ntptime module default). Firewall may block UDP/123 on some networks.",
+    "Calls ntptime.timeout = timeout before ntptime.settime() — timeout parameter is required to avoid 60s default hang",
+    "If sync() is called and Wi-Fi is not connected, raises OSError: ETIMEDOUT. Always ensure Wi-Fi is connected first (see api/wifi.json).",
+    "is_synchronized is True if RTC > 2020-01-01 — survives reboot if RTC has backup battery (most ESP32 dev boards do NOT have RTC battery, so time is lost on deep sleep)",
+    "The 4-hour cache (force=False default) prevents redundant network calls — useful in tight loops"
+  ],
+
+  "hardware_notes": [
+    "ESP32 internal RTC drifts ~20ppm — for high-accuracy timestamps, re-sync every few hours",
+    "deep_sleep() resets time.time() to 0 unless backed by external RTC (DS3231, etc.)"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard MicroPython requires manual ntptime.settime() + time.localtime() + manual timezone math. NovaMP wraps this with TimeSyncer.now().",
+    "NovaMP adds 4h cache to skip redundant syncs — standard ntptime.settime() always makes the network call",
+    "NovaMP provides http_time() for RFC 1123 formatting — standard code must implement this manually",
+    "Now() method: uses time.mktime() which interprets RTC as local time. Since RTC is UTC after ntptime.settime(), this can produce drift. For UTC formatting, use http_time()."
+  ],
+
+  "known_issues": [
+    {
+      "issue": "now(formatted=False) returns tuple treated as local time by mktime()",
+      "explanation": "After ntptime.settime(), RTC holds UTC. mktime() interprets the tuple as local, so adding timezone*3600 produces UTC + timezone*2, not local time. Most users don't notice because display strings still look reasonable.",
+      "workaround": "For accurate UTC+offset display, the timestamp math should use mktime(local) - timezone*3600, or RTC should be set to local time directly."
+    }
+  ]
+}

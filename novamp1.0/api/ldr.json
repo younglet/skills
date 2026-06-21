@@ -1,0 +1,44 @@
+{
+  "name": "ldr",
+  "module": "ldr",
+  "class": "LDR",
+  "import": "from ldr import LDR",
+  "version": "1.0.0",
+  "category": "input",
+  "description": "Light-dependent resistor (LDR) sensor driver. Reads ambient light intensity via ADC. Polarity depends on wiring (LDR to VCC or GND).",
+
+  "constructor_params": [
+    {"name": "pin", "type": "Pin|int", "description": "ADC-capable GPIO (ESP32: GPIO32-39)"},
+    {"name": "attenuation", "type": "int", "default": "ADC.ATTN_11DB", "description": "ADC attenuation (ESP32 only). ATTN_11DB = 0-3.6V input range."}
+  ],
+
+  "properties": [
+    {"name": "value", "type": "int", "read": true, "write": false, "description": "Same as read() — current ADC value (0-4095)"}
+  ],
+
+  "methods": [
+    {"name": "read", "signature": "read()", "returns": "int", "description": "Raw ADC value (0-4095 at 12-bit)"},
+    {"name": "test", "signature": "test() (classmethod)", "returns": "None", "description": "Interactive test"},
+    {"name": "help", "signature": "help() (staticmethod)", "returns": "None", "description": "Print docs"}
+  ],
+
+  "example": "from machine import Pin, ADC\nfrom ldr import LDR\nfrom time import sleep_ms\n\nldr = LDR(pin=Pin(34), attenuation=ADC.ATTN_11DB)\nwhile True:\n    print(ldr.value)\n    sleep_ms(500)",
+
+  "help_method": "LDR.help()",
+  "test_method": "LDR.test()",
+
+  "esp32_notes": [
+    "value direction depends on wiring: LDR-to-GND → brighter = higher value; LDR-to-VCC → brighter = lower value",
+    "ADC2 channels unusable when Wi-Fi is active — prefer ADC1 (GPIO32-39)",
+    "ATTT_11DB allows reading up to ~3.6V — sufficient for most LDR divider circuits"
+  ],
+
+  "hardware_notes": [
+    "Voltage divider: LDR in series with 10kΩ resistor between 3.3V and GND, midpoint to ADC pin",
+    "Add 100nF cap across LDR for noise smoothing"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard ADC returns raw value. LDR is a thin wrapper with documented wiring patterns."
+  ]
+}

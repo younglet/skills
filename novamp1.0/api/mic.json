@@ -1,0 +1,71 @@
+{
+  "name": "mic",
+  "module": "mic",
+  "class": "Microphone",
+  "import": "from mic import Microphone",
+  "version": "1.0.0",
+  "category": "input",
+  "description": "Microphone sound sensor with sliding-window averaging, automatic noise floor calibration, and peak detection. Supports background timer for non-blocking reads.",
+
+  "constructor_params": [
+    {"name": "pin", "type": "Pin|int", "description": "ADC-capable GPIO"},
+    {"name": "min_val", "type": "int", "default": 0, "description": "Min of mapped value range"},
+    {"name": "max_val", "type": "int", "default": 100, "description": "Max of mapped value range"},
+    {"name": "peak_threshold", "type": "float", "default": 0.15, "description": "Peak detection threshold as fraction of max ADC value"},
+    {"name": "adc_bits", "type": "int", "default": 12, "description": "ADC resolution bits"},
+    {"name": "sample_count", "type": "int", "default": 50, "description": "Sliding window size for averaging"},
+    {"name": "use_timer", "type": "bool", "default": true, "description": "True: background timer updates samples. False: read samples on demand."},
+    {"name": "timer_id", "type": "int", "default": 0, "description": "Timer ID (0-3 on ESP32)"},
+    {"name": "freq", "type": "int", "default": 50, "description": "Background sampling frequency in Hz"}
+  ],
+
+  "properties": [
+    {"name": "value", "type": "float", "read": true, "write": false, "description": "Mapped value in [min_val, max_val]"},
+    {"name": "value_int", "type": "int", "read": true, "write": false, "description": "Mapped value as int"},
+    {"name": "percent", "type": "float", "read": true, "write": false, "description": "Value as percentage (0.0-100.0)"},
+    {"name": "is_calibrated", "type": "bool", "read": true, "write": false, "description": "Whether calibrate() has been called"},
+    {"name": "noise_floor", "type": "float|None", "read": true, "write": false, "description": "Noise floor from calibration (None if not calibrated)"},
+    {"name": "noise_std_dev", "type": "float|None", "read": true, "write": false, "description": "Noise std dev from calibration"}
+  ],
+
+  "methods": [
+    {"name": "read", "signature": "read()", "returns": "int", "description": "Average of samples (from cache if timer mode, else fresh samples)"},
+    {"name": "read_raw", "signature": "read_raw()", "returns": "int", "description": "Unprocessed single ADC reading"},
+    {"name": "peak_detected", "signature": "peak_detected()", "returns": "bool", "description": "True if current value exceeds noise floor + threshold"},
+    {
+      "name": "calibrate",
+      "signature": "calibrate(duration=3, quiet_environment=True)",
+      "parameters": [
+        {"name": "duration", "type": "int", "default": 3, "description": "Calibration duration in seconds"},
+        {"name": "quiet_environment", "type": "bool", "default": true, "description": "If True, blocks for full duration. If False, uses shorter burst."}
+      ],
+      "returns": "bool",
+      "description": "Sample ambient noise to determine noise floor. BLOCKING — pauses timer updates during calibration."
+    },
+    {"name": "reset_calibration", "signature": "reset_calibration()", "returns": "None", "description": "Discard calibration data — revert to fixed peak_threshold"},
+    {"name": "deinit", "signature": "deinit()", "returns": "None", "description": "Stop background timer and release resources"},
+    {"name": "test", "signature": "test() (classmethod)", "returns": "None", "description": "Interactive test"},
+    {"name": "help", "signature": "help() (staticmethod)", "returns": "None", "description": "Print docs"}
+  ],
+
+  "example": "from machine import Pin\nfrom mic import Microphone\nfrom time import sleep_ms\n\nmic = Microphone(pin=Pin(34))\nmic.calibrate(duration=3)\nwhile True:\n    print(f'{mic.value:.1f}', 'PEAK!' if mic.peak_detected() else '')\n    sleep_ms(100)",
+
+  "help_method": "Microphone.help()",
+  "test_method": "Microphone.test()",
+
+  "esp32_notes": [
+    "Timer ID conflicts: ESP32 has 4 hardware timers (0-3). Avoid IDs used by other libs.",
+    "use_timer=True frees your main loop from sampling, but uses one timer resource",
+    "calibrate() pauses timer updates — call only during setup or quiet periods",
+    "Sample count and freq interact: sample_count=50 at freq=50 = 1s window"
+  ],
+
+  "hardware_notes": [
+    "Most mic modules output 0-3.3V analog — direct ADC connection works",
+    "Some modules (e.g., MAX9814) have AGC — disable via GAIN pin for raw signal"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard ADC requires manual averaging + threshold code. Microphone wraps this with calibration + peak detection."
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "name": "wifi",
+  "module": "wifi",
+  "class": "WiFi",
+  "import": "from wifi import WiFi",
+  "version": "1.0.0",
+  "category": "network",
+  "description": "Wi-Fi STA connection manager with timeout, retry, and hostname support. Wraps network.WLAN with a friendly interface and prints formatted status messages.",
+
+  "constructor_params": [
+    {
+      "name": "ssid",
+      "type": "str",
+      "default": "'stemstaroffice'",
+      "description": "Wi-Fi network name (SSID)"
+    },
+    {
+      "name": "password",
+      "type": "str",
+      "default": "'ilovestem'",
+      "description": "Wi-Fi password. Empty string '' for open networks."
+    },
+    {
+      "name": "timeout",
+      "type": "int",
+      "default": 10,
+      "description": "Single connection attempt timeout in seconds"
+    },
+    {
+      "name": "retry",
+      "type": "int",
+      "default": 1,
+      "description": "Additional retries after first attempt (0 = no retry, 1 = total 2 attempts)"
+    },
+    {
+      "name": "hostname",
+      "type": "str|None",
+      "default": null,
+      "description": "Optional DHCP hostname (accessible as hostname.local via mDNS)"
+    }
+  ],
+
+  "properties": [
+    {
+      "name": "ip",
+      "type": "str|None",
+      "read": true,
+      "write": false,
+      "description": "Assigned IPv4 address (after connect)"
+    },
+    {
+      "name": "subnet",
+      "type": "str|None",
+      "read": true,
+      "write": false,
+      "description": "Subnet mask"
+    },
+    {
+      "name": "gateway",
+      "type": "str|None",
+      "read": true,
+      "write": false,
+      "description": "Default gateway address"
+    },
+    {
+      "name": "dns",
+      "type": "str|None",
+      "read": true,
+      "write": false,
+      "description": "DNS server address"
+    },
+    {
+      "name": "local_hostname",
+      "type": "str|None",
+      "read": true,
+      "write": false,
+      "description": "hostname.local form (only set if hostname was provided)"
+    },
+    {
+      "name": "is_connected",
+      "type": "bool",
+      "read": true,
+      "write": false,
+      "description": "Whether WLAN is currently connected"
+    }
+  ],
+
+  "methods": [
+    {
+      "name": "connect",
+      "signature": "connect()",
+      "returns": "bool",
+      "description": "Connect to the configured Wi-Fi network. Returns True on success, False on failure. Prints progress dots and status messages."
+    },
+    {
+      "name": "disconnect",
+      "signature": "disconnect()",
+      "returns": "None",
+      "description": "Disconnect from Wi-Fi and update is_connected flag"
+    },
+    {
+      "name": "scan",
+      "signature": "scan() (classmethod)",
+      "returns": "list",
+      "description": "Scan available Wi-Fi networks, print them sorted by signal strength (descending), deduplicated by SSID. Returns the raw network list."
+    },
+    {
+      "name": "test",
+      "signature": "test() (classmethod)",
+      "returns": "None",
+      "description": "Interactive wizard: scan → prompt for SSID/password/timeout/retry/hostname → connect → print network info"
+    },
+    {
+      "name": "help",
+      "signature": "help() (staticmethod)",
+      "returns": "None",
+      "description": "Print full module documentation including signature, parameters, properties, methods, and example"
+    }
+  ],
+
+  "class_constants": {},
+
+  "example": "from wifi import WiFi\n\nwifi = WiFi(ssid='your_ssid', password='your_pwd', hostname='my-esp32')\nif wifi.connect():\n    print('IP:', wifi.ip)\n    print('Local:', wifi.local_hostname)\n    wifi.disconnect()",
+
+  "help_method": "WiFi.help()    # prints full docs",
+  "test_method": "WiFi.test()    # interactive scan + connect wizard",
+
+  "esp32_notes": [
+    "Calls network.WLAN(network.STA_IF) under the hood — see parent skill api/network.json for underlying behavior",
+    "If wlan.isconnected() is already True at start, connect() prints current config and returns True without re-connecting",
+    "Each retry cycle calls wlan.active(False) then wlan.active(True) to reset state — adds ~1s delay between attempts",
+    "network.hostname() may not be supported on all ports (silently caught with try/except)",
+    "For non-blocking connect, use parent skill network.WLAN directly — WiFi.connect() polls wlan.isconnected() with time.sleep(0.5)",
+    "After deep sleep, Wi-Fi credentials persist — call wlan.active(False) before soft-reset to clear"
+  ],
+
+  "hardware_notes": [
+    "Default credentials (stemstaroffice / ilovestem) target Stemstar office network — change for production use",
+    "Open networks: pass password='' (empty string)",
+    "Signal strength should be > -80 dBm for stable connection"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard MicroPython requires manually constructing WLAN, polling status, parsing ifconfig(). NovaMP WiFi wraps all of this.",
+    "NovaMP WiFi.scan() prints and deduplicates — standard wlan.scan() returns raw tuples with duplicate SSIDs at different BSSIDs",
+    "NovaMP WiFi prints emoji-decorated status messages — standard code is silent"
+  ]
+}

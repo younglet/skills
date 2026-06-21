@@ -1,0 +1,48 @@
+{
+  "name": "hcsr04",
+  "module": "hcsr04",
+  "class": "HCSR04",
+  "import": "from hcsr04 import HCSR04",
+  "version": "1.0.0",
+  "category": "sensor",
+  "description": "HC-SR04 ultrasonic distance sensor. Measures 2cm-400cm using time-of-flight of 40kHz ultrasound burst. Uses machine.time_pulse_us for accurate timing.",
+
+  "constructor_params": [
+    {"name": "trig_pin", "type": "Pin|int", "description": "Trigger pin (output, sends 10μs pulse)"},
+    {"name": "echo_pin", "type": "Pin|int", "description": "Echo pin (input, high during ultrasound round-trip)"},
+    {"name": "echo_timeout_us", "type": "int", "default": 30000, "description": "Max wait for echo in μs (~5m at default)"}
+  ],
+
+  "properties": [
+    {"name": "distance", "type": "float", "read": true, "write": false, "description": "Distance in cm (same as get_distance())"}
+  ],
+
+  "methods": [
+    {"name": "get_distance", "signature": "get_distance()", "returns": "float", "description": "Trigger a measurement and return distance in cm. Returns 500 if echo timeout."},
+    {"name": "test", "signature": "test() (classmethod)", "returns": "None", "description": "Interactive test"},
+    {"name": "help", "signature": "help() (staticmethod)", "returns": "None", "description": "Print docs"}
+  ],
+
+  "example": "from machine import Pin\nfrom hcsr04 import HCSR04\nfrom time import sleep_ms\n\nsensor = HCSR04(trig_pin=Pin(14), echo_pin=Pin(12))\nwhile True:\n    print(f'{sensor.distance:.1f} cm')\n    sleep_ms(500)",
+
+  "help_method": "HCSR04.help()",
+  "test_method": "HCSR04.test()",
+
+  "esp32_notes": [
+    "Speed of sound approximation: 343 m/s → 29.1 μs/cm round-trip",
+    "On timeout, returns 500 cm (not error) — caller must validate range",
+    "Min detection range: 2cm. Max: 400cm (or echo_timeout_us limit).",
+    "5V device — Echo pin outputs 5V which can damage 3.3V GPIO. Use voltage divider (1kΩ+2kΩ) on Echo line.",
+    "Uses from utime import sleep_us — see pitfalls.json. (Standard MicroPython forbids u-prefix.)"
+  ],
+
+  "hardware_notes": [
+    "Trig and Echo need separate GPIO — both 5V tolerant on input (with divider)",
+    "Use 1kΩ+2kΩ voltage divider on Echo to step 5V down to ~3.3V",
+    "VCC requires 5V supply (not 3.3V)"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard MicroPython requires manual pulse generation + time_pulse_us. HCSR04 wraps the full measurement cycle."
+  ]
+}

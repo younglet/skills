@@ -1,0 +1,91 @@
+{
+  "name": "led",
+  "module": "led",
+  "class": "LED",
+  "import": "from led import LED",
+  "version": "1.0.0",
+  "category": "output",
+  "description": "PWM LED driver with on/off, brightness, blink, fade, and breathe effects. Defaults to 500Hz PWM with 1023 max duty (ESP32). Supports inverted logic via is_0_max flag.",
+
+  "constructor_params": [
+    {
+      "name": "pin",
+      "type": "Pin|int",
+      "default": null,
+      "description": "machine.Pin instance or GPIO number (must support PWM)"
+    },
+    {
+      "name": "is_0_max",
+      "type": "bool",
+      "default": false,
+      "description": "Inverted logic. False: duty=1023 brightest (default ESP32). True: duty=0 brightest (some external drivers)."
+    }
+  ],
+
+  "properties": [
+    {
+      "name": "brightness",
+      "type": "int",
+      "read": true,
+      "write": true,
+      "description": "Current brightness 0~1023. Setting updates PWM immediately."
+    },
+    {
+      "name": "is_on",
+      "type": "bool",
+      "read": true,
+      "write": false,
+      "description": "Whether LED is currently on (brightness > 0)"
+    },
+    {
+      "name": "is_0_max",
+      "type": "bool",
+      "read": true,
+      "write": false,
+      "description": "Inverted-logic flag (set at init)"
+    }
+  ],
+
+  "methods": [
+    {"name": "on", "signature": "on()", "returns": "None", "description": "Turn LED on at current brightness"},
+    {"name": "off", "signature": "off()", "returns": "None", "description": "Turn LED off (duty 0)"},
+    {"name": "switch", "signature": "switch()", "returns": "None", "description": "Toggle on/off"},
+    {"name": "set_brightness", "signature": "set_brightness(value)", "returns": "None", "description": "Set brightness 0~1023 (alias for brightness property setter)"},
+    {"name": "brighter", "signature": "brighter(step=100)", "returns": "None", "description": "Increase brightness by step (clamped to 1023)"},
+    {"name": "darker", "signature": "darker(step=100)", "returns": "None", "description": "Decrease brightness by step (clamped to 0)"},
+    {"name": "blink", "signature": "blink(times=1, interval=500)", "returns": "None", "description": "Blink on/off `times` times with `interval` ms between transitions (uses time.sleep_ms)"},
+    {"name": "fade_to", "signature": "fade_to(target_brightness=1023, steps=50, interval=40)", "returns": "None", "description": "Smoothly transition to target brightness over `steps` iterations"},
+    {"name": "fade_on", "signature": "fade_on(steps=50, interval=40)", "returns": "None", "description": "Fade in from 0 to current remembered brightness"},
+    {"name": "fade_off", "signature": "fade_off(steps=50, interval=40)", "returns": "None", "description": "Fade out from current brightness to 0"},
+    {"name": "breathe", "signature": "breathe(steps=50, interval=20)", "returns": "None", "description": "One breath cycle: fade_on() + fade_off()"},
+    {"name": "test", "signature": "test() (classmethod)", "returns": "None", "description": "Interactive test: prompts for pin, then runs all features in sequence"},
+    {"name": "help", "signature": "help() (staticmethod)", "returns": "None", "description": "Print full documentation"}
+  ],
+
+  "class_constants": {},
+
+  "example": "from machine import Pin\nfrom led import LED\n\nled = LED(Pin(4))\nled.brightness = 800\nled.on()\nimport time\ntime.sleep(2)\nled.fade_off()\nled.blink(times=3, interval=300)",
+
+  "help_method": "LED.help()    # prints docs",
+  "test_method": "LED.test()    # interactive wizard",
+
+  "esp32_notes": [
+    "PWM frequency is hardcoded to 500Hz at init — not user-configurable in v1.0",
+    "Max duty is 1023 (10-bit). On ESP32-S2/S3/C3 this is also 10-bit. On RP2040, set is_0_max appropriately if ported.",
+    "PWM on GPIO 34-39 fails (input-only pins) — constructor raises RuntimeError",
+    "fade_to uses integer division — large steps may produce non-uniform transitions",
+    "All timing uses time.sleep_ms() — NOT non-blocking. Do not call from ISR."
+  ],
+
+  "hardware_notes": [
+    "Default wiring: LED anode → GPIO via current-limiting resistor (~220Ω) → GND",
+    "For common-anode RGB LED strips, use is_0_max=True",
+    "Total GPIO current should stay < 100mA across all pins"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard MicroPython requires manual PWM setup: pwm = PWM(Pin(4), freq=500); pwm.duty(512). NovaMP LED wraps this.",
+    "LED includes fade and breathe effects — standard code requires custom math",
+    "brightness setter auto-updates PWM — standard code requires pwm.duty() after each change"
+  ]
+}

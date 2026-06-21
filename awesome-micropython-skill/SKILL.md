@@ -85,6 +85,18 @@ awesome-micropython-skill/
 | ESP32 pinout reference (C3/S3) | ✅ Stable | `hardware/esp32-pinout.json` — every GPIO, ADC, touch |
 | Firmware flashing | 📋 Planned | `firmware/flash.py` + `firmware/cache/` |
 
+## Companion Skills
+
+This skill covers **standard MicroPython v1.28.0**. Customized firmwares built on top of it are documented as **peer skills** (siblings, not sub-skills):
+
+| Companion skill | Covers | Folder |
+|-----------------|--------|--------|
+| **NovaMP v1.0** | Stemstar's 16-driver firmware wrapper — `WiFi`, `TimeSyncer`, `LED`, etc. | `../novamp1.0/` |
+
+When writing code for a NovaMP device, load **both** this skill and `novamp1.0/`. The peer skill provides the NovaMP-specific API; this skill provides the underlying MicroPython behavior those wrappers call.
+
+See `../awesome-micropython.md` for the full version manifest and compatibility matrix.
+
 ## Platform Compatibility
 
 All scripts and mpremote commands work on **Windows, macOS, and Linux**. The only platform-specific detail is the serial port:

@@ -1,0 +1,64 @@
+{
+  "name": "diff_drive_car",
+  "module": "diff_drive_car",
+  "class": "DiffDriveCar",
+  "import": "from diff_drive_car import DiffDriveCar",
+  "version": "1.0.0",
+  "category": "output",
+  "description": "Two-wheel differential-drive car controller. Composes two Motor instances for left/right wheels and adds high-level motion commands (forward, backward, spin, arc).",
+
+  "constructor_params": [
+    {"name": "left_pin1", "type": "Pin|int", "description": "Left motor IN1 (H-bridge)"},
+    {"name": "left_pin2", "type": "Pin|int", "description": "Left motor IN2 (H-bridge)"},
+    {"name": "right_pin1", "type": "Pin|int", "description": "Right motor IN1"},
+    {"name": "right_pin2", "type": "Pin|int", "description": "Right motor IN2"},
+    {"name": "default_speed", "type": "float", "default": 0.6, "description": "Default speed 0.0-1.0 used by forward/backward/spin when not specified"},
+    {"name": "direction_left", "type": "int", "default": 1, "description": "Left wheel direction correction (1 or -1)"},
+    {"name": "direction_right", "type": "int", "default": 1, "description": "Right wheel direction correction"},
+    {"name": "freq", "type": "int", "default": 5000, "description": "PWM frequency"},
+    {"name": "max_duty", "type": "int", "default": 1023, "description": "Max duty (1023 for ESP32)"}
+  ],
+
+  "properties": [
+    {"name": "default_speed", "type": "float", "read": true, "write": true, "description": "Default speed used by motion commands (clamped 0.0-1.0)"},
+    {"name": "left_motor", "type": "Motor", "read": true, "write": false, "description": "Internal Motor instance for left wheel"},
+    {"name": "right_motor", "type": "Motor", "read": true, "write": false, "description": "Internal Motor instance for right wheel"}
+  ],
+
+  "methods": [
+    {"name": "set_speed", "signature": "set_speed(left_speed, right_speed)", "returns": "None", "description": "Directly set left/right wheel speeds (-1.0~+1.0)"},
+    {"name": "forward", "signature": "forward(speed=None)", "returns": "None", "description": "Both wheels forward (speed or default_speed)"},
+    {"name": "backward", "signature": "backward(speed=None)", "returns": "None", "description": "Both wheels reverse"},
+    {"name": "spin_left", "signature": "spin_left(speed=None)", "returns": "None", "description": "Rotate left in place (left back, right forward). Aliases: turn_left, left"},
+    {"name": "spin_right", "signature": "spin_right(speed=None)", "returns": "None", "description": "Rotate right in place. Aliases: turn_right, right"},
+    {"name": "arc_turn", "signature": "arc_turn(direction='left', forward_speed=None, turn_ratio=0.5)", "returns": "None", "description": "Arc turn (one wheel faster than other). Alias: smooth_turn"},
+    {"name": "arc_left", "signature": "arc_left(forward_speed=None, turn_ratio=0.5)", "returns": "None", "description": "Arc left turn. Alias: smooth_left"},
+    {"name": "arc_right", "signature": "arc_right(forward_speed=None, turn_ratio=0.5)", "returns": "None", "description": "Arc right turn. Alias: smooth_right"},
+    {"name": "stop", "signature": "stop()", "returns": "None", "description": "Stop both motors"},
+    {"name": "deinit", "signature": "deinit()", "returns": "None", "description": "Release PWM resources"},
+    {"name": "test", "signature": "test() (classmethod)", "returns": "None", "description": "Interactive test"},
+    {"name": "help", "signature": "help() (staticmethod)", "returns": "None", "description": "Print docs"}
+  ],
+
+  "class_aliases": ["Car", "DoubleWheelCar", "DiffDriveRobot", "TwoWheelCar", "TwoWheelRobot"],
+
+  "example": "from machine import Pin\nfrom diff_drive_car import DiffDriveCar\nfrom time import sleep_ms\n\ncar = DiffDriveCar(Pin(14), Pin(15), Pin(16), Pin(17))\ncar.forward()\nsleep_ms(2000)\ncar.spin_left()\nsleep_ms(2000)\ncar.stop()\ncar.deinit()",
+
+  "help_method": "DiffDriveCar.help()",
+  "test_method": "DiffDriveCar.test()",
+
+  "esp32_notes": [
+    "turn_ratio=0.5 means inner wheel at half speed. 0.0 = pivot one wheel, 1.0 = no turn (straight)",
+    "Multiple aliases (turn_left, left, smooth_left) for compatibility — all map to same method",
+    "If a wheel spins backward, set direction_left/right=-1 instead of swapping pins"
+  ],
+
+  "hardware_notes": [
+    "Requires two H-bridge channels (one per motor)",
+    "Use external battery — motor stall current can exceed USB 500mA limit"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard code requires manually composing two Motor instances. DiffDriveCar adds high-level motion primitives."
+  ]
+}

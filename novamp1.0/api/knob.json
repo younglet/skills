@@ -1,0 +1,49 @@
+{
+  "name": "knob",
+  "module": "knob",
+  "class": "Knob",
+  "import": "from knob import Knob",
+  "version": "1.0.0",
+  "category": "input",
+  "description": "Potentiometer (rotary knob) driver via ADC. Reads raw value, percentage, or mapped value in user-defined range. Defaults to 12-bit ADC (0-4095).",
+
+  "constructor_params": [
+    {"name": "pin", "type": "Pin|int", "description": "ADC-capable GPIO (ESP32: GPIO32-39)"},
+    {"name": "min_val", "type": "int|float", "default": 0, "description": "Minimum of mapped value range"},
+    {"name": "max_val", "type": "int|float", "default": 100, "description": "Maximum of mapped value range"},
+    {"name": "adc_bits", "type": "int", "default": 12, "description": "ADC resolution bits (12 → max ADC value 4095)"}
+  ],
+
+  "properties": [
+    {"name": "percent", "type": "float", "read": true, "write": false, "description": "Current value as 0.0-100.0 percentage (1 decimal place)"},
+    {"name": "value", "type": "float", "read": true, "write": false, "description": "Mapped value in [min_val, max_val] range (float)"},
+    {"name": "value_int", "type": "int", "read": true, "write": false, "description": "Mapped value rounded to int"}
+  ],
+
+  "methods": [
+    {"name": "read", "signature": "read()", "returns": "int", "description": "Raw ADC value (0 to 2^adc_bits - 1)"},
+    {"name": "test", "signature": "test() (classmethod)", "returns": "None", "description": "Interactive test"},
+    {"name": "help", "signature": "help() (staticmethod)", "returns": "None", "description": "Print docs"}
+  ],
+
+  "example": "from machine import Pin\nfrom knob import Knob\nfrom time import sleep_ms\n\nknob = Knob(pin=Pin(34), min_val=0, max_val=100)\nwhile True:\n    print(knob.percent, knob.value_int)\n    sleep_ms(100)",
+
+  "help_method": "Knob.help()",
+  "test_method": "Knob.test()",
+
+  "esp32_notes": [
+    "ADC attenuation set to ATTN_11DB (~0-3.3V) — wrapped in try/except for ESP8266/RP2040 compatibility",
+    "Only ADC1 channels (GPIO32-39) are reliable. ADC2 conflicts with Wi-Fi.",
+    "ADC is non-linear at extremes — values near 0 and 4095 may have larger error",
+    "Reading takes ~10μs — safe in tight loops"
+  ],
+
+  "hardware_notes": [
+    "Potentiometer: outer pins to 3.3V and GND, wiper (middle) to ADC pin",
+    "Add 100nF capacitor between ADC pin and GND for noise filtering"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard ADC returns 12-bit raw. Knob adds percent/value/value_int convenience properties."
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "name": "motor",
+  "module": "motor",
+  "class": "Motor",
+  "import": "from motor import Motor",
+  "version": "1.0.0",
+  "category": "output",
+  "description": "DC motor driver via H-bridge (L298N, TB6612FNG). Controls speed (-1.0 reverse to +1.0 forward) and direction using two GPIO pins for IN1/IN2.",
+
+  "constructor_params": [
+    {"name": "pin1", "type": "Pin|int", "description": "H-bridge IN1 pin"},
+    {"name": "pin2", "type": "Pin|int", "description": "H-bridge IN2 pin"},
+    {"name": "direction", "type": "int", "default": 1, "description": "1=normal, -1=reverse (for correcting reverse wiring without changing logic)"},
+    {"name": "freq", "type": "int", "default": 5000, "description": "PWM frequency in Hz (1k-10k recommended)"},
+    {"name": "max_duty", "type": "int", "default": 1023, "description": "Max duty value (1023 for ESP32, 65535 for RP2040)"}
+  ],
+
+  "properties": [
+    {"name": "speed", "type": "float", "read": true, "write": true, "description": "Current speed -1.0~+1.0. Setting auto-applies to PWM."},
+    {"name": "direction", "type": "int", "read": true, "write": false, "description": "Direction correction factor (set at init)"}
+  ],
+
+  "methods": [
+    {"name": "set_speed", "signature": "set_speed(speed)", "returns": "None", "description": "Set motor speed (-1.0 to +1.0)"},
+    {"name": "stop", "signature": "stop()", "returns": "None", "description": "Immediately stop motor (speed=0)"},
+    {"name": "deinit", "signature": "deinit()", "returns": "None", "description": "Release PWM resources"},
+    {"name": "test", "signature": "test() (classmethod)", "returns": "None", "description": "Interactive test"},
+    {"name": "help", "signature": "help() (staticmethod)", "returns": "None", "description": "Print docs"}
+  ],
+
+  "example": "from machine import Pin\nfrom motor import Motor\nimport time\n\nmotor = Motor(Pin(14), Pin(15))\nmotor.speed = 0.7\ntime.sleep(2)\nmotor.speed = -0.5\ntime.sleep(2)\nmotor.stop()\nmotor.deinit()",
+
+  "help_method": "Motor.help()",
+  "test_method": "Motor.test()",
+
+  "esp32_notes": [
+    "Speed is clamped to [-1.0, +1.0] — values outside are clipped",
+    "speed=0 sets both PWM channels to 0 (coast mode, not brake)",
+    "direction=-1 swaps the meaning: positive speed drives the other physical direction"
+  ],
+
+  "hardware_notes": [
+    "MUST use external H-bridge (L298N, TB6612FNG). Never connect motors directly to GPIO.",
+    "Motor power supply must be separate (NOT 3.3V/5V from dev board)",
+    "Voltage must match motor rating (e.g., 6V motor = 6V supply)",
+    "Higher PWM frequency (5-10kHz) reduces audible motor whine"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard MicroPython requires manual PWM control of two pins with direction logic. Motor wraps this.",
+    "Speed normalized to -1.0~+1.0 regardless of max_duty — easier mental model"
+  ]
+}

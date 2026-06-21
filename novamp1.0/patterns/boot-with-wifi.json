@@ -1,0 +1,61 @@
+{
+  "name": "boot-with-wifi",
+  "title": "boot.py with Wi-Fi + NTP Time Sync",
+  "version": "1.0.0",
+  "category": "bootstrap",
+  "description": "Standard NovaMP v1.0 boot.py pattern — connect Wi-Fi, sync NTP time, persist connection across main.py. Runs automatically on every boot.",
+  "modules_used": ["wifi", "time_sync"],
+
+  "pattern": {
+    "file": "boot.py",
+    "purpose": "Establish network connectivity and clock sync before main.py runs",
+    "when_to_use": "Any project that needs internet access or accurate timestamps"
+  },
+
+  "code": "# boot.py — runs on every boot\nfrom wifi import WiFi\nfrom time_sync import TimeSyncer\n\n# Configure with your Wi-Fi credentials\nWIFI_SSID = 'your_ssid'\nWIFI_PASSWORD = 'your_password'\nTIMEZONE = 8  # Beijing UTC+8; use 0 for UTC, -5 for EST\n\ndef bootstrap():\n    \"\"\"Connect Wi-Fi and sync time. Called once at boot.\"\"\"\n    # 1. Connect Wi-Fi\n    wifi = WiFi(ssid=WIFI_SSID, password=WIFI_PASSWORD, hostname='novamp-device')\n    if not wifi.connect():\n        print('⚠️  Wi-Fi failed — running offline')\n        return False\n\n    print(f'✅ Connected: {wifi.ip} ({wifi.local_hostname})')\n\n    # 2. Sync NTP time (4h cache prevents redundant syncs)\n    ts = TimeSyncer(timezone=TIMEZONE)\n    if ts.sync():\n        print(f'🕒 Time: {ts.now()}')\n    else:\n        print('⚠️  NTP sync failed — using RTC (may be wrong)')\n\n    return True\n\n# Run at boot\nbootstrap()\n",
+
+  "main_py_template": {
+    "file": "main.py",
+    "code": "# main.py — your application\nfrom wifi import WiFi\nfrom time_sync import TimeSyncer\nfrom time import sleep_ms\n\n# Wi-Fi is already connected from boot.py — re-instantiate to access state\nwifi = WiFi()  # No args = use defaults (or pass same credentials)\nprint('Wi-Fi connected:', wifi.is_connected)\n\n# Time sync state is preserved across imports — re-create instance\nts = TimeSyncer(timezone=8)\nprint('Local time:', ts.now())\n\n# Your application code here\nwhile True:\n    # Read sensor, send to cloud, etc.\n    sleep_ms(1000)\n"
+  },
+
+  "variations": [
+    {
+      "name": "Persistent credentials",
+      "description": "Wi-Fi credentials persist in NVS across soft-reset. Only re-enter on full power-cycle.",
+      "code": "# After first successful connect(), credentials are saved automatically\n# Subsequent boots: WiFi() with no args may auto-reconnect if same network available"
+    },
+    {
+      "name": "Force re-sync on demand",
+      "description": "When you need fresh NTP data despite 4h cache",
+      "code": "from time_sync import TimeSyncer\nts = TimeSyncer(timezone=8)\nts.sync(force=True)  # bypass 4h cache"
+    },
+    {
+      "name": "Error-tolerant boot",
+      "description": "Continue even if Wi-Fi fails (sensors work offline)",
+      "code": "if not wifi.connect():\n    print('Offline mode')\n    # main.py still runs, but network features will fail"
+    }
+  ],
+
+  "esp32_notes": [
+    "boot.py MUST be on device root, not in /lib/. File path matters.",
+    "If boot.py crashes, device may soft-reset loop. Wrap in try/except for production.",
+    "Wi-Fi and NTP both fail silently if boot.py takes >5s — WDT reset.",
+    "Add gc.collect() after Wi-Fi connect to free heap before main.py starts"
+  ],
+
+  "common_mistakes": [
+    {
+      "mistake": "Calling sync() before WiFi().connect() succeeds",
+      "fix": "Always check wifi.is_connected or wifi.connect() return value before sync()"
+    },
+    {
+      "mistake": "Forgetting timezone parameter",
+      "fix": "Always pass timezone to TimeSyncer — defaults to 8 (Beijing)"
+    },
+    {
+      "mistake": "boot.py infinite loop",
+      "fix": "boot.py should run setup once and return. Use main.py for loops."
+    }
+  ]
+}

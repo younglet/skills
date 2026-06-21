@@ -1,0 +1,72 @@
+{
+  "name": "help-docs",
+  "title": "In-IDE Documentation with .help()",
+  "version": "1.0.0",
+  "category": "documentation",
+  "description": "All 16 NovaMP v1.0 classes support .help() — prints full signature, parameter list, and working examples directly in the REPL. No internet or external docs required.",
+  "modules_used": ["all 16 modules"],
+
+  "pattern": {
+    "workflow": "When unsure about a class's API, call .help() first",
+    "rationale": "Faster than searching docs — documentation is bundled with the firmware"
+  },
+
+  "code": "# Generic pattern\nfrom <module> import <Class>\n<Class>.help()\n\n# Examples\nfrom led import LED\nLED.help()\n\nfrom wifi import WiFi\nWiFi.help()\n\nfrom hcsr04 import HCSR04\nHCSR04.help()\n",
+
+  "help_output_example": {
+    "module": "LED",
+    "output": "【LED 驱动类】\n--------------------\n[硬件参数]:\n    - 亮度范围: 0 (关闭) 到 1023 (最亮)\n--------------------\n[初始化]:\n    led = LED(pin)                   # pin: machine.Pin 对象\n[属性]:\n    brightness: 当前亮度（可读写，范围 0~1023）\n    is_on: 当前是否开启（只读）\n[方法]:\n    on()                             # 打开 LED 至当前亮度\n    off()                            # 关闭 LED\n    switch()                         # 切换 LED 状态\n    ...\n--------------------\n[示例]:\n    from machine import Pin\n    from led import LED\n    led = LED(Pin(4))\n    led.brightness = 800\n    led.on()\n"
+  },
+
+  "when_to_use": [
+    {
+      "scenario": "First time using a module",
+      "action": "Run <Class>.help() — read parameter list and example"
+    },
+    {
+      "scenario": "Forgot exact method signature",
+      "action": "Run <Class>.help() — refresh memory on parameter names and order"
+    },
+    {
+      "scenario": "Offline classroom (no internet)",
+      "action": "Use .help() — documentation is bundled with firmware"
+    },
+    {
+      "scenario": "Discovering new methods",
+      "action": "Run .help() after firmware update — see new APIs"
+    }
+  ],
+
+  "esp32_notes": [
+    ".help() prints to stdout — works in any REPL (mpremote, Thonny, rshell)",
+    "Output is plain text — no formatting escapes that could break in serial terminals",
+    "Some classes have staticmethod help() (no instance needed), some have classmethod (also no instance)"
+  ],
+
+  "comparison_to_documentation": [
+    {
+      "aspect": ".help()",
+      "feature": "Always available offline, bundled with firmware"
+    },
+    {
+      "aspect": ".help()",
+      "feature": "Matches the exact firmware version"
+    },
+    {
+      "aspect": ".help()",
+      "feature": "Concise — fits in one screen"
+    },
+    {
+      "aspect": "docs/*.md (web)",
+      "feature": "More detailed, includes examples and pitfalls"
+    },
+    {
+      "aspect": "docs/*.md (web)",
+      "feature": "Searchable, links between modules"
+    },
+    {
+      "aspect": "docs/*.md (web)",
+      "feature": "Includes hardware wiring diagrams"
+    }
+  ]
+}

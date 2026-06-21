@@ -1,0 +1,151 @@
+{
+  "name": "novamp-pitfalls",
+  "title": "NovaMP v1.0 Self-Healing Error Database",
+  "version": "1.0.0",
+  "description": "NovaMP-specific errors with ranked fixes. Upvote fixes that work, downvote those that don't. After enough votes, fixes with score < -3 should be deprecated.",
+
+  "OSError: [Errno 110] ETIMEDOUT": {
+    "context": "NTP sync failure — usually Wi-Fi not connected",
+    "fixes": [
+      {"action": "Verify WiFi.connect() returned True before calling TimeSyncer.sync()", "upvotes": 8, "downvotes": 0, "verified": true},
+      {"action": "Check ntptime.timeout setting — default may be too low for slow networks", "upvotes": 3, "downvotes": 0},
+      {"action": "Test with sync(force=True) to bypass 4h cache", "upvotes": 1, "downvotes": 0},
+      {"action": "Ensure firewall allows UDP/123 outbound (some corporate networks block NTP)", "upvotes": 5, "downvotes": 1}
+    ]
+  },
+
+  "OSError: [Errno 113] EHOSTUNREACH": {
+    "context": "Cannot reach NTP server — DNS or routing issue",
+    "fixes": [
+      {"action": "Check wifi.dns is set correctly", "upvotes": 4, "downvotes": 0},
+      {"action": "Try ping 8.8.8.8 to verify IP connectivity", "upvotes": 2, "downvotes": 0},
+      {"action": "Some routers isolate IoT devices — check AP isolation settings", "upvotes": 3, "downvotes": 0}
+    ]
+  },
+
+  "RuntimeError: PWM initialization failed on pin X": {
+    "context": "PWM cannot be initialized — pin doesn't support PWM",
+    "fixes": [
+      {"action": "GPIO 34-39 are input-only on ESP32 — use a different pin", "upvotes": 12, "downvotes": 0, "verified": true},
+      {"action": "Check if pin is already used by another PWM channel — deinit first", "upvotes": 6, "downvotes": 0},
+      {"action": "GPIO 6-11 are connected to flash — do NOT use", "upvotes": 9, "downvotes": 0, "verified": true}
+    ]
+  },
+
+  "ValueError: pin is input-only": {
+    "context": "Tried to use GPIO 34-39 as output",
+    "fixes": [
+      {"action": "Move to GPIO 2, 4, 5, 12-33 — these support output", "upvotes": 15, "downvotes": 0, "verified": true},
+      {"action": "If you need analog input on these pins, use ADC class instead", "upvotes": 3, "downvotes": 0}
+    ]
+  },
+
+  "OSError: [Errno 12] ENOMEM": {
+    "context": "Memory allocation failed",
+    "fixes": [
+      {"action": "Call gc.collect() before large allocations", "upvotes": 10, "downvotes": 0},
+      {"action": "Wi-Fi + TLS consumes 50-80KB — keep heap usage low", "upvotes": 7, "downvotes": 0},
+      {"action": "Reduce buffer sizes in libraries (e.g., requests response buffer)", "upvotes": 4, "downvotes": 1},
+      {"action": "Avoid string concatenation in loops — use list + join", "upvotes": 2, "downvotes": 0}
+    ]
+  },
+
+  "IndentationError after .test() exit": {
+    "context": "REPL indentation state corrupted by .test()",
+    "fixes": [
+      {"action": "Press Ctrl+C to break out, then Ctrl+D for soft reset", "upvotes": 8, "downvotes": 0},
+      {"action": "Send Ctrl+E to enter paste mode before pasting code blocks", "upvotes": 5, "downvotes": 0}
+    ]
+  },
+
+  "WLAN connect fails silently (no error, no connection)": {
+    "context": "WiFi.connect() returns False without exception",
+    "fixes": [
+      {"action": "Check signal strength: WiFi.scan() and verify RSSI > -80 dBm", "upvotes": 6, "downvotes": 0},
+      {"action": "Verify SSID and password case-sensitive match", "upvotes": 11, "downvotes": 0, "verified": true},
+      {"action": "5GHz networks not supported — use 2.4GHz only", "upvotes": 9, "downvotes": 0, "verified": true},
+      {"action": "WPA3-Enterprise not supported in v1.0 — use WPA2-PSK", "upvotes": 4, "downvotes": 0}
+    ]
+  },
+
+  "ntptime module not found": {
+    "context": "ImportError: no module named 'ntptime'",
+    "fixes": [
+      {"action": "Some NovaMP builds don't include ntptime — connect via mpremote and run: mip.install('ntptime')", "upvotes": 7, "downvotes": 0},
+      {"action": "Verify NovaMP version — v1.0 should include ntptime by default", "upvotes": 3, "downvotes": 1}
+    ]
+  },
+
+  "HCSR04 returns 500 (timeout)": {
+    "context": "Echo never returns — wiring issue",
+    "fixes": [
+      {"action": "Echo pin is 5V — add voltage divider (1kΩ + 2kΩ) to step down to 3.3V", "upvotes": 12, "downvotes": 0, "verified": true},
+      {"action": "VCC needs 5V (not 3.3V) — check power supply", "upvotes": 8, "downvotes": 0},
+      {"action": "Object out of range (>4m) — increase echo_timeout_us", "upvotes": 4, "downvotes": 0}
+    ]
+  },
+
+  "Servo jitters when stationary": {
+    "context": "SG90 vibrates at target position",
+    "fixes": [
+      {"action": "Driver rounds to 0.01° — but if calling move_to() rapidly, jitter appears", "upvotes": 5, "downvotes": 0},
+      {"action": "Add sleep_ms(20) after move_to() to let servo settle", "upvotes": 6, "downvotes": 0, "verified": true},
+      {"action": "External 5V supply recommended — undervoltage causes jitter", "upvotes": 8, "downvotes": 0, "verified": true}
+    ]
+  },
+
+  "RGBMatrix pixels don't update": {
+    "context": "set_color() called but display unchanged",
+    "fixes": [
+      {"action": "For batched updates: set immediate=False, then call write() once at end", "upvotes": 9, "downvotes": 0, "verified": true},
+      {"action": "WS2812B needs 5V power — check supply (USB often insufficient for full brightness)", "upvotes": 7, "downvotes": 0},
+      {"action": "Data line too long — keep <1m or use level shifter", "upvotes": 2, "downvotes": 0}
+    ]
+  },
+
+  "TimeSyncer.now() shows wrong time": {
+    "context": "Local time displays UTC or off by hours",
+    "fixes": [
+      {"action": "Pass timezone= parameter to TimeSyncer constructor (default is 8 = Beijing)", "upvotes": 10, "downvotes": 0},
+      {"action": "If RTC was set manually to local time, use http_time() for UTC instead", "upvotes": 4, "downvotes": 0},
+      {"action": "Known issue: now() uses mktime() which interprets tuple as local. See time_sync.json known_issues.", "upvotes": 6, "downvotes": 1, "verified": true}
+    ]
+  },
+
+  "WiFi credentials persist unexpectedly": {
+    "context": "WiFi auto-reconnects with old credentials after soft-reset",
+    "fixes": [
+      {"action": "This is ESP32 NVS behavior — call wlan.active(False) before soft_reset to clear", "upvotes": 7, "downvotes": 0, "verified": true},
+      {"action": "For full clear: wlan.active(False); gc.collect(); soft_reset", "upvotes": 3, "downvotes": 0}
+    ]
+  },
+
+  "Motor doesn't spin despite correct code": {
+    "context": "speed=0.5 set but motor silent",
+    "fixes": [
+      {"action": "Check H-bridge power supply (separate from ESP32)", "upvotes": 11, "downvotes": 0, "verified": true},
+      {"action": "Verify IN1/IN2 pins match wiring — swap if needed or use direction=-1", "upvotes": 8, "downvotes": 0},
+      {"action": "Use external power supply rated for motor stall current (typically 1-2A)", "upvotes": 6, "downvotes": 0}
+    ]
+  },
+
+  "Microphone reads always 0": {
+    "context": "mic.value always returns 0 even with sound",
+    "fixes": [
+      {"action": "Check mic module power — many need 3.3V or 5V depending on model", "upvotes": 8, "downvotes": 0},
+      {"action": "Verify ADC pin — GPIO 32-39 only (ADC1)", "upvotes": 7, "downvotes": 0},
+      {"action": "Some mic modules have digital output — need analog-output module for ADC", "upvotes": 5, "downvotes": 1}
+    ]
+  },
+
+  "Voting instructions": {
+    "description": "When applying a fix from this database:",
+    "rules": [
+      "Fix worked → increment upvotes",
+      "Fix failed → increment downvotes",
+      "Fix has score < -3 → deprecate it (remove from list)",
+      "Discovered new error → add new entry following existing schema",
+      "Discovered new fix → add to existing error's fixes list"
+    ]
+  }
+}

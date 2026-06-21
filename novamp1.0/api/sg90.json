@@ -1,0 +1,63 @@
+{
+  "name": "sg90",
+  "module": "sg90",
+  "class": "SG90",
+  "import": "from sg90 import SG90",
+  "version": "1.0.0",
+  "category": "output",
+  "description": "TowerPro SG90 servo motor driver using 50Hz PWM. Angle range 0°-180° with 0.5ms-2.5ms pulse width. Includes anti-jitter via angle rounding.",
+
+  "constructor_params": [
+    {"name": "pin", "type": "Pin|int", "description": "Servo signal pin (must support PWM)"}
+  ],
+
+  "properties": [
+    {"name": "angle", "type": "float", "read": true, "write": true, "description": "Current target angle (0-180). Setting auto-moves servo."},
+    {"name": "min_angle", "type": "int", "class_attr": true, "read": true, "write": true, "description": "Minimum angle (default 0, class-level attribute — modify if hardware supports different range)"},
+    {"name": "max_angle", "type": "int", "class_attr": true, "read": true, "write": true, "description": "Maximum angle (default 180)"}
+  ],
+
+  "methods": [
+    {
+      "name": "move_to",
+      "signature": "move_to(angle)",
+      "parameters": [
+        {"name": "angle", "type": "float", "description": "Target angle (min_angle to max_angle)"}
+      ],
+      "returns": "None",
+      "description": "Move servo to angle. Rounds to 0.01° to prevent PWM jitter. Skips if same as current."
+    },
+    {"name": "deinit", "signature": "deinit()", "returns": "None", "description": "Stop PWM signal — servo loses torque"},
+    {"name": "test", "signature": "test() (classmethod)", "returns": "None", "description": "Interactive test"},
+    {"name": "help", "signature": "help() (staticmethod)", "returns": "None", "description": "Print docs"}
+  ],
+
+  "class_constants": {
+    "_servo_pwm_freq": 50,
+    "_min_u10_duty": 26,
+    "_max_u10_duty": 123
+  },
+
+  "example": "from machine import Pin\nfrom sg90 import SG90\nfrom time import sleep_ms\n\nservo = SG90(Pin(4))\nservo.move_to(0)\nsleep_ms(1000)\nservo.angle = 90\nsleep_ms(1000)\nservo.move_to(180)\nservo.deinit()",
+
+  "help_method": "SG90.help()",
+  "test_method": "SG90.test()",
+
+  "esp32_notes": [
+    "PWM frequency fixed at 50Hz (20ms period) — standard for servos",
+    "Pulse width: 0.5ms (0°) to 2.5ms (180°). ESP32 duty range 0-1023.",
+    "Duty values 26-123 correspond to 0°-180° (linear mapping)",
+    "Constructor does NOT move the servo on init — PWM starts at duty=0 (no signal)"
+  ],
+
+  "hardware_notes": [
+    "Use external 5V supply for servo — ESP32 3.3V may not provide enough current",
+    "Capable of ~1.8 kg·cm torque at 5V",
+    "Do NOT manually rotate servo when powered — damages gears"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard MicroPython requires manual PWM setup + duty calculation. SG90 wraps with angle-based API.",
+    "Built-in jitter prevention via angle rounding"
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "name": "buzzer",
+  "module": "buzzer",
+  "class": "Buzzer",
+  "import": "from buzzer import Buzzer",
+  "version": "1.0.0",
+  "category": "output",
+  "description": "Buzzer driver supporting both passive (PWM tone control) and active (fixed-frequency) buzzers. Passive mode supports note-based melody playback.",
+
+  "constructor_params": [
+    {
+      "name": "pin",
+      "type": "Pin|int",
+      "default": null,
+      "description": "GPIO pin connected to buzzer signal (must support PWM for passive mode)"
+    },
+    {
+      "name": "is_passive",
+      "type": "bool",
+      "default": true,
+      "description": "True for passive buzzer (PWM tone control). False for active buzzer (fixed tone, on/off only)."
+    },
+    {
+      "name": "active_high",
+      "type": "bool",
+      "default": true,
+      "description": "True: high level triggers sound. False: low level triggers (for some active buzzers)."
+    }
+  ],
+
+  "properties": [
+    {"name": "is_passive", "type": "bool", "read": true, "write": false, "description": "Buzzer type (set at init)"},
+    {"name": "active_high", "type": "bool", "read": true, "write": false, "description": "Trigger polarity (set at init)"}
+  ],
+
+  "methods": [
+    {"name": "on", "signature": "on()", "returns": "None", "description": "Turn buzzer on"},
+    {"name": "off", "signature": "off()", "returns": "None", "description": "Turn buzzer off"},
+    {
+      "name": "beep",
+      "signature": "beep(times=1, duration=0.2, interval=0.1)",
+      "returns": "None",
+      "description": "Beep `times` times. Each beep lasts `duration` seconds, separated by `interval` seconds."
+    },
+    {
+      "name": "play_note",
+      "signature": "play_note(note='C4', duration=0.5)",
+      "parameters": [
+        {"name": "note", "type": "str", "default": "'C4'", "description": "Note name with octave: 'C4', 'D5', 'A3', etc. Empty string '' = silence."},
+        {"name": "duration", "type": "float", "default": 0.5, "description": "Note duration in seconds"}
+      ],
+      "returns": "None",
+      "description": "Play a musical note. Only works on passive buzzers. Supports major scale notes C, D, E, F, G, A, B at octaves 3-6+."
+    },
+    {
+      "name": "set_tone_freq",
+      "signature": "set_tone_freq(frequency=1000, duty=512)",
+      "returns": "None",
+      "description": "Set PWM frequency and duty cycle. Passive buzzer only."
+    },
+    {"name": "deinit", "signature": "deinit()", "returns": "None", "description": "Release PWM resources and set pin low"},
+    {"name": "test", "signature": "test() (classmethod)", "returns": "None", "description": "Interactive test"},
+    {"name": "help", "signature": "help() (staticmethod)", "returns": "None", "description": "Print docs"}
+  ],
+
+  "class_constants": {
+    "NOTE_FREQUENCIES": {
+      "C": 261.63,
+      "D": 293.66,
+      "E": 329.63,
+      "F": 349.23,
+      "G": 392.00,
+      "A": 440.00,
+      "B": 493.88
+    },
+    "_NOTE_COMMENT": "Base frequencies for octave 4. Other octaves computed as freq * 2^(octave-4)"
+  },
+
+  "example": "from machine import Pin\nfrom buzzer import Buzzer\n\n# Passive buzzer with melody\nbz = Buzzer(Pin(4))\nbz.play_note('C4', 0.5)\nbz.play_note('E4', 0.5)\nbz.play_note('G4', 0.5)\n\n# Active buzzer\nbz2 = Buzzer(Pin(4), is_passive=False)\nbz2.beep(times=3, duration=0.2)\nbz2.deinit()",
+
+  "help_method": "Buzzer.help()",
+  "test_method": "Buzzer.test()",
+
+  "esp32_notes": [
+    "NOTE_FREQUENCIES only contains major scale notes (C, D, E, F, G, A, B) — no sharps/flats (#, b)",
+    "play_note() silently ignores unsupported note names (prints warning)",
+    "PWM default frequency 1000Hz, duty 512 (50%) — adjustable via set_tone_freq()",
+    "Passing note='' is a rest (silence for duration seconds)"
+  ],
+
+  "hardware_notes": [
+    "Passive buzzers require PWM-capable pin — all GPIO except 34-39 work",
+    "Active buzzers only need digital on/off — works on any GPIO",
+    "External transistor recommended for high-volume buzzers (passive piezo types)"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard MicroPython requires manual PWM setup. Buzzer abstracts this plus adds note-to-frequency mapping.",
+    "Standard PWM can play any frequency. Buzzer adds play_note() with built-in note table."
+  ]
+}

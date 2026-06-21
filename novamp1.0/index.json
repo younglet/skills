@@ -1,0 +1,134 @@
+{
+  "name": "novamp-index",
+  "title": "NovaMP v1.0 Module Index",
+  "version": "1.0.0",
+  "released": "2026-06-21",
+  "platform": "ESP32 (NovaMP firmware)",
+  "parent_firmware": "MicroPython v1.28.0",
+  "publisher": "Stemstar Education",
+  "summary": {
+    "total_modules": 16,
+    "categories": {
+      "input": ["button", "knob", "ldr", "mic"],
+      "output": ["led", "rgb_matrix", "trilight", "motor", "diff_drive_car", "sg90", "buzzer"],
+      "sensor": ["hcsr04"],
+      "display": ["ssd1306"],
+      "network": ["wifi"],
+      "utility": ["time_sync", "colors"]
+    }
+  },
+  "modules": [
+    {
+      "file": "api/button.json",
+      "module": "button",
+      "class": "Button",
+      "category": "input",
+      "description": "按钮输入驱动 — 防抖 + 单击事件检测"
+    },
+    {
+      "file": "api/buzzer.json",
+      "module": "buzzer",
+      "class": "Buzzer",
+      "category": "output",
+      "description": "蜂鸣器驱动 — 有源/无源 + 旋律播放（仅无源）"
+    },
+    {
+      "file": "api/colors.json",
+      "module": "colors",
+      "class": "(module functions)",
+      "category": "utility",
+      "description": "颜色工具 — 22 个 RGB 常量 + 渐变/彩虹/亮度调节函数"
+    },
+    {
+      "file": "api/diff_drive_car.json",
+      "module": "diff_drive_car",
+      "class": "DiffDriveCar",
+      "category": "output",
+      "description": "双轮差速小车 — 前进/后退/原地旋转/弧线转弯"
+    },
+    {
+      "file": "api/hcsr04.json",
+      "module": "hcsr04",
+      "class": "HCSR04",
+      "category": "sensor",
+      "description": "HC-SR04 超声波测距 — 2cm~400cm"
+    },
+    {
+      "file": "api/knob.json",
+      "module": "knob",
+      "class": "Knob",
+      "category": "input",
+      "description": "旋钮（电位器） — ADC 读取 + 范围映射 + 百分比"
+    },
+    {
+      "file": "api/ldr.json",
+      "module": "ldr",
+      "class": "LDR",
+      "category": "input",
+      "description": "光敏电阻 — ADC 读数（0~4095）"
+    },
+    {
+      "file": "api/led.json",
+      "module": "led",
+      "class": "LED",
+      "category": "output",
+      "description": "PWM LED — 开关/亮度调节/渐变/呼吸/闪烁"
+    },
+    {
+      "file": "api/mic.json",
+      "module": "mic",
+      "class": "Microphone",
+      "category": "input",
+      "description": "麦克风声音传感器 — 滑动窗口 + 自动噪声校准 + 峰值检测"
+    },
+    {
+      "file": "api/motor.json",
+      "module": "motor",
+      "class": "Motor",
+      "category": "output",
+      "description": "直流电机 — H 桥驱动 + 速度/方向 (-1.0~+1.0)"
+    },
+    {
+      "file": "api/rgb_matrix.json",
+      "module": "rgb_matrix",
+      "class": "RGBMatrix",
+      "category": "output",
+      "description": "8x8 WS2812B LED 矩阵 — 像素/位图/旋转/亮度"
+    },
+    {
+      "file": "api/sg90.json",
+      "module": "sg90",
+      "class": "SG90",
+      "category": "output",
+      "description": "SG90 舵机 — PWM 角度控制 (0°~180°)"
+    },
+    {
+      "file": "api/ssd1306.json",
+      "module": "ssd1306",
+      "class": "SSD1306",
+      "category": "display",
+      "description": "SSD1306 OLED — I²C 文字/图形显示（128x64 / 128x32）"
+    },
+    {
+      "file": "api/time_sync.json",
+      "module": "time_sync",
+      "class": "TimeSyncer",
+      "category": "network",
+      "description": "NTP 时间同步 — UTC+时区 + HTTP 时间格式 + 4h 缓存"
+    },
+    {
+      "file": "api/trilight.json",
+      "module": "trilight",
+      "class": "TriLight",
+      "category": "output",
+      "description": "三色 RGB LED — 共阴/共阳 + 颜色属性"
+    },
+    {
+      "file": "api/wifi.json",
+      "module": "wifi",
+      "class": "WiFi",
+      "category": "network",
+      "description": "Wi-Fi STA 连接 — 超时/重试/主机名/IP 信息"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "name": "trilight",
+  "module": "trilight",
+  "class": "TriLight",
+  "import": "from trilight import TriLight",
+  "version": "1.0.0",
+  "category": "output",
+  "description": "Three-channel PWM controller for RGB LEDs. Supports common-cathode (default) and common-anode (is_0_max=True) configurations. Color values 0-255 per channel.",
+
+  "constructor_params": [
+    {"name": "pin1", "type": "Pin|int", "description": "Red channel GPIO (PWM-capable)"},
+    {"name": "pin2", "type": "Pin|int", "description": "Green channel GPIO (PWM-capable)"},
+    {"name": "pin3", "type": "Pin|int", "description": "Blue channel GPIO (PWM-capable)"},
+    {"name": "is_0_max", "type": "bool", "default": false, "description": "False: common-cathode (duty=1023 brightest). True: common-anode (duty=0 brightest)"},
+    {"name": "freq", "type": "int", "default": 5000, "description": "PWM frequency"},
+    {"name": "max_duty", "type": "int", "default": 1023, "description": "Max duty (1023 ESP32, 65535 RP2040)"}
+  ],
+
+  "properties": [
+    {"name": "color", "type": "tuple", "read": true, "write": true, "description": "Current (r, g, b) tuple. Each 0-255. Setting auto-applies to PWM."},
+    {"name": "r", "type": "int", "read": true, "write": true, "description": "Red channel (0-255)"},
+    {"name": "g", "type": "int", "read": true, "write": true, "description": "Green channel (0-255)"},
+    {"name": "b", "type": "int", "read": true, "write": true, "description": "Blue channel (0-255)"}
+  ],
+
+  "methods": [
+    {
+      "name": "set_rgb",
+      "signature": "set_rgb(r, g, b)",
+      "parameters": [
+        {"name": "r", "type": "int", "description": "Red 0-255"},
+        {"name": "g", "type": "int", "description": "Green 0-255"},
+        {"name": "b", "type": "int", "description": "Blue 0-255"}
+      ],
+      "returns": "None",
+      "description": "Set color via three separate arguments"
+    },
+    {
+      "name": "set_color",
+      "signature": "set_color(color)",
+      "parameters": [
+        {"name": "color", "type": "tuple|list", "description": "(r, g, b) tuple or list"}
+      ],
+      "returns": "None",
+      "description": "Set color from tuple/list"
+    },
+    {"name": "off", "signature": "off()", "returns": "None", "description": "Turn off all channels"},
+    {"name": "deinit", "signature": "deinit()", "returns": "None", "description": "Release PWM resources"},
+    {"name": "test", "signature": "test() (classmethod)", "returns": "None", "description": "Interactive test"},
+    {"name": "help", "signature": "help() (staticmethod)", "returns": "None", "description": "Print docs"}
+  ],
+
+  "example": "from machine import Pin\nfrom trilight import TriLight\nfrom time import sleep_ms\n\nlight = TriLight(Pin(25), Pin(26), Pin(27))\nlight.set_rgb(255, 0, 0)   # red\nsleep_ms(500)\nlight.set_color((0, 255, 0))  # green\nsleep_ms(500)\nlight.color = (0, 0, 255)     # blue\nlight.off()\nlight.deinit()",
+
+  "help_method": "TriLight.help()",
+  "test_method": "TriLight.test()",
+
+  "esp32_notes": [
+    "RGB values clamped to 0-255 (out-of-range silently capped)",
+    "Common-cathode RGB LED: long leg (anode) to VCC, three short legs via current-limit resistors to GPIO",
+    "Common-anode: long leg to GND, three short legs via resistors to GPIO — set is_0_max=True"
+  ],
+
+  "hardware_notes": [
+    "Each channel needs 220Ω current-limit resistor (or 100Ω for brighter)",
+    "RGB LED draws ~60mA at full white — total GPIO current OK, but consider external driver for higher power"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard code requires three PWM channels + manual mapping. TriLight wraps this with color semantics."
+  ]
+}

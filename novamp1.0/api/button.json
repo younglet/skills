@@ -1,0 +1,79 @@
+{
+  "name": "button",
+  "module": "button",
+  "class": "Button",
+  "import": "from button import Button",
+  "version": "1.0.0",
+  "category": "input",
+  "description": "Debounced button input with press-state and click-event detection. Uses internal state machine with debounce_delay (default 10ms).",
+
+  "constructor_params": [
+    {
+      "name": "pin",
+      "type": "Pin",
+      "default": null,
+      "description": "machine.Pin instance (driver auto-configures as input with pull-up/down)"
+    },
+    {
+      "name": "debounce_delay",
+      "type": "int",
+      "default": 10,
+      "description": "Debounce time in milliseconds. Typical: 10-50ms."
+    }
+  ],
+
+  "properties": [],
+
+  "methods": [
+    {
+      "name": "is_pressed",
+      "signature": "is_pressed()",
+      "returns": "bool",
+      "description": "Returns True if button is currently held down (debounced). Continuously True while held."
+    },
+    {
+      "name": "is_clicked",
+      "signature": "is_clicked(min_interval=50)",
+      "parameters": [
+        {"name": "min_interval", "type": "int", "default": 50, "description": "Minimum interval between clicks in ms (debounce for click events)"}
+      ],
+      "returns": "bool",
+      "description": "Returns True ONCE per complete press-release cycle. Must be polled at least every debounce_delay ms."
+    },
+    {
+      "name": "test",
+      "signature": "test() (classmethod)",
+      "returns": "None",
+      "description": "Interactive test"
+    },
+    {
+      "name": "help",
+      "signature": "help() (staticmethod)",
+      "returns": "None",
+      "description": "Print full documentation"
+    }
+  ],
+
+  "class_constants": {},
+
+  "example": "from machine import Pin\nfrom button import Button\nfrom time import sleep_ms\n\nbtn = Button(Pin(4))\nwhile True:\n    if btn.is_clicked():\n        print('Clicked!')\n    sleep_ms(50)",
+
+  "help_method": "Button.help()",
+  "test_method": "Button.test()",
+
+  "esp32_notes": [
+    "Driver auto-configures pull-up or pull-down based on pin — for typical low-side buttons (button to GND), pull-up is used",
+    "is_clicked() depends on is_pressed() being polled — must call in loop faster than debounce_delay",
+    "Use only one of is_pressed() or is_clicked() in the same loop — mixing them can cause missed events"
+  ],
+
+  "hardware_notes": [
+    "S-V-G wiring: Signal→GPIO, V→3.3V, G→GND (with internal pull-up enabled)",
+    "Active-low wiring (button between GPIO and GND) is the standard for ESP32"
+  ],
+
+  "differences_from_standard_mp": [
+    "Standard machine.Pin.value() returns raw, possibly bouncing state. Button adds hardware debounce.",
+    "is_clicked() detects a complete press-release cycle — standard code requires manual state tracking"
+  ]
+}

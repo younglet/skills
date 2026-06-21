@@ -1,0 +1,63 @@
+{
+  "name": "ssd1306",
+  "module": "ssd1306",
+  "class": "SSD1306",
+  "import": "from ssd1306 import SSD1306",
+  "version": "1.0.0",
+  "category": "display",
+  "description": "SSD1306 OLED display driver via I²C. Supports 128x64 and 128x32 panels. Inherits from framebuf.FrameBuffer — supports text, lines, rectangles, pixels. Sub-package ssd1306_cn adds Chinese character rendering.",
+
+  "constructor_params": [
+    {"name": "width", "type": "int", "description": "Display width in pixels (typically 128)"},
+    {"name": "height", "type": "int", "description": "Display height in pixels (32 or 64)"},
+    {"name": "i2c", "type": "I2C", "description": "Initialized I2C object (user creates with machine.I2C)"},
+    {"name": "addr", "type": "int", "default": "0x3C", "description": "I2C device address (0x3C or 0x3D typical)"},
+    {"name": "external_vcc", "type": "bool", "default": false, "description": "True if display powered externally (affects charge pump config)"}
+  ],
+
+  "properties": [
+    {"name": "width", "type": "int", "read": true, "write": false, "description": "Display width"},
+    {"name": "height", "type": "int", "read": true, "write": false, "description": "Display height"}
+  ],
+
+  "methods": [
+    {"name": "show", "signature": "show()", "returns": "None", "description": "Flush frame buffer to display (REQUIRED after any draw call)"},
+    {"name": "fill", "signature": "fill(color)", "parameters": [{"name": "color", "type": "int", "description": "0=black, 1=white"}], "returns": "None", "description": "Fill entire screen"},
+    {"name": "pixel", "signature": "pixel(x, y, color)", "returns": "None", "description": "Set single pixel"},
+    {"name": "text", "signature": "text(string, x, y, color=1)", "returns": "None", "description": "Draw text at (x,y). Uses built-in 8x8 font for ASCII."},
+    {"name": "line", "signature": "line(x1, y1, x2, y2, color)", "returns": "None", "description": "Draw a line"},
+    {"name": "rect", "signature": "rect(x, y, w, h, color)", "returns": "None", "description": "Draw outline rectangle"},
+    {"name": "fill_rect", "signature": "fill_rect(x, y, w, h, color)", "returns": "None", "description": "Draw filled rectangle"},
+    {"name": "poweron", "signature": "poweron()", "returns": "None", "description": "Turn display on"},
+    {"name": "poweroff", "signature": "poweroff()", "returns": "None", "description": "Turn display off (RAM retained)"},
+    {"name": "contrast", "signature": "contrast(level)", "parameters": [{"name": "level", "type": "int", "description": "0-255"}], "returns": "None", "description": "Set display contrast"},
+    {"name": "invert", "signature": "invert(invert)", "parameters": [{"name": "invert", "type": "bool"}], "returns": "None", "description": "Invert colors"}
+  ],
+
+  "sub_packages": {
+    "ssd1306_cn": "Chinese character rendering extension (separate module in lib/ssd1306_cn/)"
+  },
+
+  "example": "from machine import I2C, Pin\nfrom ssd1306 import SSD1306\n\ni2c = I2C(1, scl=Pin(22), sda=Pin(21), freq=115200)\nscreen = SSD1306(128, 64, i2c)\nscreen.text('Hello, World!', 0, 0, 1)\nscreen.show()",
+
+  "help_method": "SSD1306.help()    # prints full docs",
+  "test_method": "SSD1306.test()    # interactive test (prompts for SCL/SDA pins)",
+
+  "esp32_notes": [
+    "All draw methods write to frame buffer — must call show() to display",
+    "Default I²C frequency 115200 — works for most displays. Try 400000 for faster refresh.",
+    "Built-in 8x8 font only supports ASCII (32-126). For Chinese, use ssd1306_cn sub-package.",
+    "I2C(1, ...) uses GPIO21/22. I2C(0, ...) uses GPIO1/3 (UART — avoid)."
+  ],
+
+  "hardware_notes": [
+    "Most SSD1306 modules work at 3.3V. Some 5V modules include on-board regulator.",
+    "SCL/SDA need 4.7kΩ pull-up resistors (most modules include them)",
+    "Run I2C.scan() first if uncertain about address"
+  ],
+
+  "differences_from_standard_mp": [
+    "SSD1306 wraps framebuf.FrameBuffer — adds show(), poweron/off(), contrast(), invert() methods",
+    "Standard framebuf has no display-flush concept. show() is the NovaMP addition."
+  ]
+}
