@@ -145,6 +145,39 @@ import requests
 
 Files in `/lib/` are on `sys.path` directly. The directory name `lib` is NOT a Python package namespace.
 
+### 3. Import ordering — base modules first, all in one block
+
+All imports go in **one contiguous block** at the top of the file. No blank lines between import groups. Order within the block: base → framework → drivers.
+
+| # | Category | Typical modules |
+|---|----------|-----------------|
+| 1 | Python standard library | `time`, `json`, `struct`, `re`, `math`, `random` |
+| 2 | MicroPython built-ins | `machine`, `network`, `esp`, `uos`, `gc` |
+| 3 | Framework / third-party / `/lib/` files | `requests`, `nova_server`, custom libs |
+| 4 | Project-specific NovaMP drivers | `led`, `hcsr04`, `ssd1306`, `wifi` |
+
+**Base modules (`machine`, `time`, etc.) MUST come before drivers.** Hardware-specific drivers go last.
+
+✅ Correct:
+
+```python
+import time
+import json
+from machine import Pin, ADC
+from nova_server import NovaServer
+from led import LED
+```
+
+❌ Wrong — drivers before `machine`:
+
+```python
+from led import LED                    # group 4 — too early
+from nova_server import NovaServer      # group 3
+from machine import Pin                 # group 2 — too late
+```
+
+Rationale: reading order mirrors dependency direction (`led` depends on `machine.Pin`, which depends on firmware). One compact block is easier to read than groups separated by blank lines.
+
 ## Self-Healing: pitfalls.json Voting
 
 `pitfalls.json` is a **self-improving error database**. Each error has ranked fixes with upvote/downvote counts:

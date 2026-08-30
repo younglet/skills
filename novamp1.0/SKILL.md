@@ -115,6 +115,46 @@ HCSR04.test()
 
 Launches an interactive REPL wizard that prompts for pin numbers, runs the module through its paces, and reports results. **Always run this first** when wiring a new module to confirm pinout and basic operation.
 
+## Import Ordering Convention
+
+Imports are ordered by category — **base modules first, hardware drivers last**. All imports stay in one contiguous block (no blank lines between groups); one blank line before the code that follows.
+
+### The 4 Categories (top → bottom)
+
+| # | Category | Typical modules |
+|---|----------|-----------------|
+| 1 | Python standard library | `time`, `json`, `struct`, `re`, `math` |
+| 2 | MicroPython built-ins | `machine`, `network`, `esp`, `uos` |
+| 3 | Framework / third-party | `nova_server`, custom libs |
+| 4 | NovaMP hardware drivers | `led`, `hcsr04`, `ssd1306`, `wifi` |
+
+### ✅ Correct
+
+```python
+import time
+import json
+from machine import Pin, ADC
+from nova_server import NovaServer
+from led import LED
+from hcsr04 import HCSR04
+
+_hcsr04 = HCSR04(...)
+```
+
+### ❌ Wrong — drivers before `machine`
+
+```python
+from led import LED                    # group 4 — too early
+from nova_server import NovaServer      # group 3
+from machine import Pin                 # group 2 — too late
+```
+
+### Rationale
+
+- Reading top-to-bottom mirrors **dependency direction**: drivers depend on `machine.Pin`, which depends on firmware.
+- Teachers can scan the top of any script and instantly see what hardware is attached (last lines of the import block).
+- Visually compact — a single import block is easier to read than a wall of blank lines.
+
 ## Pin-Based Design
 
 All NovaMP drivers accept either an integer GPIO number OR a `machine.Pin` instance:
@@ -240,6 +280,25 @@ See [`pitfalls.json`](pitfalls.json) for the full ranked-fixes database. Most co
 3. **Motors without H-bridge** — never connect DC motors directly to GPIO. Use L298N/TB6612FNG.
 4. **Time sync before Wi-Fi** — `ntptime.settime()` raises `OSError: ETIMEDOUT` if WLAN is inactive.
 5. **Servo jitter** — `SG90` rounds to 0.01° to prevent PWM jitter, but avoid rapid `move_to()` calls <50ms apart.
+
+## Firmware Flashing
+
+```bash
+# 擦除
+python -m esptool --chip esp32 --port COM3 erase_flash
+
+# 烧录（波特率 1258000 可大幅提速）
+python -m esptool --chip esp32 --port COM3 --baud 1258000 write_flash -z 0x1000 firmwares/novamp_v1.0_esp32_generic.bin
+
+# 烧录完成后，用 mpremote 上传项目文件
+mpremote connect COM3
+mpremote fs cp server.py :server.py
+mpremote fs cp lib/tomato_clock.py :lib/tomato_clock.py
+mpremote fs cp index.html :index.html
+# 等等
+```
+
+注意：第一次烧录后 flash 是空的，需要把 nova_server.mpy、项目文件等重新上传。
 
 ## Relationship to Peer Skill
 
