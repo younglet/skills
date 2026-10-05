@@ -16,6 +16,7 @@ import json
 import os
 import re
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -71,21 +72,29 @@ def call_mimo_tts(
     if voice in ("Mia", "Chloe", "Milo", "Dean"):
         user_content = "Natural, expressive American English. Clear pronunciation."
 
-    completion = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "user", "content": user_content},
-            {"role": "assistant", "content": assistant_content},
-        ],
-        audio={"format": fmt, "voice": voice},
-    )
+    last_err = None
+    for attempt in range(4):
+        try:
+            completion = client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "user", "content": user_content},
+                    {"role": "assistant", "content": assistant_content},
+                ],
+                audio={"format": fmt, "voice": voice},
+            )
 
-    message = completion.choices[0].message
-    audio_data = getattr(message, "audio", None)
-    if audio_data is None:
-        raise RuntimeError("No audio data in response")
+            message = completion.choices[0].message
+            audio_data = getattr(message, "audio", None)
+            if audio_data is None:
+                raise RuntimeError("No audio data in response")
 
-    return base64.b64decode(audio_data.data)
+            return base64.b64decode(audio_data.data)
+        except Exception as e:
+            last_err = e
+            if attempt < 3:
+                time.sleep(2 * (attempt + 1))
+    raise last_err
 
 
 def parse_coach_output(text: str) -> list[dict]:
@@ -552,9 +561,13 @@ def generate_from_json(api_key, json_path, model=DEFAULT_MODEL, output_dir=None)
     """
     data = json.loads(Path(json_path).read_text(encoding="utf-8"))
 
-    voice = data.get("voice", "Chloe")
     fmt = data.get("format", "wav")
     topic = data.get("topic", "general")
+
+    # Dialogue support: `cast` maps speaker -> {voice, style}
+    cast = data.get("cast", {}) or {}
+    default_voice = data.get("voice", "Chloe")
+    default_style = data.get("style", "")
 
     if output_dir:
         base_dir = Path(output_dir) / topic
@@ -569,7 +582,22 @@ def generate_from_json(api_key, json_path, model=DEFAULT_MODEL, output_dir=None)
     total_lines = len(lines)
 
     for li, line in enumerate(lines):
-        text = line.strip()
+        if isinstance(line, dict):
+            text = str(line.get("text", "")).strip()
+            speaker = line.get("speaker", "")
+            cfg = cast.get(speaker, {})
+            if not isinstance(cfg, dict):
+                cfg = {}
+            line_voice = line.get("voice") or cfg.get("voice") or default_voice
+            line_style = line.get("style")
+            if line_style is None:
+                line_style = cfg.get("style", default_style)
+        else:
+            text = str(line).strip()
+            speaker = ""
+            line_voice = default_voice
+            line_style = default_style
+
         if not text or len(text) < 2:
             continue
 
@@ -585,14 +613,15 @@ def generate_from_json(api_key, json_path, model=DEFAULT_MODEL, output_dir=None)
             filename = f"{li+1:04d}{chunk_suffix}.{fmt}"
             fpath = base_dir / filename
 
+            tag = f"{speaker}: " if speaker else ""
             if len(sub_chunks) > 1:
-                print(f"[合成] {filename}  (拆分 {ci+1}/{len(sub_chunks)})")
+                print(f"[合成] {filename}  {tag}(拆分 {ci+1}/{len(sub_chunks)})")
             else:
-                print(f"[合成] {filename}")
+                print(f"[合成] {filename}  {tag}")
             print(f"       {chunk[:80]}{'...' if len(chunk) > 80 else ''}")
 
             try:
-                audio = call_mimo_tts(api_key, tts_text, voice=voice, style="",
+                audio = call_mimo_tts(api_key, tts_text, voice=line_voice, style=line_style,
                                       model=model, fmt=fmt)
                 fpath.write_bytes(audio)
 
@@ -607,6 +636,9 @@ def generate_from_json(api_key, json_path, model=DEFAULT_MODEL, output_dir=None)
 
                 results.append({
                     "index": li + 1,
+                    "speaker": speaker,
+                    "voice": line_voice,
+                    "style": line_style,
                     "text": chunk,
                 })
 
@@ -654,7 +686,8 @@ def generate_from_json(api_key, json_path, model=DEFAULT_MODEL, output_dir=None)
     meta = {
         "title": data.get("title", ""),
         "role": data.get("role", ""),
-        "voice": voice,
+        "default_voice": default_voice,
+        "cast": cast,
         "topic": topic,
         "model": model,
         "generated": datetime.now().isoformat(),
